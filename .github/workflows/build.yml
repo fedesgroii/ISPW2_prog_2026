@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 23
-          distribution: 'zulu'  # Cambia se necessario
+          distribution: 'zulu'
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
@@ -37,10 +37,10 @@ jobs:
 
       - name: Build and analyze with SonarCloud
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Per ottenere informazioni sui PR
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    # Token SonarCloud
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=fedesgroii_ISPW2_prog_2026 \
-          -Dsonar.organization=fedesgroii \
-          -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.projectKey=fedesgroii_ISPW2_prog_2026 \
+            -Dsonar.organization=fedesgroii \
+            -Dsonar.host.url=https://sonarcloud.io

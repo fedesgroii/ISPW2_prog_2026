@@ -28,13 +28,13 @@ public class StartupSettingsBoundary extends Application {
     public void start(Stage primaryStage) {
         // Metodo principale chiamato da JavaFX per avviare l'interfaccia
         StartupSettingsController controller = new StartupSettingsController(); // Crea un'istanza del controller per
-                                                                                // gestire le azioni dell'utente
+        // gestire le azioni dell'utente
         primaryStage.setTitle("MindLab");
 
         // **Aggiunta dell'icona dell'applicazione**
         Image appIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icone/logo_ML.png"))); // Carica
-                                                                                                                 // l'immagine
-                                                                                                                 // dell'icona
+        // l'immagine
+        // dell'icona
         primaryStage.getIcons().add(appIcon); // Aggiunge l'icona alla finestra principale (Stage)
 
         VBox container = new VBox(); // Crea un contenitore verticale per organizzare gli elementi
@@ -45,7 +45,7 @@ public class StartupSettingsBoundary extends Application {
 
         // Carica e visualizza l'icona principale nella UI
         Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icone/power-off.png"))); // Carica
-                                                                                                                // l'immagine
+        // l'immagine
         ImageView iconaPower = new ImageView(icon); // Crea un visualizzatore per l'immagine
         iconaPower.setFitHeight(50); // Imposta l'altezza dell'immagine
         iconaPower.setFitWidth(50); // Imposta la larghezza dell'immagine
@@ -77,7 +77,7 @@ public class StartupSettingsBoundary extends Application {
         fileSystemOption = new RadioButton("File System"); // Opzione per File System
         fileSystemOption.setToggleGroup(storageGroup); // Aggiunge il pulsante al gruppo
         HBox storageBox = new HBox(10, memoryOption, databaseOption, fileSystemOption); // Contenitore orizzontale per
-                                                                                        // le opzioni
+        // le opzioni
         storageBox.setAlignment(Pos.CENTER); // Allinea le opzioni al centro
         storageBox.getStyleClass().add("option-box"); // Aggiunge una classe di stile CSS
 
@@ -93,9 +93,9 @@ public class StartupSettingsBoundary extends Application {
                 Screen.getPrimary().getBounds().getHeight()); // Crea una scena a schermo intero
         scene.getStylesheets()
                 .add(Objects.requireNonNull(getClass().getResource("/style/style_avvio.css")).toExternalForm()); // Aggiunge
-                                                                                                                 // lo
-                                                                                                                 // stile
-                                                                                                                 // CSS
+        // lo
+        // stile
+        // CSS
         primaryStage.setScene(scene); // Imposta la scena sulla finestra principale
         primaryStage.setFullScreen(true); // Imposta la finestra a schermo intero
         primaryStage.setResizable(false);
@@ -106,7 +106,7 @@ public class StartupSettingsBoundary extends Application {
     /**
      * Metodo pubblico per ottenere i dati delle impostazioni selezionate
      * dall'utente
-     * 
+     *
      * @return Oggetto SettingsData contenente le impostazioni selezionate
      */
     public SettingsData getSettingsData() {
@@ -118,7 +118,7 @@ public class StartupSettingsBoundary extends Application {
     /**
      * Metodo privato per determinare l'opzione di archiviazione selezionata
      * Nasconde la logica di implementazione interna della boundary
-     * 
+     *
      * @return Intero rappresentante l'opzione di archiviazione (0=RAM, 1=Database,
      *         2=File System)
      */

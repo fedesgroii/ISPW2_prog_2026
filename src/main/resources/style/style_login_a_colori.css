@@ -1,0 +1,87 @@
+/* Corpo della pagina */
+.root {
+    -fx-background-color: linear-gradient(to bottom, #f7f9fc, #e3f2fd); /* Gradiente tenue */
+    -fx-font-family: 'Roboto', sans-serif;
+    -fx-alignment: center;
+    -fx-padding: 0;
+    -fx-max-height: Infinity;
+}
+
+/* Titolo principale */
+#title {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495e; /* Blu-grigio scuro */
+    -fx-padding: 20px;
+}
+
+/* Sottotitolo */
+#subtitle {
+    -fx-font-size: 18px;
+    -fx-text-fill: #566573; /* Grigio-blu tenue */
+    -fx-padding: 0 0 20px 0;
+}
+
+/* Pulsanti Generali */
+.button {
+    -fx-padding: 15px 30px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 5); /* Ombra leggera */
+}
+
+/* Pulsante Specialista */
+#login {
+    -fx-background-color: #4caf50; /* Verde tenue */
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2px;
+    -fx-text-fill: white;
+}
+#login:hover {
+    -fx-background-color: #388e3c; /* Verde scuro tenue */
+}
+
+/* Pulsante Paziente */
+#registrazione {
+    -fx-background-color: #42a5f5; /* Azzurro tenue */
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2px;
+    -fx-text-fill: white;
+}
+#registrazione:hover {
+    -fx-background-color: #1976d2; /* Blu più scuro */
+}
+
+/* Pulsante Prenotazione Senza Registrazione */
+#appointmentLink {
+    -fx-background-color: #ffd54f; /* Giallo tenue */
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2px;
+    -fx-text-fill: #212121; /* Testo grigio scuro */
+    -fx-padding: 12px 25px;
+    -fx-font-size: 14px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-pref-width: 400px;
+    -fx-max-width: 400px;
+}
+#appointmentLink:hover {
+    -fx-background-color: #fbc02d; /* Giallo più scuro */
+}
+
+/* Contenitore principale */
+#container {
+    -fx-background-color: #ffffff; /* Bianco neutro */
+    -fx-background-radius: 12px;
+    -fx-padding: 30px;
+    -fx-max-width: 600px;
+    -fx-max-height: 600px;
+    -fx-width: 70%;
+    -fx-height: 70%;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 15, 0, 0, 4); /* Ombra tenue */
+    -fx-alignment: center;
+    -fx-margin-bottom: 20px;
+}

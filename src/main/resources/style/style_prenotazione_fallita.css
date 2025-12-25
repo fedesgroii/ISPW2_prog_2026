@@ -1,0 +1,47 @@
+/* Layout principale */
+.root-container {
+    -fx-alignment: center;
+    -fx-spacing: 1.5em;
+    -fx-padding: 3em;
+    -fx-background-color: linear-gradient(to bottom, #f9f9f9, #eaeaea);
+}
+
+/* Messaggio principale */
+.message {
+    -fx-font-size: 24px;
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ff4d4d; /* Rosso acceso, indicativo di errore */
+    -fx-text-alignment: center;
+    -fx-padding: 10px 0;
+}
+
+/* Testo descrittivo */
+.description {
+    -fx-font-size: 18px;
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-text-fill: #444444;
+    -fx-text-alignment: center;
+    -fx-padding: 0 30px;
+}
+
+/* Bottone */
+.back-button {
+    -fx-font-size: 16px;
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-background-color: #0078d4;
+    -fx-text-fill: white;
+    -fx-padding: 10px 30px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}
+
+.back-button:hover {
+    -fx-background-color: #005bb5;
+}
+
+.back-button:pressed {
+    -fx-background-color: #004c99;
+}

@@ -1,0 +1,89 @@
+/* Contenitore principale */
+.container {
+    -fx-background-color: #f9f9f9;
+    -fx-spacing: 30px; /* Riduci spaziatura */
+    -fx-padding: 60px; /* Riduci padding */
+    -fx-alignment: center;
+    -fx-box-sizing: border-box;
+}
+
+/* Header */
+.header {
+    -fx-border-color: #ddd;
+    -fx-border-width: 0 0 1.5px 0; /* Riduci spessore */
+    -fx-padding: 15px; /* Riduci padding */
+    -fx-pref-height: 75px; /* Riduci altezza */
+}
+
+/* Icone header */
+.user-icon, .cog-icon, .lock-icon {
+    -fx-fit-height: 32px; /* Riduci altezza */
+    -fx-fit-width: 32px;  /* Riduci larghezza */
+}
+
+.cog-icon {
+    -fx-fit-width: 40px;  /* Aumenta larghezza */
+}
+
+/* Testo di benvenuto */
+.welcome-text {
+    -fx-font-family: "Roboto";
+    -fx-font-size: 36px; /* Riduci dimensione font */
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+    -fx-padding: 30px 0; /* Riduci padding */
+}
+
+/* Bottoni principali */
+.prenota-button, .storico-button, .shop-button {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-font-size: 27px; /* Riduci dimensione font */
+    -fx-padding: 22.5px; /* Riduci padding */
+    -fx-border-radius: 12px; /* Riduci raggio */
+    -fx-background-radius: 12px; /* Riduci raggio */
+    -fx-border-width: 0;
+    -fx-max-width: 300px; /* Riduci larghezza massima */
+}
+
+.prenota-button:hover, .storico-button:hover, .shop-button:hover {
+    -fx-background-color: #218838;
+    -fx-cursor: hand;
+}
+
+/* Footer */
+.footer {
+    -fx-border-color: #ddd;
+    -fx-border-width: 1.5px 0 0 0; /* Riduci spessore bordo */
+    -fx-padding: 15px; /* Riduci padding */
+    -fx-alignment: center;
+    -fx-pref-height: 75px; /* Riduci altezza */
+    -fx-spacing: 30px; /* Riduci spaziatura */
+}
+
+/* Collegamenti nel footer */
+.footer-link {
+    -fx-font-family: "Roboto";
+    -fx-font-size: 21px; /* Riduci dimensione font */
+    -fx-text-fill: #007bff;
+    -fx-underline: true;
+    -fx-padding: 0 15px; /* Riduci padding */
+}
+
+.footer-link:hover {
+    -fx-text-fill: #0056b3;
+    -fx-cursor: hand;
+}
+
+/* Link attivo */
+.home-link {
+    -fx-text-fill: #28a745;
+    -fx-font-weight: bold;
+    -fx-font-size: 21px; /* Riduci dimensione font */
+}
+
+.hidden-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}

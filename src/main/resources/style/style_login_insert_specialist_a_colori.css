@@ -1,0 +1,101 @@
+/* Corpo della pagina */
+.root {
+    -fx-background-color: linear-gradient(to bottom, #e0eafc, #cfdef3); /* Sfondo sfumato */
+    -fx-font-family: 'Roboto', sans-serif; /* Font del testo */
+    -fx-alignment: center; /* Centrato */
+    -fx-padding: 0;
+    -fx-max-height: 100%; /* Altezza massima */
+}
+
+/* Titolo principale */
+#title {
+    -fx-font-size: 36px; /* Dimensione del titolo */
+    -fx-font-weight: bold; /* Grassetto per il titolo */
+    -fx-text-fill: #2d3436; /* Colore del testo grigio scuro */
+    -fx-padding: 20px; /* Spaziatura intorno al titolo */
+}
+
+/* Sottotitolo */
+#subtitle {
+    -fx-font-size: 18px; /* Dimensione del sottotitolo */
+    -fx-text-fill: #2d3436; /* Colore testo grigio scuro */
+    -fx-padding: 0 0 20px 0; /* Padding inferiore */
+}
+
+/* Pulsanti Generali */
+.button {
+    -fx-padding: 15px 30px; /* Spaziatura interna */
+    -fx-border-radius: 12px; /* Arrotonda i bordi */
+    -fx-background-radius: 12px; /* Arrotonda lo sfondo */
+    -fx-font-size: 18px; /* Dimensione del testo */
+    -fx-font-weight: bold; /* Grassetto */
+    -fx-cursor: hand; /* Cambia il cursore */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 5); /* Aggiunge un'ombra */
+    -fx-background-color: #81ecec; /* Sfondo ciano chiaro */
+    -fx-text-fill: #2d3436; /* Testo grigio scuro */
+}
+
+/* Campo di input */
+#inputField {
+    -fx-padding: 10px; /* Spaziatura interna */
+    -fx-font-size: 16px; /* Dimensione del testo */
+    -fx-border-color: #7cca2d; /* Colore del bordo rosa chiaro */
+    -fx-border-radius: 6px; /* Arrotondamento del bordo */
+    -fx-background-radius: 6px; /* Arrotondamento dello sfondo */
+    -fx-background-color: #ffffff; /* Sfondo giallo chiaro */
+    -fx-border-width: 1px; /* Larghezza del bordo */
+    -fx-pref-width: 150px; /* Larghezza preferita */
+    -fx-min-width: 100px;  /* Larghezza minima */
+    -fx-max-width: 250px;  /* Larghezza massima */
+}
+
+/* Pulsante Specialista */
+#specialistButton {
+    -fx-background-color: #ffffff; /* Sfondo azzurro */
+    -fx-border-color: #7cca2d; /* Bordo azzurro */
+    -fx-border-width: 2px;
+    -fx-text-fill: #7cca2d; /* Colore del testo grigio scuro */
+}
+#specialistButton:hover {
+    -fx-background-color: #7cca2d; /* Sfondo azzurro scuro al passaggio del mouse */
+    -fx-text-fill: #ffffff; /* Testo bianco */
+}
+
+/* Contenitore dei pulsanti */
+#vbox {
+    -fx-spacing: 30; /* Spaziatura tra gli elementi */
+    -fx-alignment: center; /* Allineamento al centro */
+    -fx-padding: 40; /* Padding */
+}
+
+/* Contenitore principale */
+#container {
+    -fx-background-color: #ffffff; /* Sfondo bianco */
+    -fx-background-radius: 12px; /* Bordo arrotondato */
+    -fx-padding: 40px; /* Spaziatura interna */
+    -fx-max-width: 800px; /* Larghezza massima */
+    -fx-width: 90%; /* Larghezza al 90% */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 15, 0, 0, 4); /* Ombra per profondità */
+}
+
+/* Campo di errore */
+#errorText {
+    -fx-font-size: 14px;
+    -fx-text-fill: red; /* Colore rosso per l'errore */
+    -fx-padding: 10px;
+    -fx-font-weight: bold;
+}
+
+/* Campo di input */
+#inputFieldErrore {
+    -fx-padding: 10px; /* Spaziatura interna */
+    -fx-font-size: 16px; /* Dimensione del testo */
+    -fx-border-color: #ff0000; /* Colore del bordo rosa chiaro */
+    -fx-border-radius: 6px; /* Arrotondamento del bordo */
+    -fx-background-radius: 6px; /* Arrotondamento dello sfondo */
+    -fx-background-color: #ffffff; /* Sfondo giallo chiaro */
+    -fx-border-width: 1px; /* Larghezza del bordo */
+    -fx-pref-width: 150px; /* Larghezza preferita */
+    -fx-min-width: 100px;  /* Larghezza minima */
+    -fx-max-width: 250px;  /* Larghezza massima */
+}

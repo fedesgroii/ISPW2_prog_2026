@@ -1,0 +1,37 @@
+/* styles_loading.css */
+
+/* Stile per il layout principale */
+.root {
+    -fx-background-color: #F0F0F0; /* Sfondo grigio chiaro */
+}
+
+/* Stile per il contenitore verticale principale */
+.loading-container {
+    -fx-spacing: 20px;           /* Spaziatura interna tra gli elementi */
+    -fx-padding: 40px;           /* Padding interno del contenitore */
+    -fx-alignment: center;       /* Allinea i figli al centro */
+}
+
+/* Stile per il messaggio di caricamento */
+.loading-message {
+    -fx-font-size: 18px;         /* Dimensione del font */
+    -fx-text-fill: #333333;      /* Colore del testo (grigio scuro) */
+    -fx-font-weight: bold;       /* Testo in grassetto */
+    -fx-padding: 10px;           /* Spazio interno intorno al messaggio */
+}
+
+/* Stile per il contenitore dei pallini animati */
+.loading-dots {
+    -fx-alignment: center;       /* Allinea i pallini al centro */
+}
+
+/* Stile base per i pallini */
+.dot {
+    -fx-fill: #888888;           /* Colore di riempimento (grigio) */
+    -fx-stroke: transparent;     /* Nessun bordo visibile */
+}
+
+/* Stile per il pallino attivo */
+.dot.active {
+    -fx-fill: #0078D7;           /* Colore blu per evidenziare il pallino attivo */
+}

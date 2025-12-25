@@ -1,0 +1,39 @@
+#main-container {
+    -fx-background-color: #f9f9f9;
+}
+
+#header {
+    -fx-background-color: #008000;
+    -fx-padding: 10px;
+}
+
+.header-text {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-fill: white;
+}
+
+.description-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555555;
+}
+
+#result-container {
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+    -fx-background-color: #ffffff;
+    -fx-padding: 10px;
+    -fx-spacing: 5px;
+}
+
+#footer {
+    -fx-background-color: #e6e6e6;
+}
+
+#backButton {
+    -fx-background-color: #008000;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 5px 10px;
+    -fx-border-radius: 5px;
+}

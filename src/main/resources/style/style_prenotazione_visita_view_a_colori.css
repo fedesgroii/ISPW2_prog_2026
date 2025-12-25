@@ -1,0 +1,108 @@
+/* Corpo della pagina */
+.root {
+    -fx-background-color: linear-gradient(to bottom, #f2f5f7, #dce4ec);
+    -fx-font-family: 'Roboto', sans-serif;
+    -fx-alignment: center;
+    -fx-padding: 0;
+    -fx-max-height: 100%;
+}
+
+/* Titolo principale */
+#title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495e;
+    -fx-padding: 15px 0;
+}
+
+/* Sottotitolo */
+#subtitle {
+    -fx-font-size: 18px;
+    -fx-text-fill: #5d6d7e;
+    -fx-padding: 5px 0 15px 0;
+}
+
+/* Pulsanti Generali */
+.button {
+    -fx-padding: 12px 24px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-color: #3498db;
+    -fx-text-fill: #ffffff;
+    -fx-cursor: hand;
+}
+.button:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Campo di input */
+#inputField {
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+    -fx-border-color: #95a5a6;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-background-color: #ffffff;
+    -fx-pref-width: 200px;
+    -fx-min-width: 150px;
+    -fx-max-width: 300px;
+}
+
+/* Pulsante Specialista */
+#specialistButton {
+    -fx-background-color: #2ecc71;
+    -fx-border-color: #27ae60;
+    -fx-text-fill: #ffffff;
+}
+#specialistButton:hover {
+    -fx-background-color: #27ae60;
+}
+
+/* Contenitore dei pulsanti */
+#vbox {
+    -fx-spacing: 20;
+    -fx-alignment: center;
+    -fx-padding: 25px;
+}
+
+/* Contenitore principale */
+#container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12px;
+    -fx-padding: 25px;
+    -fx-max-width: 650px;
+    -fx-width: 90%;
+}
+
+/* Campo di errore */
+#errorText {
+    -fx-font-size: 13px;
+    -fx-text-fill: #e74c3c;
+    -fx-padding: 8px;
+}
+
+/* Titolo principale nella scena */
+.label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495e;
+}
+
+/* Sottotitolo */
+.subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: #5d6d7e;
+}
+
+/* Bottone "Torna indietro" */
+#backButton {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+#backButton:hover {
+    -fx-background-color: #c0392b;
+}

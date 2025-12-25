@@ -1,0 +1,44 @@
+**Principio di separazione delle responsabilità
+(Single Responsibility Principle - SRP):**
+Creare un nuovo `Stage` per ogni pagina consente di separare chiaramente
+le responsabilità tra le diverse funzionalità dell'applicazione.
+Ogni `Stage` è dedicato a una specifica parte del flusso dell'applicazione
+(ad esempio, login, home, prenotazione, ecc.) e incapsula al
+suo interno il layout, gli eventi e i comportamenti specifici di quella pagina.
+Questa separazione semplifica la gestione del codice e riduce il rischio di
+effetti collaterali tra pagine diverse.
+
+---
+
+**Maggiore flessibilità nella gestione delle finestre:**
+Utilizzando un nuovo `Stage` per ogni pagina, è possibile personalizzare
+le caratteristiche di ciascuna finestra (dimensioni, modalità di visualizzazione,
+comportamento al ridimensionamento) senza influenzare le altre. Inoltre,
+ogni `Stage` può essere gestito in modo indipendente, consentendo all'applicazione
+di supportare scenari complessi come il multi-window o la visualizzazione di più
+pagine contemporaneamente, se necessario.
+
+---
+
+**Semplificazione del ciclo di vita:**
+Ogni nuovo `Stage` ha un ciclo di vita indipendente, che può essere gestito
+facilmente (apertura, chiusura, distruzione) senza influenzare altri `Stage`.
+Questo approccio è particolarmente utile per evitare conflitti o problemi di
+gestione delle risorse, come memoria o listener inutilizzati, che potrebbero
+accumularsi nel caso in cui si utilizzi sempre lo stesso `Stage`.
+
+---
+
+**Conformità ai principi di progettazione di interfacce:**
+Dal punto di vista dell'esperienza utente, aprire un nuovo `Stage` per
+ogni pagina permette di implementare comportamenti comuni nelle applicazioni
+desktop, come finestre modali o popup. Inoltre, è possibile mantenere lo stato
+di ogni `Stage` separato (ad esempio, dimensione e posizione della finestra),
+migliorando la consistenza dell'interfaccia.
+
+---
+
+Questa scelta è quindi giustificabile sia dal punto di vista dell'architettura
+del software (poiché segue principi di separazione delle responsabilità e
+gestione del ciclo di vita), sia dal punto di vista dell'esperienza utente
+(poiché garantisce flessibilità e indipendenza tra le finestre).

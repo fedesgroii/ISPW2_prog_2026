@@ -1,0 +1,62 @@
+/* Stile generale per la finestra dinamica */
+.root {
+    -fx-background-color: #f4f4f9; /* Colore di sfondo chiaro */
+    -fx-font-family: "Arial", sans-serif;
+    -fx-font-size: 14px;
+}
+
+/* Header */
+.header {
+    -fx-background-color: #4CAF50; /* Verde chiaro per l'header */
+    -fx-text-fill: white; /* Testo bianco */
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-padding: 20px;
+}
+
+.header-text {
+    -fx-fill: white; /* Colore del testo nell'header */
+}
+
+/* Descrizione */
+.description {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333; /* Testo scuro */
+    -fx-padding: 10px;
+}
+
+/* Contenitore dei risultati */
+.result-container {
+    -fx-background-color: #ffffff; /* Sfondo bianco */
+    -fx-border-color: #cccccc; /* Bordo leggero */
+    -fx-border-radius: 5px;
+    -fx-padding: 20px;
+    -fx-spacing: 10px; /* Spazio tra gli elementi */
+}
+
+.result-item {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555555; /* Testo grigio scuro */
+}
+
+/* Pulsante "Torna Indietro" */
+.button-back {
+    -fx-background-color: #007BFF; /* Blu acceso */
+    -fx-text-fill: white; /* Testo bianco */
+    -fx-font-size: 16px;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand; /* Cambia il cursore al passaggio del mouse */
+}
+
+.button-back:hover {
+    -fx-background-color: #0056b3; /* Blu più scuro al passaggio del mouse */
+}
+
+/* Footer */
+.footer {
+    -fx-background-color: #f4f4f9; /* Sfondo chiaro */
+    -fx-padding: 20px;
+    -fx-spacing: 10px;
+}

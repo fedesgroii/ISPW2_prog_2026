@@ -1,0 +1,47 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom, #e0eafc, #cfdef3); /* Sfondo sfumato */
+    -fx-font-family: 'Roboto', sans-serif; /* Font del testo */
+}
+
+.title {
+    -fx-font-size: 36px; /* Dimensione del titolo */
+    -fx-font-weight: bold; /* Grassetto per il titolo */
+    -fx-fill: #333; /* Colore del testo del titolo */
+    -fx-padding: 20px; /* Spaziatura intorno al titolo */
+}
+
+.button {
+    -fx-background-color: #28a745; /* Colore di sfondo */
+    -fx-text-fill: white; /* Colore del testo */
+    -fx-padding: 15px 30px; /* Spaziatura interna */
+    -fx-border-radius: 12px; /* Arrotonda i bordi */
+    -fx-background-radius: 12px; /* Arrotonda lo sfondo */
+    -fx-font-size: 18px; /* Dimensione del testo */
+    -fx-font-weight: bold; /* Grassetto */
+    -fx-cursor: hand; /* Cambia il cursore */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 5); /* Aggiunge un'ombra */
+}
+
+.button:hover {
+    -fx-background-color: #218838; /* Colore al passaggio del mouse */
+}
+
+.option-box {
+    -fx-background-color: white; /* Sfondo bianco */
+    -fx-padding: 20px; /* Padding interno */
+    -fx-border-radius: 12px; /* Arrotonda i bordi */
+    -fx-background-radius: 12px; /* Arrotonda lo sfondo */
+    -fx-border-color: #aaa; /* Colore del bordo */
+    -fx-border-width: 2px; /* Larghezza del bordo */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 10, 0, 0, 5); /* Aggiunge un'ombra */
+    -fx-pref-width: 100%; /* Larghezza del contenitore al 100% */
+    -fx-max-width: 800px; /* Larghezza massima del contenitore */
+    -fx-alignment: center; /* Centra il contenuto */
+    -fx-margin-bottom: 25px; /* Margine inferiore */
+}
+
+.checkbox {
+    -fx-cursor: hand; /* Cambia il cursore */
+    -fx-font-size: 18px; /* Dimensione del testo */
+    -fx-fill: #444; /* Colore del testo */
+}

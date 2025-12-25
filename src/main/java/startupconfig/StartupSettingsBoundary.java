@@ -27,13 +27,11 @@ public class StartupSettingsBoundary extends Application {
     private RadioButton databaseOption; // Pulsante per selezionare l'archiviazione su Database
     private RadioButton fileSystemOption; // Pulsante per selezionare l'archiviazione su File System
 
-    // Riferimento al controller per delegare la logica di business
-    private StartupSettingsController controller;
-
     @Override
     public void start(Stage primaryStage) {
         // Inizializza il controller che gestirà le azioni dell'utente
-        controller = new StartupSettingsController();
+        // Inizializza il controller che gestirà le azioni dell'utente
+        StartupSettingsController controller = new StartupSettingsController();
 
         // Imposta il titolo della finestra principale
         primaryStage.setTitle("MindLab");

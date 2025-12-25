@@ -35,6 +35,20 @@ public class StartupSettingsEntity implements Serializable {
         return SingletonHelper.INSTANCE; // Restituisce l'istanza creata nella classe helper
     }
 
+    /**
+     * Metodo protetto readResolve per garantire il rispetto del pattern Singleton
+     * durante la deserializzazione.
+     * Se l'oggetto viene deserializzato, restituisce l'istanza esistente invece di
+     * crearne una nuova.
+     * Questo risolve il code smell di SonarQube relativo ai Singleton
+     * serializzabili.
+     * 
+     * @return L'unica istanza esistente della classe
+     */
+    protected Object readResolve() {
+        return getInstance();
+    }
+
     // --- Metodi Getter e Setter per accedere e modificare i dati incapsulati ---
 
     // Restituisce la modalità di interfaccia corrente

@@ -21,19 +21,20 @@ public class StartupSettingsBoundary extends Application {
 
     // Riferimenti ai componenti UI per accedere ai loro stati
     private RadioButton guiMode;
-    private RadioButton cliMode;
-    private RadioButton memoryOption;
     private RadioButton databaseOption;
     private RadioButton fileSystemOption;
 
     @Override
     public void start(Stage primaryStage) {
         // Metodo principale chiamato da JavaFX per avviare l'interfaccia
-        StartupSettingsController controller = new StartupSettingsController(); // Crea un'istanza del controller per gestire le azioni dell'utente
+        StartupSettingsController controller = new StartupSettingsController(); // Crea un'istanza del controller per
+                                                                                // gestire le azioni dell'utente
         primaryStage.setTitle("MindLab");
 
         // **Aggiunta dell'icona dell'applicazione**
-        Image appIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icone/logo_ML.png"))); // Carica l'immagine dell'icona
+        Image appIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icone/logo_ML.png"))); // Carica
+                                                                                                                 // l'immagine
+                                                                                                                 // dell'icona
         primaryStage.getIcons().add(appIcon); // Aggiunge l'icona alla finestra principale (Stage)
 
         VBox container = new VBox(); // Crea un contenitore verticale per organizzare gli elementi
@@ -43,7 +44,8 @@ public class StartupSettingsBoundary extends Application {
         container.getStyleClass().add("root"); // Aggiunge una classe di stile CSS al contenitore
 
         // Carica e visualizza l'icona principale nella UI
-        Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icone/power-off.png"))); // Carica l'immagine
+        Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icone/power-off.png"))); // Carica
+                                                                                                                // l'immagine
         ImageView iconaPower = new ImageView(icon); // Crea un visualizzatore per l'immagine
         iconaPower.setFitHeight(50); // Imposta l'altezza dell'immagine
         iconaPower.setFitWidth(50); // Imposta la larghezza dell'immagine
@@ -52,27 +54,30 @@ public class StartupSettingsBoundary extends Application {
         Text title = new Text("Configurazione Avvio di MindLab"); // Testo del titolo
         title.getStyleClass().add("title"); // Aggiunge una classe di stile CSS al testo
 
-        // Crea i pulsanti di scelta per la modalità di interazione: GUI oppure terminale (CLI)
+        // Crea i pulsanti di scelta per la modalità di interazione: GUI oppure
+        // terminale (CLI)
         ToggleGroup modeGroup = new ToggleGroup(); // Gruppo di pulsanti di scelta
         guiMode = new RadioButton("Modalità GUI");
         guiMode.setToggleGroup(modeGroup); // Aggiunge il pulsante al gruppo
         guiMode.setSelected(true); // Imposta l'opzione come predefinita
-        cliMode = new RadioButton("Modalità CLI"); // Opzione per la modalità terminale
+        RadioButton cliMode = new RadioButton("Modalità CLI"); // Opzione per la modalità terminale
         cliMode.setToggleGroup(modeGroup); // Aggiunge il pulsante al gruppo
         HBox modeBox = new HBox(10, guiMode, cliMode); // Contenitore orizzontale per le opzioni
         modeBox.setAlignment(Pos.CENTER); // Allinea le opzioni al centro
         modeBox.getStyleClass().add("option-box"); // Aggiunge una classe di stile CSS
 
-        // Crea il gruppo di pulsanti di scelta per "Memoria RAM", "Database", "File System"
+        // Crea il gruppo di pulsanti di scelta per "Memoria RAM", "Database", "File
+        // System"
         ToggleGroup storageGroup = new ToggleGroup(); // Gruppo di pulsanti di scelta
-        memoryOption = new RadioButton("Memoria RAM"); // Opzione per Memoria RAM
+        RadioButton memoryOption = new RadioButton("Memoria RAM"); // Opzione per Memoria RAM
         memoryOption.setToggleGroup(storageGroup); // Aggiunge il pulsante al gruppo
         memoryOption.setSelected(true); // Imposta l'opzione come predefinita
         databaseOption = new RadioButton("Database"); // Opzione per Database
         databaseOption.setToggleGroup(storageGroup); // Aggiunge il pulsante al gruppo
         fileSystemOption = new RadioButton("File System"); // Opzione per File System
         fileSystemOption.setToggleGroup(storageGroup); // Aggiunge il pulsante al gruppo
-        HBox storageBox = new HBox(10, memoryOption, databaseOption, fileSystemOption); // Contenitore orizzontale per le opzioni
+        HBox storageBox = new HBox(10, memoryOption, databaseOption, fileSystemOption); // Contenitore orizzontale per
+                                                                                        // le opzioni
         storageBox.setAlignment(Pos.CENTER); // Allinea le opzioni al centro
         storageBox.getStyleClass().add("option-box"); // Aggiunge una classe di stile CSS
 
@@ -80,26 +85,17 @@ public class StartupSettingsBoundary extends Application {
         Button confirmButton = new Button("Conferma"); // Pulsante per confermare le scelte
         confirmButton.getStyleClass().add("button"); // Aggiunge una classe di stile CSS
 
-
-        /**
-         *
-         * DA CAMBIARE PERCHE NON RISPETTA GRASP E BCE
-         */
-        confirmButton.setOnAction(event -> {
-            // Passa le impostazioni al controller attraverso un oggetto dati
-            controller.processSettings(getSettingsData());
-        });
-
-
-
-
-
         // Aggiunge tutti gli elementi al contenitore principale
         container.getChildren().addAll(iconaPower, title, modeBox, storageBox, confirmButton);
 
         // Configura e mostra la scena
-        Scene scene = new Scene(container, Screen.getPrimary().getBounds().getWidth(), Screen.getPrimary().getBounds().getHeight()); // Crea una scena a schermo intero
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/style/style_avvio.css")).toExternalForm()); // Aggiunge lo stile CSS
+        Scene scene = new Scene(container, Screen.getPrimary().getBounds().getWidth(),
+                Screen.getPrimary().getBounds().getHeight()); // Crea una scena a schermo intero
+        scene.getStylesheets()
+                .add(Objects.requireNonNull(getClass().getResource("/style/style_avvio.css")).toExternalForm()); // Aggiunge
+                                                                                                                 // lo
+                                                                                                                 // stile
+                                                                                                                 // CSS
         primaryStage.setScene(scene); // Imposta la scena sulla finestra principale
         primaryStage.setFullScreen(true); // Imposta la finestra a schermo intero
         primaryStage.setResizable(false);
@@ -108,7 +104,9 @@ public class StartupSettingsBoundary extends Application {
     }
 
     /**
-     * Metodo pubblico per ottenere i dati delle impostazioni selezionate dall'utente
+     * Metodo pubblico per ottenere i dati delle impostazioni selezionate
+     * dall'utente
+     * 
      * @return Oggetto SettingsData contenente le impostazioni selezionate
      */
     public SettingsData getSettingsData() {
@@ -120,7 +118,9 @@ public class StartupSettingsBoundary extends Application {
     /**
      * Metodo privato per determinare l'opzione di archiviazione selezionata
      * Nasconde la logica di implementazione interna della boundary
-     * @return Intero rappresentante l'opzione di archiviazione (0=RAM, 1=Database, 2=File System)
+     * 
+     * @return Intero rappresentante l'opzione di archiviazione (0=RAM, 1=Database,
+     *         2=File System)
      */
     private int getSelectedStorageOption() {
         if (databaseOption.isSelected()) {
@@ -128,12 +128,13 @@ public class StartupSettingsBoundary extends Application {
         } else if (fileSystemOption.isSelected()) {
             return 2;
         }
-        return 0; //RAM
+        return 0; // RAM
     }
 
     /**
      * Classe interna per incapsulare i dati delle impostazioni selezionate
-     * Favorisce il rispetto del principio di incapsulamento e rende esplicita l'interfaccia
+     * Favorisce il rispetto del principio di incapsulamento e rende esplicita
+     * l'interfaccia
      * tra boundary e controller
      */
     public static class SettingsData {

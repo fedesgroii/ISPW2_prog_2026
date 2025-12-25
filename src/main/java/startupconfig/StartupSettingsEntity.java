@@ -5,8 +5,10 @@ import java.io.Serializable;
 public class StartupSettingsEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // Istanza unica della classe (Singleton)
-    private static StartupSettingsEntity instance;
+    // Classe interna statica per la gestione del Singleton (Bill Pugh Singleton)
+    private static class SingletonHelper {
+        private static final StartupSettingsEntity INSTANCE = new StartupSettingsEntity();
+    }
 
     // Variabili per memorizzare le scelte di configurazione
     private boolean interfaceMode; // Modalità GUI o CLI
@@ -21,10 +23,7 @@ public class StartupSettingsEntity implements Serializable {
 
     // Metodo statico per ottenere l'istanza unica della classe
     public static StartupSettingsEntity getInstance() {
-        if (instance == null) {
-            instance = new StartupSettingsEntity();
-        }
-        return instance;
+        return SingletonHelper.INSTANCE;
     }
 
     // Getter e setter per colorMode

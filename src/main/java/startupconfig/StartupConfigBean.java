@@ -1,7 +1,7 @@
 package startupconfig; // Dichiarazione del package di appartenenza
 
-// Classe Bean (Data Transfer Object) per trasportare le configurazioni di avvio
-// Serve a disaccoppiare la logica di visualizzazione (View) dalla logica di controllo (Controller)
+// Classe Bean per trasportare le configurazioni di avvio
+
 public class StartupConfigBean {
     private boolean interfaceMode; // Variabile booleana per la modalità interfaccia (true = GUI, false = CLI)
     private int storageOption; // Intero che rappresenta l'opzione di storage (0 = RAM, 1 = DB, 2 = FS)

@@ -17,8 +17,8 @@ public class StartupSettingsController {
     }
 
     /**
-     * Metodo principale per elaborare le impostazioni ricevute dalla View.
-     * Riceve un Bean (DTO) per disaccoppiare il controller dai dettagli della UI.
+     * Metodo principale per elaborare le impostazioni ricevute dalla Boundary.
+     * Riceve un Bean per disaccoppiare il controller dai dettagli della Boundary.
      * 
      * @param configBean Il bean contenente le configurazioni (modalità interfaccia
      *                   e storage) scelte dall'utente
@@ -37,4 +37,5 @@ public class StartupSettingsController {
             ComandoDaTerminale.avviaServerSQL();
         }
     }
+
 }

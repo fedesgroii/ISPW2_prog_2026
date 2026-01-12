@@ -30,7 +30,6 @@ public class StartupSettingsBoundary extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Inizializza il controller che gestirà le azioni dell'utente
-        // Inizializza il controller che gestirà le azioni dell'utente
         StartupSettingsController controller = new StartupSettingsController();
 
         // Imposta il titolo della finestra principale
@@ -104,8 +103,15 @@ public class StartupSettingsBoundary extends Application {
             StartupConfigBean bean = getSettingsBean();
             // Passa il Bean al controller per l'elaborazione
             controller.processSettings(bean);
-            // Chiude la finestra corrente al termine dell'operazione
+
+            // Chiude la finestra corrente
             primaryStage.close();
+
+            // Delega la navigazione verso la login selection al Graphic Controller dedicato
+            // MVC strict: la Boundary chiama un Graphic Controller per cambiare vista
+            selectTypeLogin.SelectTypeLoginGraphicController graphicController = new selectTypeLogin.SelectTypeLoginGraphicController();
+            graphicController.start(bean);
+
         });
 
         // Aggiunge tutti i componenti creati al contenitore principale
@@ -113,6 +119,7 @@ public class StartupSettingsBoundary extends Application {
 
         // Crea la scena contenente il layout principale, dimensionandola a tutto
         // schermo
+        // scena, larghezza e altezza della scena
         Scene scene = new Scene(container, Screen.getPrimary().getBounds().getWidth(),
                 Screen.getPrimary().getBounds().getHeight());
 
@@ -126,7 +133,7 @@ public class StartupSettingsBoundary extends Application {
         primaryStage.setResizable(false); // Disabilita il ridimensionamento manuale della finestra
         primaryStage.setFullScreenExitHint(""); // Rimuove il messaggio di suggerimento per uscire dal full screen
         primaryStage.show(); // Rende visibile la finestra
-    }
+    } // fine metodo start
 
     /**
      * Metodo privato (helper) per raccogliere i dati dalla UI e creare il Bean.

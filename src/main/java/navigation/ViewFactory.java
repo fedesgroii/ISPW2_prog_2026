@@ -26,7 +26,7 @@ public class ViewFactory {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(
+            throw new IllegalArgumentException(
                     "Errore durante la creazione della vista: " + viewName + "Errore: " + e.getMessage());
         }
 

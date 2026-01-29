@@ -16,10 +16,13 @@ import javafx.stage.Screen; // Importa classe per ottenere informazioni sullo sc
 import javafx.stage.Stage; // Importa classe per la finestra principale dell'applicazione
 
 import java.util.Objects; // Importa classe utilitaria per la gestione degli oggetti (es. null-check)
+import java.util.logging.Logger; // Importa classe per il logging
 
 // Classe che rappresenta la View (Interfaccia Grafica) per le impostazioni iniziali
 // Estende Application per integrarsi con il ciclo di vita di JavaFX
 public class StartupSettingsBoundary extends Application {
+
+    private static final Logger logger = Logger.getLogger(StartupSettingsBoundary.class.getName());
 
     // Dichiarazione dei riferimenti ai componenti UI per accedere al loro stato
     // (selezionato/non selezionato)
@@ -29,6 +32,7 @@ public class StartupSettingsBoundary extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        logger.info(() -> "StartupSettingsBoundary.start() called on thread: " + Thread.currentThread().getName());
         // Inizializza il controller che gestirà le azioni dell'utente
         StartupSettingsController controller = new StartupSettingsController();
 
@@ -99,16 +103,18 @@ public class StartupSettingsBoundary extends Application {
         // Definisce l'azione da eseguire quando il pulsante viene cliccato (Event
         // Handler)
         confirmButton.setOnAction(event -> {
+            logger.info("Confirm button clicked");
             // Recupera i dati selezionati dall'interfaccia incapsulati in un Bean
             StartupConfigBean bean = getSettingsBean();
             // Passa il Bean al controller per l'elaborazione
             controller.processSettings(bean);
 
-            // Chiude la finestra corrente
-            primaryStage.close();
+            // La chiusura della finestra corrente e' delegata al Navigator
 
             // Delega la navigazione verso la login selection al Navigator centralizzato
+            logger.info("Navigating to Login...");
             new navigation.AppNavigator().navigateTo("Login", bean, primaryStage);
+            logger.info("Navigation to Login initiated.");
 
         });
 
@@ -130,7 +136,9 @@ public class StartupSettingsBoundary extends Application {
         primaryStage.setFullScreen(true); // Abilita modalità schermo intero
         primaryStage.setResizable(false); // Disabilita il ridimensionamento manuale della finestra
         primaryStage.setFullScreenExitHint(""); // Rimuove il messaggio di suggerimento per uscire dal full screen
+        logger.info("Calling primaryStage.show()");
         primaryStage.show(); // Rende visibile la finestra
+        logger.info("primaryStage.show() returned");
     } // fine metodo start
 
     /**

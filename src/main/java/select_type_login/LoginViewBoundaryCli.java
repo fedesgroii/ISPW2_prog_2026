@@ -49,19 +49,15 @@ public class LoginViewBoundaryCli implements navigation.View { // Definizione de
             switch (input) { // Inizia la struttura switch per gestire le diverse opzioni inserite
                 case "1": // Caso in cui l'utente inserisce "1"
                     handleSpecialistLogin(); // Chiama il metodo per gestire il login specialista
-                    running = false; // Imposta running a false per uscire dal ciclo (simula cambio schermata)
                     break; // Interrompe il caso dello switch
                 case "2": // Caso in cui l'utente inserisce "2"
                     handlePatientLogin(); // Chiama il metodo per gestire il login paziente
-                    running = false; // Imposta running a false per uscire dal ciclo
                     break; // Interrompe il caso dello switch
                 case "3": // Caso in cui l'utente inserisce "3"
                     handleRegistration(); // Chiama il metodo per gestire la registrazione
-                    running = false; // Imposta running a false per uscire dal ciclo
                     break; // Interrompe il caso dello switch
                 case "4": // Caso in cui l'utente inserisce "4"
                     handleAppointment(); // Chiama il metodo per gestire l'appuntamento
-                    running = false; // Imposta running a false per uscire dal ciclo
                     break; // Interrompe il caso dello switch
                 default: // Caso di default se l'input non corrisponde a nessun caso previsto
                     printLine("Opzione non valida, riprova."); // Comunica all'utente che l'input non è valido
@@ -87,10 +83,10 @@ public class LoginViewBoundaryCli implements navigation.View { // Definizione de
 
     private void handleRegistration() { // Metodo privato per gestire la registrazione
         logger.info("Registration request"); // Logga l'azione come nella GUI
-        printLine("[CLI] La registrazione non è posibile per gli utenti non autorizzati dalla dottoressa."); // Feedback
-                                                                                                             // visivo
-                                                                                                             // all'utente
-                                                                                                             // CLI
+        printLine("[CLI] La registrazione non è possibile per gli utenti non autorizzati dalla dottoressa."); // Feedback
+                                                                                                              // visivo
+                                                                                                              // all'utente
+                                                                                                              // CLI
     } // Chiude il metodo handleRegistration
 
     private void handleAppointment() { // Metodo privato per gestire l'appuntamento rapido

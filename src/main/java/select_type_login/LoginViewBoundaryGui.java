@@ -150,6 +150,12 @@ public class LoginViewBoundaryGui implements navigation.View {
     private void handleRegistration(Stage stage) { // Metodo segnaposto per gestire la registrazione
         logger.info("Registration request"); // Logga l'evento (da sostituire con chiamata
                                              // al Controller)
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle("Info Registrazione");
+        alert.setHeaderText(null);
+        alert.setContentText("La registrazione non è possibile per gli utenti non autorizzati dalla dottoressa.");
+        alert.showAndWait();
     }
 
     private void handleAppointment(Stage stage) { // Metodo segnaposto per gestire l'appuntamento rapido

@@ -2,8 +2,6 @@ package startupconfig; // Dichiarazione del package di appartenenza
 
 import javafx.application.Application; // Importa la classe base per le applicazioni JavaFX
 
-import selectTypeLogin.LoginViewBoundary_gui; // Importa la nuova view
-
 // Classe principale per l'avvio dell'applicazione
 public class AppLauncher {
 

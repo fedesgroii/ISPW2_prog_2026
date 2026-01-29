@@ -21,9 +21,9 @@ public class StartupSettingsEntity implements Serializable {
     private boolean interfaceMode; // true = Modalità GUI, false = Modalità CLI
     private int storageOption; // Codice intero per il tipo di storage: 0 = RAM, 1 = DB, 2 = File System
 
-    // Costruttore privato per impedire l'istanziazione diretta dall'esterno
+    // Costruttore protetto per impedire l'istanziazione diretta dall'esterno
     // Fondamentale per garantire l'unicità dell'istanza (pattern Singleton)
-    private StartupSettingsEntity() {
+    protected StartupSettingsEntity() {
         // Imposta i valori di default alla creazione dell'istanza
         this.interfaceMode = true; // Imposta di default la modalità grafica (GUI)
         this.storageOption = 0; // Imposta di default il salvataggio in RAM
@@ -45,7 +45,8 @@ public class StartupSettingsEntity implements Serializable {
      * 
      * @return L'unica istanza esistente della classe
      */
-    protected Object readResolve() {
+    protected Object readResolve() { // messo se un giorno voglio salvare su file la configurazione e tramite il
+                                     // readResolve
         return getInstance();
     }
 

@@ -1,4 +1,4 @@
-package selectTypeLogin; // Dichiara il package di appartenenza della classe
+package select_type_login; // Dichiara il package di appartenenza della classe
 
 import javafx.geometry.Insets; // Importa la classe per gestire i margini (padding)
 import javafx.geometry.Pos; // Importa l'enumerazione per gestire l'allineamento (es. CENTER)
@@ -9,20 +9,13 @@ import javafx.scene.layout.StackPane; // Importa StackPane per sovrapporre eleme
 import javafx.scene.layout.VBox; // Importa VBox per layout verticali
 import javafx.scene.text.Text; // Importa la classe Text per visualizzare stringhe
 import javafx.stage.Stage; // Importa la classe Stage, che rappresenta la finestra
-import javafx.application.Application; // Importa la classe base per le app JavaFX
 import java.util.logging.Logger; // Importa il Logger per registrare messaggi di sistema
 
-/**
- * Boundary class for the Login Selection Screen.
- * adheres to the MVC pattern by strictly handling UI presentation.
- * All logic (navigation, business rules) is delegated to the Controller
- */
+public class LoginViewBoundaryGui {
 
-public class LoginViewBoundary_gui {
-
-    private static final Logger logger = Logger.getLogger(LoginViewBoundary_gui.class.getName()); // Crea un logger per
-                                                                                                  // registrare eventi
-                                                                                                  // di questa classe
+    private static final Logger logger = Logger.getLogger(LoginViewBoundaryGui.class.getName()); // Crea un logger per
+                                                                                                 // registrare eventi
+                                                                                                 // di questa classe
     private static final String SUBTITLE_ID = "subtitle"; // Costante per l'ID CSS dei sottotitoli
     private static final String LOGIN_ID = "login"; // Costante per l'ID CSS dei pulsanti di login
     private static final String CONTAINER_ID = "container"; // Costante per l'ID CSS del contenitore principale
@@ -123,7 +116,13 @@ public class LoginViewBoundary_gui {
                                                                                   // stringa esterna
             scene.getStylesheets().add(style); // Aggiunge il foglio di stile alla scena
         } catch (NullPointerException e) { // Cattura l'eccezione se il file non viene trovato
-            logger.severe("Could not load style resource: " + resourcePath); // Logga un errore grave se il CSS manca
+            logger.severe("Could not load style resource: " + resourcePath + " \n Errore: " + e.getMessage()); // Logga
+                                                                                                               // un
+                                                                                                               // errore
+                                                                                                               // grave
+                                                                                                               // se il
+                                                                                                               // CSS
+                                                                                                               // manca
         }
     }
 

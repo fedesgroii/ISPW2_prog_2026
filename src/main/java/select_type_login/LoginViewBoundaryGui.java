@@ -132,22 +132,22 @@ public class LoginViewBoundaryGui {
      */
 
     private void handleSpecialistLogin(Stage stage) { // Metodo segnaposto per gestire il login specialista
-        logger.info("Specialist Login request - To be handled by Controller"); // Logga l'evento (da sostituire con
-                                                                               // chiamata al Controller)
+        logger.info("Specialist Login request"); // Logga l'evento (da sostituire con
+                                                 // chiamata al Controller)
     }
 
     private void handlePatientLogin(Stage stage) { // Metodo segnaposto per gestire il login paziente
-        logger.info("Patient Login request - To be handled by Controller"); // Logga l'evento (da sostituire con
-                                                                            // chiamata al Controller)
+        logger.info("Patient Login request"); // Logga l'evento (da sostituire con
+                                              // chiamata al Controller)
     }
 
     private void handleRegistration(Stage stage) { // Metodo segnaposto per gestire la registrazione
-        logger.info("Registration request - To be handled by Controller"); // Logga l'evento (da sostituire con chiamata
-                                                                           // al Controller)
+        logger.info("Registration request"); // Logga l'evento (da sostituire con chiamata
+                                             // al Controller)
     }
 
     private void handleAppointment(Stage stage) { // Metodo segnaposto per gestire l'appuntamento rapido
-        logger.info("Appointment request - To be handled by Controller"); // Logga l'evento (da sostituire con chiamata
-                                                                          // al Controller)
+        logger.info("Appointment request"); // Logga l'evento (da sostituire con chiamata
+                                            // al Controller)
     }
 }

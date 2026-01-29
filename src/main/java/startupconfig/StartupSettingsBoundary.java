@@ -109,7 +109,7 @@ public class StartupSettingsBoundary extends Application {
 
             // Delega la navigazione verso la login selection al Graphic Controller dedicato
             // MVC strict: la Boundary chiama un Graphic Controller per cambiare vista
-            selectTypeLogin.SelectTypeLoginGraphicController graphicController = new selectTypeLogin.SelectTypeLoginGraphicController();
+            select_type_login.SelectTypeLoginGraphicController graphicController = new select_type_login.SelectTypeLoginGraphicController();
             graphicController.start(bean);
 
         });

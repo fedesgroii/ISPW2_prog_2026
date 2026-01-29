@@ -71,4 +71,5 @@ public class StartupSettingsEntity implements Serializable {
     public void setStorageOption(int storageOption) {
         this.storageOption = storageOption; // Aggiorna il valore della variabile d'istanza
     }
+
 }

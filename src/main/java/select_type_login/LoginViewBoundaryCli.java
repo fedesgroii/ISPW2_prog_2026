@@ -1,14 +1,14 @@
-package selectTypeLogin; // Package di appartenenza della classe
+package select_type_login; // Package di appartenenza della classe
 
 import java.util.Scanner; // Importa la classe Scanner per leggere l'input da tastiera
 import java.util.logging.Logger; // Importa il Logger per registrare messaggi di sistema
 
-public class LoginViewBoundary_cli { // Definizione della classe pubblica LoginViewBoundary_cli
+public class LoginViewBoundaryCli { // Definizione della classe pubblica LoginViewBoundary_cli
 
-    private static final Logger logger = Logger.getLogger(LoginViewBoundary_cli.class.getName()); // Inizializza il
-                                                                                                  // logger per
-                                                                                                  // tracciare le
-                                                                                                  // operazioni
+    private static final Logger logger = Logger.getLogger(LoginViewBoundaryCli.class.getName()); // Inizializza il
+                                                                                                 // logger per
+                                                                                                 // tracciare le
+                                                                                                 // operazioni
 
     public void start() { // Metodo principale per avviare l'interfaccia CLI
         Scanner scanner = new Scanner(System.in); // Crea un oggetto Scanner collegato allo standard input (tastiera)

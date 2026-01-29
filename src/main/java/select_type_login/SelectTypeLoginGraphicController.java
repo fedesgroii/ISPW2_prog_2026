@@ -1,4 +1,4 @@
-package selectTypeLogin;
+package select_type_login;
 
 import javafx.stage.Stage;
 import startupconfig.StartupConfigBean;
@@ -25,14 +25,14 @@ public class SelectTypeLoginGraphicController {
                 // Crea un nuovo Stage per la nuova finestra
                 Stage stage = new Stage();
                 // Istanzia e avvia la Boundary GUI
-                new LoginViewBoundary_gui().start(stage);
+                new LoginViewBoundaryGui().start(stage);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
             // Modalità CLI
             // Istanzia e avvia la Boundary CLI
-            new LoginViewBoundary_cli().start();
+            new LoginViewBoundaryCli().start();
         }
     }
 }

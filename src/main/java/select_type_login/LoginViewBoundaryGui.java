@@ -20,11 +20,10 @@ public class LoginViewBoundaryGui implements navigation.View {
     private static final String LOGIN_ID = "login"; // Costante per l'ID CSS dei pulsanti di login
     private static final String CONTAINER_ID = "container"; // Costante per l'ID CSS del contenitore principale
     private static final String ROOT_ID = "root"; // Costante per l'ID CSS della radice
-    private startupconfig.StartupConfigBean config;
 
     @Override
     public void show(Stage stage, startupconfig.StartupConfigBean config) {
-        this.config = config;
+
         this.start(stage);
     }
 

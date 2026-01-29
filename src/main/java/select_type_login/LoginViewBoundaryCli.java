@@ -11,11 +11,9 @@ public class LoginViewBoundaryCli implements navigation.View { // Definizione de
                                                                                                  // tracciare le
                                                                                                  // operazioni
 
-    private startupconfig.StartupConfigBean config; // Riferimento alla configurazione
-
     @Override
     public void show(javafx.stage.Stage stage, startupconfig.StartupConfigBean config) {
-        this.config = config; // Memorizza la configurazione
+
         this.start();
     }
 

@@ -3,12 +3,21 @@ package select_type_login; // Package di appartenenza della classe
 import java.util.Scanner; // Importa la classe Scanner per leggere l'input da tastiera
 import java.util.logging.Logger; // Importa il Logger per registrare messaggi di sistema
 
-public class LoginViewBoundaryCli { // Definizione della classe pubblica LoginViewBoundary_cli
+public class LoginViewBoundaryCli implements navigation.View { // Definizione della classe pubblica
+                                                               // LoginViewBoundary_cli
 
     private static final Logger logger = Logger.getLogger(LoginViewBoundaryCli.class.getName()); // Inizializza il
                                                                                                  // logger per
                                                                                                  // tracciare le
                                                                                                  // operazioni
+
+    private startupconfig.StartupConfigBean config; // Riferimento alla configurazione
+
+    @Override
+    public void show(javafx.stage.Stage stage, startupconfig.StartupConfigBean config) {
+        this.config = config; // Memorizza la configurazione
+        this.start();
+    }
 
     public void start() { // Metodo principale per avviare l'interfaccia CLI
         Scanner scanner = new Scanner(System.in); // Crea un oggetto Scanner collegato allo standard input (tastiera)
@@ -68,23 +77,26 @@ public class LoginViewBoundaryCli { // Definizione della classe pubblica LoginVi
     } // Chiude il metodo start
 
     private void handleSpecialistLogin() { // Metodo privato per gestire la logica del login specialista
-        logger.info("Specialist Login request - To be handled by Controller"); // Logga l'azione, replicando il
-                                                                               // comportamento della GUI
+        logger.info("Specialist Login request"); // Logga l'azione, replicando il
+                                                 // comportamento della GUI
         printLine("[CLI] Navigazione verso Login Specialista..."); // Feedback visivo all'utente CLI
     } // Chiude il metodo handleSpecialistLogin
 
     private void handlePatientLogin() { // Metodo privato per gestire la logica del login paziente
-        logger.info("Patient Login request - To be handled by Controller"); // Logga l'azione come nella GUI
+        logger.info("Patient Login request"); // Logga l'azione come nella GUI
         printLine("[CLI] Navigazione verso Login Paziente..."); // Feedback visivo all'utente CLI
     } // Chiude il metodo handlePatientLogin
 
     private void handleRegistration() { // Metodo privato per gestire la registrazione
-        logger.info("Registration request - To be handled by Controller"); // Logga l'azione come nella GUI
-        printLine("[CLI] Navigazione verso Registrazione..."); // Feedback visivo all'utente CLI
+        logger.info("Registration request"); // Logga l'azione come nella GUI
+        printLine("[CLI] La registrazione non è posibile per gli utenti non autorizzati dalla dottoressa."); // Feedback
+                                                                                                             // visivo
+                                                                                                             // all'utente
+                                                                                                             // CLI
     } // Chiude il metodo handleRegistration
 
     private void handleAppointment() { // Metodo privato per gestire l'appuntamento rapido
-        logger.info("Appointment request - To be handled by Controller"); // Logga l'azione come nella GUI
+        logger.info("Appointment request"); // Logga l'azione come nella GUI
         printLine("[CLI] Navigazione verso Prenotazione Appuntamento..."); // Feedback visivo all'utente CLI
     } // Chiude il metodo handleAppointment
 

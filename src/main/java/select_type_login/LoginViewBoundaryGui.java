@@ -11,7 +11,7 @@ import javafx.scene.text.Text; // Importa la classe Text per visualizzare string
 import javafx.stage.Stage; // Importa la classe Stage, che rappresenta la finestra
 import java.util.logging.Logger; // Importa il Logger per registrare messaggi di sistema
 
-public class LoginViewBoundaryGui {
+public class LoginViewBoundaryGui implements navigation.View {
 
     private static final Logger logger = Logger.getLogger(LoginViewBoundaryGui.class.getName()); // Crea un logger per
                                                                                                  // registrare eventi
@@ -20,6 +20,13 @@ public class LoginViewBoundaryGui {
     private static final String LOGIN_ID = "login"; // Costante per l'ID CSS dei pulsanti di login
     private static final String CONTAINER_ID = "container"; // Costante per l'ID CSS del contenitore principale
     private static final String ROOT_ID = "root"; // Costante per l'ID CSS della radice
+    private startupconfig.StartupConfigBean config;
+
+    @Override
+    public void show(Stage stage, startupconfig.StartupConfigBean config) {
+        this.config = config;
+        this.start(stage);
+    }
 
     public void start(Stage primaryStage) { // Metodo principale avviato da JavaFX per costruire la GUI
         primaryStage.setTitle("Portale MindLab"); // Imposta il titolo visibile nella barra della finestra

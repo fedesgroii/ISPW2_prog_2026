@@ -3,7 +3,6 @@ package login_insert_data;
 import javafx.stage.Stage;
 import navigation.AppNavigator;
 import startupconfig.StartupConfigBean;
-import startupconfig.StartupSettingsEntity;
 
 import java.util.logging.Logger;
 

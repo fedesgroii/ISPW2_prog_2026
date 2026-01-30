@@ -23,25 +23,29 @@ public class LoginViewCli implements View {
         boolean authenticated = false;
 
         while (!authenticated) {
-            System.out.println("\n--------------------------------------------------");
-            System.out.println("            Login " + ("Patient".equals(tipo) ? "Paziente" : "Specialista"));
-            System.out.println("--------------------------------------------------");
+            printMessage("\n--------------------------------------------------");
+            printMessage("            Login " + ("Patient".equals(tipo) ? "Paziente" : "Specialista"));
+            printMessage("--------------------------------------------------");
 
-            System.out.print("Email: ");
+            printMessage("Email: ");
             String email = scanner.nextLine();
 
-            System.out.print("Password: ");
+            printMessage("Password: ");
             String password = scanner.nextLine();
 
             LoginBean bean = new LoginBean(email, password);
 
             if (appController.authenticate(bean, tipo)) {
-                System.out.println("\n[SUCCESS] Login effettuato con successo!");
+                printMessage("\n[SUCCESS] Login effettuato con successo!");
                 authenticated = true;
                 // Qui andrebbe la navigazione alla dashboard CLI
             } else {
-                System.out.println("\n[ERROR] Credenziali errate. Riprova.");
+                printMessage("\n[ERROR] Credenziali errate. Riprova.");
             }
         }
+    }
+
+    private void printMessage(String message) {
+        System.out.println(message);
     }
 }

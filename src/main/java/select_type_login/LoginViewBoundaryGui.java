@@ -20,10 +20,11 @@ public class LoginViewBoundaryGui implements navigation.View {
     private static final String LOGIN_ID = "login"; // Costante per l'ID CSS dei pulsanti di login
     private static final String CONTAINER_ID = "container"; // Costante per l'ID CSS del contenitore principale
     private static final String ROOT_ID = "root"; // Costante per l'ID CSS della radice
+    private startupconfig.StartupConfigBean configBean; // Bean per conservare le impostazioni di avvio
 
     @Override
     public void show(Stage stage, startupconfig.StartupConfigBean config) {
-
+        this.configBean = config; // Salva la configurazione iniettata
         this.start(stage);
     }
 
@@ -137,14 +138,17 @@ public class LoginViewBoundaryGui implements navigation.View {
      * In a full MVC implementation, these would call a GraphicController.
      */
 
-    private void handleSpecialistLogin(Stage stage) { // Metodo segnaposto per gestire il login specialista
-        logger.info("Specialist Login request"); // Logga l'evento (da sostituire con
-                                                 // chiamata al Controller)
+    private void handleSpecialistLogin(Stage stage) { // Metodo per gestire il login specialista
+        logger.info("Specialist Login request");
+        // Naviga verso la vista dello specialista usando il bean salvato e il
+        // navigatore
+        new navigation.AppNavigator().navigateTo("Specialist", this.configBean, stage);
     }
 
-    private void handlePatientLogin(Stage stage) { // Metodo segnaposto per gestire il login paziente
-        logger.info("Patient Login request"); // Logga l'evento (da sostituire con
-                                              // chiamata al Controller)
+    private void handlePatientLogin(Stage stage) { // Metodo per gestire il login paziente
+        logger.info("Patient Login request");
+        // Naviga verso la vista del paziente usando il bean salvato e il navigatore
+        new navigation.AppNavigator().navigateTo("Patient", this.configBean, stage);
     }
 
     private void handleRegistration(Stage stage) { // Metodo segnaposto per gestire la registrazione

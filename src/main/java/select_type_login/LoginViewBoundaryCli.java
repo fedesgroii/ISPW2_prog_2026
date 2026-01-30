@@ -70,15 +70,22 @@ public class LoginViewBoundaryCli implements navigation.View { // Definizione de
         // aperto come standard in System.in wrapper.
     } // Chiude il metodo start
 
-    private void handleSpecialistLogin() { // Metodo privato per gestire la logica del login specialista
-        logger.info("Specialist Login request"); // Logga l'azione, replicando il
-                                                 // comportamento della GUI
-        printLine("[CLI] Navigazione verso Login Specialista..."); // Feedback visivo all'utente CLI
+    private void handleSpecialistLogin() { // Metodo per gestire il login specialista
+        logger.info("Specialist Login request");
+        startupconfig.StartupSettingsEntity configEntity = startupconfig.StartupSettingsEntity.getInstance();
+        startupconfig.StartupConfigBean configBean = new startupconfig.StartupConfigBean(
+                configEntity.isInterfaceMode(),
+                configEntity.getStorageOption());
+        new navigation.AppNavigator().navigateTo("Specialist", configBean, null);
     } // Chiude il metodo handleSpecialistLogin
 
-    private void handlePatientLogin() { // Metodo privato per gestire la logica del login paziente
-        logger.info("Patient Login request"); // Logga l'azione come nella GUI
-        printLine("[CLI] Navigazione verso Login Paziente..."); // Feedback visivo all'utente CLI
+    private void handlePatientLogin() { // Metodo per gestire il login paziente
+        logger.info("Patient Login request");
+        startupconfig.StartupSettingsEntity configEntity = startupconfig.StartupSettingsEntity.getInstance();
+        startupconfig.StartupConfigBean configBean = new startupconfig.StartupConfigBean(
+                configEntity.isInterfaceMode(),
+                configEntity.getStorageOption());
+        new navigation.AppNavigator().navigateTo("Patient", configBean, null);
     } // Chiude il metodo handlePatientLogin
 
     private void handleRegistration() { // Metodo privato per gestire la registrazione

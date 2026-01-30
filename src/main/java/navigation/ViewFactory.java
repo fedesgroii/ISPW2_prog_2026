@@ -3,6 +3,9 @@ package navigation; // Package di appartenenza
 import startupconfig.StartupConfigBean; // Importa il bean di configurazione
 import select_type_login.LoginViewBoundaryCli;
 import select_type_login.LoginViewBoundaryGui;
+import login_insert_data.LoginViewPatient;
+import login_insert_data.LoginViewSpecialist;
+import login_insert_data.LoginViewCli;
 
 // Factory Class: responsabile della creazione delle istanze delle Viste in base ai parametri
 public class ViewFactory {
@@ -11,25 +14,18 @@ public class ViewFactory {
     // viewName: identificatore della vista richiesta (es. "Login")
     // config: configurazione per decidere quale implementazione creare (GUI o CLI)
     public View createView(String viewName, StartupConfigBean config) {
+        boolean isGui = config.isInterfaceMode();
 
         try {
-            // Controlla se la vista richiesta è la pagina di "Login"
-            if ("Login".equals(viewName)) {
-                // Controlla nel bean di configurazione se l'utente ha scelto la modalità
-                // Grafica (GUI)
-                if (config.isInterfaceMode()) {
-                    // Se GUI, restituisce la Boundary grafica del Login
-                    return new LoginViewBoundaryGui();
-                } else {
-                    // Se CLI, restituisce la Boundary testuale del Login
-                    return new LoginViewBoundaryCli();
-                }
-            }
+            return switch (viewName) {
+                case "Login" -> isGui ? new LoginViewBoundaryGui() : new LoginViewBoundaryCli();
+                case "Patient" -> isGui ? new LoginViewPatient() : new LoginViewCli("Patient");
+                case "Specialist" -> isGui ? new LoginViewSpecialist() : new LoginViewCli("Specialist");
+                default -> null;
+            };
         } catch (Exception e) {
             throw new IllegalArgumentException(
-                    "Errore durante la creazione della vista: " + viewName + "Errore: " + e.getMessage());
+                    "Errore durante la creazione della vista: " + viewName + ". Errore: " + e.getMessage());
         }
-
-        return null;
     }
 }

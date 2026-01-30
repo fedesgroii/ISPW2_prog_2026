@@ -26,6 +26,8 @@ public class AppNavigator {
                 // CLI Mode: Non serve uno Stage grafico
                 view.show(null, config);
             }
+        } else {
+            throw new IllegalArgumentException("Vista non inserita");
         }
 
         // 3. Gestione della chiusura della finestra precedente

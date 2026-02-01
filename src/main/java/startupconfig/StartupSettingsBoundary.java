@@ -1,6 +1,7 @@
 package startupconfig; // Dichiarazione del package di appartenenza
 
 import javafx.application.Application; // Importa la classe base per le applicazioni JavaFX
+import javafx.application.Platform;
 import javafx.geometry.Insets; // Importa classe per gestire i margini dei layout
 import javafx.geometry.Pos; // Importa enumerazione per l'allineamento degli elementi
 import javafx.scene.Scene; // Importa classe per il contenitore di alto livello per il contenuto della scena
@@ -22,150 +23,152 @@ import java.util.logging.Logger; // Importa classe per il logging
 // Estende Application per integrarsi con il ciclo di vita di JavaFX
 public class StartupSettingsBoundary extends Application {
 
-    private static final Logger logger = Logger.getLogger(StartupSettingsBoundary.class.getName());
+        private static final Logger logger = Logger.getLogger(StartupSettingsBoundary.class.getName());
 
-    // Dichiarazione dei riferimenti ai componenti UI per accedere al loro stato
-    // (selezionato/non selezionato)
-    private RadioButton guiMode; // Pulsante per selezionare la modalità grafica
-    private RadioButton databaseOption; // Pulsante per selezionare l'archiviazione su Database
-    private RadioButton fileSystemOption; // Pulsante per selezionare l'archiviazione su File System
+        // Dichiarazione dei riferimenti ai componenti UI per accedere al loro stato
+        // (selezionato/non selezionato)
+        private RadioButton guiMode; // Pulsante per selezionare la modalità grafica
+        private RadioButton databaseOption; // Pulsante per selezionare l'archiviazione su Database
+        private RadioButton fileSystemOption; // Pulsante per selezionare l'archiviazione su File System
 
-    @Override
-    public void start(Stage primaryStage) {
-        logger.info(() -> "StartupSettingsBoundary.start() called on thread: " + Thread.currentThread().getName());
-        // Inizializza il controller che gestirà le azioni dell'utente
-        StartupSettingsController controller = new StartupSettingsController();
+        @Override
+        public void start(Stage primaryStage) {
+                logger.info(() -> String.format("[DEBUG][Thread: %s] Entering StartupSettingsBoundary.start",
+                                Thread.currentThread().getName()));
+                // Inizializza il controller che gestirà le azioni dell'utente
+                StartupSettingsController controller = new StartupSettingsController();
 
-        // Imposta il titolo della finestra principale
-        primaryStage.setTitle("MindLab");
+                // Configura JavaFX per non terminare automaticamente alla chiusura dell'ultima
+                // finestra.
+                Platform.setImplicitExit(false);
 
-        // Carica l'immagine dell'icona dell'applicazione dalle risorse
-        Image appIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icone/logo_ML.png")));
-        // Aggiunge l'icona alla lista delle icone dello Stage (finestra)
-        primaryStage.getIcons().add(appIcon);
+                // Imposta il titolo della finestra principale
+                primaryStage.setTitle("MindLab");
 
-        // Crea un contenitore verticale (VBox) per organizzare gli elementi
-        // dell'interfaccia
-        VBox container = new VBox();
-        container.setSpacing(20); // Imposta una spaziatura di 20 pixel tra gli elementi verticali
-        container.setPadding(new Insets(20)); // Imposta un margine interno di 20 pixel su tutti i lati
-        container.setAlignment(Pos.CENTER); // Allinea il contenuto al centro del contenitore
-        container.getStyleClass().add("root"); // Aggiunge la classe CSS "root" per lo styling
+                // Carica l'immagine dell'icona dell'applicazione dalle risorse
+                Image appIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icone/logo_ML.png")));
+                // Aggiunge l'icona alla lista delle icone dello Stage (finestra)
+                primaryStage.getIcons().add(appIcon);
 
-        // Carica l'immagine dell'icona "Power" dalle risorse
-        Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icone/power-off.png")));
+                // Crea un contenitore verticale (VBox) per organizzare gli elementi
+                VBox container = new VBox();
+                container.setSpacing(20);
+                container.setPadding(new Insets(20));
+                container.setAlignment(Pos.CENTER);
+                container.getStyleClass().add("root");
 
-        // Crea un componente ImageView per visualizzare l'immagine caricata
-        ImageView iconaPower = new ImageView(icon);
-        iconaPower.setFitHeight(50); // Imposta l'altezza di visualizzazione a 50 pixel
-        iconaPower.setFitWidth(50); // Imposta la larghezza di visualizzazione a 50 pixel
+                // Carica l'immagine dell'icona "Power" dalle risorse
+                Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icone/power-off.png")));
 
-        // Crea un oggetto Text per il titolo della schermata
-        Text title = new Text("Configurazione Avvio di MindLab");
-        title.getStyleClass().add("title"); // Aggiunge la classe CSS "title" per lo styling del testo
+                // Crea un componente ImageView per visualizzare l'immagine caricata
+                ImageView iconaPower = new ImageView(icon);
+                iconaPower.setFitHeight(50);
+                iconaPower.setFitWidth(50);
 
-        // Crea un ToggleGroup per gestire l'esclusività della selezione tra GUI e CLI
-        ToggleGroup modeGroup = new ToggleGroup();
-        guiMode = new RadioButton("Modalità GUI"); // Crea opzione per GUI
-        guiMode.setToggleGroup(modeGroup); // Associa al gruppo
-        guiMode.setSelected(true); // Imposta questa opzione come selezionata di default
+                // Crea un oggetto Text per il titolo della schermata
+                Text title = new Text("Configurazione Avvio di MindLab");
+                title.getStyleClass().add("title");
 
-        RadioButton cliMode = new RadioButton("Modalità CLI"); // Crea opzione per CLI
-        cliMode.setToggleGroup(modeGroup); // Associa allo stesso gruppo
+                // Crea un ToggleGroup per gestire l'esclusività della selezione tra GUI e CLI
+                ToggleGroup modeGroup = new ToggleGroup();
+                guiMode = new RadioButton("Modalità GUI");
+                guiMode.setToggleGroup(modeGroup);
+                guiMode.setSelected(true);
 
-        // Crea un contenitore orizzontale (HBox) per le opzioni di modalità
-        HBox modeBox = new HBox(10, guiMode, cliMode); // 10 pixel di spazio tra gli elementi
-        modeBox.setAlignment(Pos.CENTER); // Allinea al centro
-        modeBox.getStyleClass().add("option-box"); // Aggiunge classe CSS
+                RadioButton cliMode = new RadioButton("Modalità CLI");
+                cliMode.setToggleGroup(modeGroup);
 
-        // Crea un nuovo ToggleGroup per le opzioni di storage (RAM vs Database vs
-        // FileSystem)
-        ToggleGroup storageGroup = new ToggleGroup();
-        RadioButton memoryOption = new RadioButton("Memoria RAM"); // Opzione RAM
-        memoryOption.setToggleGroup(storageGroup); // Associa al gruppo
-        memoryOption.setSelected(true); // Selezionata di default
+                // Crea un contenitore orizzontale (HBox) per le opzioni di modalità
+                HBox modeBox = new HBox(10, guiMode, cliMode);
+                modeBox.setAlignment(Pos.CENTER);
+                modeBox.getStyleClass().add("option-box");
 
-        databaseOption = new RadioButton("Database"); // Opzione Database
-        databaseOption.setToggleGroup(storageGroup); // Associa al gruppo
+                // Crea un nuovo ToggleGroup per le opzioni di storage
+                ToggleGroup storageGroup = new ToggleGroup();
+                RadioButton memoryOption = new RadioButton("Memoria RAM");
+                memoryOption.setToggleGroup(storageGroup);
+                memoryOption.setSelected(true);
 
-        fileSystemOption = new RadioButton("File System"); // Opzione File System
-        fileSystemOption.setToggleGroup(storageGroup); // Associa al gruppo
+                databaseOption = new RadioButton("Database");
+                databaseOption.setToggleGroup(storageGroup);
 
-        // Crea contenitore orizzontale per le opzioni di storage
-        HBox storageBox = new HBox(10, memoryOption, databaseOption, fileSystemOption);
-        storageBox.setAlignment(Pos.CENTER); // Allinea al centro
-        storageBox.getStyleClass().add("option-box"); // Aggiunge classe CSS
+                fileSystemOption = new RadioButton("File System");
+                fileSystemOption.setToggleGroup(storageGroup);
 
-        // Crea il pulsante di conferma
-        Button confirmButton = new Button("Conferma");
-        confirmButton.getStyleClass().add("button"); // Aggiunge classe CSS
+                // Crea contenitore orizzontale per le opzioni di storage
+                HBox storageBox = new HBox(10, memoryOption, databaseOption, fileSystemOption);
+                storageBox.setAlignment(Pos.CENTER);
+                storageBox.getStyleClass().add("option-box");
 
-        // Definisce l'azione da eseguire quando il pulsante viene cliccato (Event
-        // Handler)
-        confirmButton.setOnAction(event -> {
-            logger.info("Confirm button clicked");
-            // Recupera i dati selezionati dall'interfaccia incapsulati in un Bean
-            StartupConfigBean bean = getSettingsBean();
-            // Passa il Bean al controller per l'elaborazione
-            controller.processSettings(bean);
+                // Crea il pulsante di conferma
+                Button confirmButton = new Button("Conferma");
+                confirmButton.getStyleClass().add("button");
 
-            // La chiusura della finestra corrente e' delegata al Navigator
+                // Definisce l'azione da eseguire quando il pulsante viene cliccato
+                confirmButton.setOnAction(event -> {
+                        logger.info(() -> String.format("[DEBUG][Thread: %s] Confirm button clicked",
+                                        Thread.currentThread().getName()));
+                        // Recupera i dati selezionati dall'interfaccia incapsulati in un Bean
+                        StartupConfigBean bean = getSettingsBean();
 
-            // Delega la navigazione verso la login selection al Navigator centralizzato
-            logger.info("Navigating to Login...");
-            new navigation.AppNavigator().navigateTo("Login", bean, primaryStage);
-            logger.info("Navigation to Login initiated.");
+                        // Delegazione totale al Controller
+                        controller.completeConfiguration(bean, primaryStage);
 
-        });
+                        logger.info(() -> String.format(
+                                        "[DEBUG][Thread: %s] Configuration finalization delegated to controller.",
+                                        Thread.currentThread().getName()));
+                });
 
-        // Aggiunge tutti i componenti creati al contenitore principale
-        container.getChildren().addAll(iconaPower, title, modeBox, storageBox, confirmButton);
+                // Aggiunge tutti i componenti creati al contenitore principale
+                container.getChildren().addAll(iconaPower, title, modeBox, storageBox, confirmButton);
 
-        // Crea la scena contenente il layout principale, dimensionandola a tutto
-        // schermo
-        // scena, larghezza e altezza della scena
-        Scene scene = new Scene(container, Screen.getPrimary().getBounds().getWidth(),
-                Screen.getPrimary().getBounds().getHeight());
+                // Crea la scena
+                Scene scene = new Scene(container, Screen.getPrimary().getBounds().getWidth(),
+                                Screen.getPrimary().getBounds().getHeight());
 
-        // Carica e applica il foglio di stile CSS esterno
-        scene.getStylesheets()
-                .add(Objects.requireNonNull(getClass().getResource("/style/style_avvio.css")).toExternalForm());
+                // Carica e applica il foglio di stile CSS esterno
+                scene.getStylesheets()
+                                .add(Objects.requireNonNull(getClass().getResource("/style/style_avvio.css"))
+                                                .toExternalForm());
 
-        // Imposta la scena sullo Stage primario
-        primaryStage.setScene(scene);
-        primaryStage.setFullScreen(true); // Abilita modalità schermo intero
-        primaryStage.setResizable(false); // Disabilita il ridimensionamento manuale della finestra
-        primaryStage.setFullScreenExitHint(""); // Rimuove il messaggio di suggerimento per uscire dal full screen
-        logger.info("Calling primaryStage.show()");
-        primaryStage.show(); // Rende visibile la finestra
-        logger.info("primaryStage.show() returned");
-    } // fine metodo start
-
-    /**
-     * Metodo privato (helper) per raccogliere i dati dalla UI e creare il Bean.
-     * Separa la logica di estrazione dati dalla logica dell'event handler.
-     *
-     * @return Oggetto StartupConfigBean popolato con le scelte dell'utente
-     */
-    private StartupConfigBean getSettingsBean() {
-        boolean isGuiMode = guiMode.isSelected(); // Legge lo stato del RadioButton guiMode
-        int storageOption = getSelectedStorageOption(); // Determina l'opzione di storage tramite metodo helper
-        return new StartupConfigBean(isGuiMode, storageOption); // Restituisce il nuovo Bean
-    }
-
-    /**
-     * Metodo privato per tradurre la selezione dei RadioButton in un codice intero.
-     * Mappa i componenti UI a valori di logica di business.
-     *
-     * @return Intero: 0=RAM, 1=Database, 2=File System
-     */
-    private int getSelectedStorageOption() {
-        if (databaseOption.isSelected()) {
-            return 1; // Ritorna 1 se è selezionato Database
-        } else if (fileSystemOption.isSelected()) {
-            return 2; // Ritorna 2 se è selezionato File System
+                // Imposta la scena sullo Stage primario
+                primaryStage.setScene(scene);
+                primaryStage.setFullScreen(true);
+                primaryStage.setResizable(false);
+                primaryStage.setFullScreenExitHint("");
+                logger.info(() -> String.format("[DEBUG][Thread: %s] Calling primaryStage.show()",
+                                Thread.currentThread().getName()));
+                primaryStage.show();
+                logger.info(() -> String.format("[DEBUG][Thread: %s] primaryStage.show() returned",
+                                Thread.currentThread().getName()));
         }
-        return 0; // Default a 0 (RAM) se nessuna delle precedenti è vera (o se è selezionata
-                  // memoryOption)
-    }
+        // fine metodo start
+
+        /**
+         * Metodo privato (helper) per raccogliere i dati dalla UI e creare il Bean.
+         * Separa la logica di estrazione dati dalla logica dell'event handler.
+         *
+         * @return Oggetto StartupConfigBean popolato con le scelte dell'utente
+         */
+        private StartupConfigBean getSettingsBean() {
+                boolean isGuiMode = guiMode.isSelected(); // Legge lo stato del RadioButton guiMode
+                int storageOption = getSelectedStorageOption(); // Determina l'opzione di storage tramite metodo helper
+                return new StartupConfigBean(isGuiMode, storageOption); // Restituisce il nuovo Bean
+        }
+
+        /**
+         * Metodo privato per tradurre la selezione dei RadioButton in un codice intero.
+         * Mappa i componenti UI a valori di logica di business.
+         *
+         * @return Intero: 0=RAM, 1=Database, 2=File System
+         */
+        private int getSelectedStorageOption() {
+                if (databaseOption.isSelected()) {
+                        return 1; // Ritorna 1 se è selezionato Database
+                } else if (fileSystemOption.isSelected()) {
+                        return 2; // Ritorna 2 se è selezionato File System
+                }
+                return 0; // Default a 0 (RAM) se nessuna delle precedenti è vera (o se è selezionata
+                          // memoryOption)
+        }
 }

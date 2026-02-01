@@ -10,7 +10,9 @@ import java.util.Scanner;
  * Implementazione CLI per l'inserimento dei dati di login.
  */
 public class LoginViewCli implements View {
-    private final LoginController appController = new LoginController();
+    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger
+            .getLogger(LoginViewCli.class.getName());
+    private LoginController appController;
     private final String tipo;
 
     public LoginViewCli(String tipo) {
@@ -19,6 +21,13 @@ public class LoginViewCli implements View {
 
     @Override
     public void show(Stage stage, StartupConfigBean config) {
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering LoginViewCli.show for tipo: %s",
+                Thread.currentThread().getName(), tipo));
+
+        if (appController == null) {
+            appController = new LoginController(config);
+        }
+
         Scanner scanner = new Scanner(System.in);
         boolean authenticated = false;
 
@@ -34,13 +43,22 @@ public class LoginViewCli implements View {
             String password = scanner.nextLine();
 
             LoginBean bean = new LoginBean(email, password);
+            authentication.AuthenticationResult result = appController.authenticate(bean);
 
-            if (appController.authenticate(bean, tipo)) {
-                printMessage("\n[SUCCESS] Login effettuato con successo!");
+            if (result.isSuccess()) {
+                LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Login CLI successful for %s",
+                        Thread.currentThread().getName(), email));
+                printMessage("\n[SUCCESS] Login effettuato con successo come " + result.getUserType() + "!");
+
+                // Avvio sessione
+                appController.startUserSession(result);
+
                 authenticated = true;
                 // Qui andrebbe la navigazione alla dashboard CLI
             } else {
-                printMessage("\n[ERROR] Credenziali errate. Riprova.");
+                LOGGER.warning(() -> String.format("[DEBUG][Thread: %s] Login CLI failed for %s: %s",
+                        Thread.currentThread().getName(), email, result.getErrorMessage()));
+                printMessage("\n[ERROR] Login fallito: " + result.getErrorMessage() + ". Riprova.");
             }
         }
     }

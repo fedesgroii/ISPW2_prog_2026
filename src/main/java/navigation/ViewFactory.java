@@ -1,31 +1,25 @@
 package navigation; // Package di appartenenza
 
-import startupconfig.StartupConfigBean; // Importa il bean di configurazione
-import select_type_login.LoginViewBoundaryCli;
-import select_type_login.LoginViewBoundaryGui;
-import login_insert_data.LoginViewPatient;
-import login_insert_data.LoginViewSpecialist;
-import login_insert_data.LoginViewCli;
+// Abstract Factory Class: definisce il contratto per la creazione delle viste
+// Le sottoclassi concrete implementeranno il metodo factory per creare viste specifiche (GUI o CLI)
+public abstract class ViewFactory {
 
-// Factory Class: responsabile della creazione delle istanze delle Viste in base ai parametri
-public class ViewFactory {
+    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger
+            .getLogger(ViewFactory.class.getName());
 
-    // Metodo che crea e restituisce una vista (View) specifica
-    // viewName: identificatore della vista richiesta (es. "Login")
-    // config: configurazione per decidere quale implementazione creare (GUI o CLI)
-    public View createView(String viewName, StartupConfigBean config) {
-        boolean isGui = config.isInterfaceMode();
-
-        try {
-            return switch (viewName) {
-                case "Login" -> isGui ? new LoginViewBoundaryGui() : new LoginViewBoundaryCli();
-                case "Patient" -> isGui ? new LoginViewPatient() : new LoginViewCli("Patient");
-                case "Specialist" -> isGui ? new LoginViewSpecialist() : new LoginViewCli("Specialist");
-                default -> null;
-            };
-        } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Errore durante la creazione della vista: " + viewName + ". Errore: " + e.getMessage());
-        }
+    /**
+     * Metodo statico di utility per ottenere la factory corretta.
+     */
+    public static ViewFactory getFactory(boolean isGui) {
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering ViewFactory.getFactory: isGui=%b",
+                Thread.currentThread().getName(), isGui));
+        return isGui ? new GuiViewFactory() : new CliViewFactory();
     }
+
+    // Factory Method astratto: ogni sottoclasse concreta implementa questo metodo
+    // per creare le viste del proprio tipo (GUI o CLI)
+    // viewName: identificatore della vista richiesta (es. "Login", "Patient",
+    // "Specialist")
+    // Restituisce una View concreta o null se il viewName non è riconosciuto
+    public abstract View createView(String viewName);
 }

@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  */
 public abstract class LoginViewBase implements View {
     private static final Logger LOGGER = Logger.getLogger(LoginViewBase.class.getName());
-    private static final String CSS_PATH = "/style/style_login_insert_specialist_colori.css";
+    private static final String CSS_PATH = "/style/style_login_insert_specialist_a_colori.css";
     private static final int ERROR_TIMEOUT_SECONDS = 5;
 
     private final LoginGraphicController grafCon = new LoginGraphicController(this);
@@ -89,19 +89,42 @@ public abstract class LoginViewBase implements View {
     }
 
     private Scene getScene(Text title, Text subtitle) {
+        // Logo
+        javafx.scene.image.ImageView logoView = new javafx.scene.image.ImageView();
+        try {
+            javafx.scene.image.Image logo = new javafx.scene.image.Image(
+                    Objects.requireNonNull(getClass().getResourceAsStream("/icone/logo_ML_sfondo.png")));
+            logoView.setImage(logo);
+            logoView.setFitWidth(250);
+            logoView.setPreserveRatio(true);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Impossibile caricare il logo: {0}", e.getMessage());
+        }
+
         Button loginButton = new Button("Accedi");
         loginButton.setId("specialistButton");
+        loginButton.setPrefWidth(250);
         loginButton.setOnAction(event -> grafCon.handleLoginAttempt(getTipo()));
 
         Button switchLoginButton = new Button(getSwitchButtonText());
         switchLoginButton.setId("backButton");
+        switchLoginButton.setPrefWidth(250);
         switchLoginButton.setOnAction(event -> grafCon.handleSwitchLoginAction(primaryStage, getTipo()));
 
-        VBox vbox = new VBox(20, title, subtitle, errorText, emailField, passwordField, loginButton, switchLoginButton);
-        vbox.setId("vbox");
-        vbox.setAlignment(javafx.geometry.Pos.CENTER);
+        // Card container
+        VBox card = new VBox(20, title, subtitle, errorText, emailField, passwordField, loginButton, switchLoginButton);
+        card.setId("container"); // Matches the ID used in CSS for the card
+        card.setAlignment(javafx.geometry.Pos.CENTER);
+        card.setMaxWidth(500);
+        card.setPadding(new javafx.geometry.Insets(40));
 
-        return new Scene(vbox, 800, 600);
+        // Main layout
+        VBox mainLayout = new VBox(30, logoView, card);
+        mainLayout.setId("vbox"); // Root layout
+        mainLayout.setAlignment(javafx.geometry.Pos.CENTER);
+        mainLayout.setStyle("-fx-background-color: transparent;"); // Background handled by .root in CSS
+
+        return new Scene(mainLayout, 800, 600);
     }
 
     public void showError() {

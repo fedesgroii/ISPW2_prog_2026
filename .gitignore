@@ -38,4 +38,4 @@ build/
 .DS_Store
 
 # Output directories
-out/
+out/src/main/resources/icone/*.png

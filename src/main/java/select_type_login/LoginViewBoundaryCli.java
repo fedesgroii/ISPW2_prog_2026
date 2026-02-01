@@ -4,7 +4,7 @@ import java.util.Scanner; // Importa la classe Scanner per leggere l'input da ta
 import java.util.logging.Logger; // Importa il Logger per registrare messaggi di sistema
 
 public class LoginViewBoundaryCli implements navigation.View { // Definizione della classe pubblica
-                                                               // LoginViewBoundary_cli
+                                                               // LoginViewBoundaryCli
 
     private static final Logger logger = Logger.getLogger(LoginViewBoundaryCli.class.getName()); // Inizializza il
                                                                                                  // logger per
@@ -70,23 +70,35 @@ public class LoginViewBoundaryCli implements navigation.View { // Definizione de
         // aperto come standard in System.in wrapper.
     } // Chiude il metodo start
 
-    private void handleSpecialistLogin() { // Metodo per gestire il login specialista
-        logger.info("Specialist Login request");
+    private void handleSpecialistLogin() {
+        logger.info(() -> String.format("[DEBUG][Thread: %s] Entering handleSpecialistLogin",
+                Thread.currentThread().getName()));
         startupconfig.StartupSettingsEntity configEntity = startupconfig.StartupSettingsEntity.getInstance();
         startupconfig.StartupConfigBean configBean = new startupconfig.StartupConfigBean(
                 configEntity.isInterfaceMode(),
                 configEntity.getStorageOption());
-        new navigation.AppNavigator().navigateTo("Specialist", configBean, null);
-    } // Chiude il metodo handleSpecialistLogin
+        // Factory Method Pattern: Creiamo la factory corretta in base alla modalità
+        navigation.ViewFactory factory = configBean.isInterfaceMode()
+                ? new navigation.GuiViewFactory()
+                : new navigation.CliViewFactory();
+        navigation.AppNavigator navigator = new navigation.AppNavigator(factory);
+        navigator.navigateTo("Specialist", configBean, null);
+    }
 
-    private void handlePatientLogin() { // Metodo per gestire il login paziente
-        logger.info("Patient Login request");
+    private void handlePatientLogin() {
+        logger.info(() -> String.format("[DEBUG][Thread: %s] Entering handlePatientLogin",
+                Thread.currentThread().getName()));
         startupconfig.StartupSettingsEntity configEntity = startupconfig.StartupSettingsEntity.getInstance();
         startupconfig.StartupConfigBean configBean = new startupconfig.StartupConfigBean(
                 configEntity.isInterfaceMode(),
                 configEntity.getStorageOption());
-        new navigation.AppNavigator().navigateTo("Patient", configBean, null);
-    } // Chiude il metodo handlePatientLogin
+        // Factory Method Pattern: Creiamo la factory corretta in base alla modalità
+        navigation.ViewFactory factory = configBean.isInterfaceMode()
+                ? new navigation.GuiViewFactory()
+                : new navigation.CliViewFactory();
+        navigation.AppNavigator navigator = new navigation.AppNavigator(factory);
+        navigator.navigateTo("Patient", configBean, null);
+    }
 
     private void handleRegistration() { // Metodo privato per gestire la registrazione
         logger.info("Registration request"); // Logga l'azione come nella GUI

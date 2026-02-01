@@ -1,101 +1,115 @@
+/* 
+ * Professional Medical Theme for MindLab
+ * Palette: 
+ * - Teal (Primary): #3c8d99
+ * - Sage Green (Secondary): #a8c58f
+ * - Dark Navy: #2c3e50
+ * - Soft Gray: #f8f9fa
+ */
+
 /* Corpo della pagina */
 .root {
-    -fx-background-color: linear-gradient(to bottom, #e0eafc, #cfdef3); /* Sfondo sfumato */
-    -fx-font-family: 'Roboto', sans-serif; /* Font del testo */
-    -fx-alignment: center; /* Centrato */
+    -fx-background-color: linear-gradient(to bottom right, #f4faff, #e8f4ff);
+    /* Azzurrino chiaro per contrasto */
+    -fx-font-family: 'Segoe UI', 'Roboto', sans-serif;
+    -fx-alignment: center;
     -fx-padding: 0;
-    -fx-max-height: 100%; /* Altezza massima */
 }
 
-/* Titolo principale */
-#title {
-    -fx-font-size: 36px; /* Dimensione del titolo */
-    -fx-font-weight: bold; /* Grassetto per il titolo */
-    -fx-text-fill: #2d3436; /* Colore del testo grigio scuro */
-    -fx-padding: 20px; /* Spaziatura intorno al titolo */
-}
-
-/* Sottotitolo */
-#subtitle {
-    -fx-font-size: 18px; /* Dimensione del sottotitolo */
-    -fx-text-fill: #2d3436; /* Colore testo grigio scuro */
-    -fx-padding: 0 0 20px 0; /* Padding inferiore */
-}
-
-/* Pulsanti Generali */
-.button {
-    -fx-padding: 15px 30px; /* Spaziatura interna */
-    -fx-border-radius: 12px; /* Arrotonda i bordi */
-    -fx-background-radius: 12px; /* Arrotonda lo sfondo */
-    -fx-font-size: 18px; /* Dimensione del testo */
-    -fx-font-weight: bold; /* Grassetto */
-    -fx-cursor: hand; /* Cambia il cursore */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 5); /* Aggiunge un'ombra */
-    -fx-background-color: #81ecec; /* Sfondo ciano chiaro */
-    -fx-text-fill: #2d3436; /* Testo grigio scuro */
-}
-
-/* Campo di input */
-#inputField {
-    -fx-padding: 10px; /* Spaziatura interna */
-    -fx-font-size: 16px; /* Dimensione del testo */
-    -fx-border-color: #7cca2d; /* Colore del bordo rosa chiaro */
-    -fx-border-radius: 6px; /* Arrotondamento del bordo */
-    -fx-background-radius: 6px; /* Arrotondamento dello sfondo */
-    -fx-background-color: #ffffff; /* Sfondo giallo chiaro */
-    -fx-border-width: 1px; /* Larghezza del bordo */
-    -fx-pref-width: 150px; /* Larghezza preferita */
-    -fx-min-width: 100px;  /* Larghezza minima */
-    -fx-max-width: 250px;  /* Larghezza massima */
-}
-
-/* Pulsante Specialista */
-#specialistButton {
-    -fx-background-color: #ffffff; /* Sfondo azzurro */
-    -fx-border-color: #7cca2d; /* Bordo azzurro */
-    -fx-border-width: 2px;
-    -fx-text-fill: #7cca2d; /* Colore del testo grigio scuro */
-}
-#specialistButton:hover {
-    -fx-background-color: #7cca2d; /* Sfondo azzurro scuro al passaggio del mouse */
-    -fx-text-fill: #ffffff; /* Testo bianco */
-}
-
-/* Contenitore dei pulsanti */
-#vbox {
-    -fx-spacing: 30; /* Spaziatura tra gli elementi */
-    -fx-alignment: center; /* Allineamento al centro */
-    -fx-padding: 40; /* Padding */
-}
-
-/* Contenitore principale */
+/* Contenitore a scheda (Card) */
 #container {
-    -fx-background-color: #ffffff; /* Sfondo bianco */
-    -fx-background-radius: 12px; /* Bordo arrotondato */
-    -fx-padding: 40px; /* Spaziatura interna */
-    -fx-max-width: 800px; /* Larghezza massima */
-    -fx-width: 90%; /* Larghezza al 90% */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 15, 0, 0, 4); /* Ombra per profondità */
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 20px;
+    -fx-padding: 50px;
+    -fx-min-width: 450px;
+    -fx-max-width: 500px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 20, 0, 0, 10);
+    -fx-alignment: center;
 }
 
-/* Campo di errore */
-#errorText {
-    -fx-font-size: 14px;
-    -fx-text-fill: red; /* Colore rosso per l'errore */
-    -fx-padding: 10px;
+/* Titolo e Sottotitolo */
+#title {
+    -fx-font-size: 28px;
     -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    /* Navy professionale */
+    -fx-padding: 0 0 5 0;
 }
 
-/* Campo di input */
-#inputFieldErrore {
-    -fx-padding: 10px; /* Spaziatura interna */
-    -fx-font-size: 16px; /* Dimensione del testo */
-    -fx-border-color: #ff0000; /* Colore del bordo rosa chiaro */
-    -fx-border-radius: 6px; /* Arrotondamento del bordo */
-    -fx-background-radius: 6px; /* Arrotondamento dello sfondo */
-    -fx-background-color: #ffffff; /* Sfondo giallo chiaro */
-    -fx-border-width: 1px; /* Larghezza del bordo */
-    -fx-pref-width: 150px; /* Larghezza preferita */
-    -fx-min-width: 100px;  /* Larghezza minima */
-    -fx-max-width: 250px;  /* Larghezza massima */
+#subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: #7f8c8d;
+    /* Grigio soft */
+    -fx-padding: 0 0 20 0;
+}
+
+/* Campi di Input */
+#inputField {
+    -fx-padding: 12px 15px;
+    -fx-font-size: 15px;
+    -fx-background-color: #fcfdfe;
+    -fx-border-color: #dcdde1;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-pref-width: 350px;
+    -fx-text-fill: #2c3e50;
+}
+
+#inputField:focused {
+    -fx-border-color: #3c8d99;
+    /* Teal */
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(three-pass-box, rgba(60, 141, 153, 0.2), 8, 0, 0, 0);
+}
+
+/* Pulsanti */
+.button {
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 12px 25px;
+}
+
+/* Pulsante Accedi (Primario - Teal) */
+#specialistButton {
+    -fx-background-color: #3c8d99;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(60, 141, 153, 0.3), 10, 0, 0, 4);
+}
+
+#specialistButton:hover {
+    -fx-background-color: #a8c58f;
+    /* Sage Green on hover */
+    -fx-effect: dropshadow(three-pass-box, rgba(168, 197, 143, 0.4), 12, 0, 0, 6);
+}
+
+/* Pulsante Torna indietro/Switch (Secondario - Outlined) */
+#backButton {
+    -fx-background-color: transparent;
+    -fx-border-color: #3c8d99;
+    -fx-border-width: 1.5px;
+    -fx-text-fill: #3c8d99;
+}
+
+#backButton:hover {
+    -fx-background-color: rgba(60, 141, 153, 0.05);
+    -fx-border-color: #a8c58f;
+    -fx-text-fill: #a8c58f;
+}
+
+/* Testo Errore */
+#errorText {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e74c3c;
+    -fx-padding: 5 0 5 0;
+}
+
+/* Layout Root (VBox contenente Logo + Card) */
+#vbox {
+    -fx-spacing: 25;
+    -fx-padding: 40;
 }

@@ -138,17 +138,29 @@ public class LoginViewBoundaryGui implements navigation.View {
      * In a full MVC implementation, these would call a GraphicController.
      */
 
-    private void handleSpecialistLogin(Stage stage) { // Metodo per gestire il login specialista
-        logger.info("Specialist Login request");
+    private void handleSpecialistLogin(Stage stage) {
+        logger.info(() -> String.format("[DEBUG][Thread: %s] Entering handleSpecialistLogin",
+                Thread.currentThread().getName()));
         // Naviga verso la vista dello specialista usando il bean salvato e il
         // navigatore
-        new navigation.AppNavigator().navigateTo("Specialist", this.configBean, stage);
+        // Factory Method Pattern: Creiamo la factory corretta in base alla modalità
+        navigation.ViewFactory factory = this.configBean.isInterfaceMode()
+                ? new navigation.GuiViewFactory()
+                : new navigation.CliViewFactory();
+        navigation.AppNavigator navigator = new navigation.AppNavigator(factory);
+        navigator.navigateTo("Specialist", this.configBean, stage);
     }
 
-    private void handlePatientLogin(Stage stage) { // Metodo per gestire il login paziente
-        logger.info("Patient Login request");
+    private void handlePatientLogin(Stage stage) {
+        logger.info(() -> String.format("[DEBUG][Thread: %s] Entering handlePatientLogin",
+                Thread.currentThread().getName()));
         // Naviga verso la vista del paziente usando il bean salvato e il navigatore
-        new navigation.AppNavigator().navigateTo("Patient", this.configBean, stage);
+        // Factory Method Pattern: Creiamo la factory corretta in base alla modalità
+        navigation.ViewFactory factory = this.configBean.isInterfaceMode()
+                ? new navigation.GuiViewFactory()
+                : new navigation.CliViewFactory();
+        navigation.AppNavigator navigator = new navigation.AppNavigator(factory);
+        navigator.navigateTo("Patient", this.configBean, stage);
     }
 
     private void handleRegistration(Stage stage) { // Metodo segnaposto per gestire la registrazione

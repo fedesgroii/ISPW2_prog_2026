@@ -135,7 +135,7 @@ public class DatabaseStorageStrategyPaziente implements DataStorageStrategy<Pazi
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Errore durante la ricerca del paziente per email: " + email, e);
+            logger.log(Level.SEVERE, e, () -> "Errore durante la ricerca del paziente per email: " + email);
         }
         return Optional.empty();
     }

@@ -83,7 +83,7 @@ public abstract class LoginViewBase implements View {
                     getClass().getResource(CSS_PATH),
                     "Resource non trovata: " + CSS_PATH).toExternalForm();
             scene.getStylesheets().add(styleSheet);
-        } catch (Exception e) {
+        } catch (Exception _) {
             LOGGER.log(Level.WARNING, "Impossibile caricare il CSS: {0}. Uso stile di sistema.", CSS_PATH);
         }
     }

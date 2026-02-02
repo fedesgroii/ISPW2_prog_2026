@@ -43,22 +43,22 @@ public class InMemoryUserDAO<T> implements UserDAO<T> {
 
     // Helper per estrarre email genericamente in base al tipo
     private String getEmail(T user) {
-        if (user instanceof Paziente) {
-            return ((Paziente) user).getEmail();
+        if (user instanceof Paziente paziente) {
+            return paziente.getEmail();
         }
-        if (user instanceof Specialista) {
-            return ((Specialista) user).getEmail();
+        if (user instanceof Specialista specialista) {
+            return specialista.getEmail();
         }
         throw new IllegalArgumentException("Tipo utente non supportato: " + user.getClass().getName());
     }
 
     // Helper per estrarre password genericamente in base al tipo
     private String getPassword(T user) {
-        if (user instanceof Paziente) {
-            return ((Paziente) user).getPassword();
+        if (user instanceof Paziente paziente) {
+            return paziente.getPassword();
         }
-        if (user instanceof Specialista) {
-            return ((Specialista) user).getPassword();
+        if (user instanceof Specialista specialista) {
+            return specialista.getPassword();
         }
         throw new IllegalArgumentException("Tipo utente non supportato: " + user.getClass().getName());
     }

@@ -44,6 +44,7 @@ public class ListaPazienti {
         observableListaPazienti.add(paziente);
     }
 
+
     // Metodo per rimuovere un paziente dalla lista (per codice fiscale)
     public boolean rimuoviPaziente(String codiceFiscale) {
         for (Paziente paziente : observableListaPazienti) {

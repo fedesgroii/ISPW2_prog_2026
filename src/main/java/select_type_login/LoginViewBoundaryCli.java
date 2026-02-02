@@ -19,10 +19,8 @@ public class LoginViewBoundaryCli implements navigation.View { // Definizione de
 
     public void start() { // Metodo principale per avviare l'interfaccia CLI
         Scanner scanner = new Scanner(System.in); // Crea un oggetto Scanner collegato allo standard input (tastiera)
-        boolean running = true; // Variabile di controllo per il ciclo principale dell'applicazione
-
-        while (running) { // Inizio del ciclo per mantenere l'interfaccia attiva finché l'utente non esce
-                          // o completa un'azione
+        while (true) { // Inizio del ciclo per mantenere l'interfaccia attiva finché l'utente non esce
+                       // o completa un'azione
             printLine("--------------------------------------------------"); // Stampa una linea separatrice per
                                                                              // chiarezza visuale
             printLine("                  Portale MindLab                 "); // Stampa il titolo principale centrato
@@ -41,6 +39,7 @@ public class LoginViewBoundaryCli implements navigation.View { // Definizione de
             printLine("altrimenti"); // Stampa il testo di raccordo "altrimenti"
             printLine(""); // Stampa una riga vuota per spaziatura
             printLine("4. Prenota un appuntamento senza registrarti"); // Stampa l'opzione 4 per l'appuntamento rapido
+            printLine("5. Esci"); // Stampa l'opzione 5 per uscire dall'applicazione
             printLine(""); // Stampa una riga vuota per separare il menu dal prompt
             printLine("Inserisci il numero dell'opzione desiderata: "); // Chiede all'utente di inserire una scelta
 
@@ -59,6 +58,9 @@ public class LoginViewBoundaryCli implements navigation.View { // Definizione de
                 case "4": // Caso in cui l'utente inserisce "4"
                     handleAppointment(); // Chiama il metodo per gestire l'appuntamento
                     break; // Interrompe il caso dello switch
+                case "5": // Caso in cui l'utente inserisce "5"
+                    printLine("Uscita in corso... \n Arrivederci!");
+                    return; // Esce dal metodo start e termina il ciclo
                 default: // Caso di default se l'input non corrisponde a nessun caso previsto
                     printLine("Opzione non valida, riprova."); // Comunica all'utente che l'input non è valido
             } // Chiude il blocco switch

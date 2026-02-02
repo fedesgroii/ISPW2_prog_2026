@@ -101,6 +101,7 @@ public class Specialista {
         private String password;
 
         public Builder() {
+            // Default constructor for the Builder pattern
         }
 
         public Builder nome(String nome) {

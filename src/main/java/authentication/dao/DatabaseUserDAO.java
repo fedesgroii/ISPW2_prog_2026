@@ -46,10 +46,10 @@ public class DatabaseUserDAO<T> implements UserDAO<T> {
      */
     private boolean checkPassword(T user, String password) {
         String userPassword = null;
-        if (user instanceof Paziente) {
-            userPassword = ((Paziente) user).getPassword();
-        } else if (user instanceof Specialista) {
-            userPassword = ((Specialista) user).getPassword();
+        if (user instanceof Paziente paziente) {
+            userPassword = paziente.getPassword();
+        } else if (user instanceof Specialista specialista) {
+            userPassword = specialista.getPassword();
         }
         return userPassword != null && userPassword.equals(password);
     }

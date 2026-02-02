@@ -144,7 +144,7 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
                     return false;
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException _) {
             logger.severe("Errore durante la verifica della disponibilità della visita");
             return false;
         }

@@ -105,6 +105,7 @@ public class Paziente {
         private String password;
 
         public Builder() {
+            // Default constructor for the Builder pattern
         }
 
         public Builder codiceFiscalePaziente(String numeroTesseraSanitaria) {

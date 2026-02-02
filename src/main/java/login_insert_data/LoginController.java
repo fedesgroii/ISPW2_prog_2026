@@ -21,12 +21,10 @@ public class LoginController {
     private static final Logger LOGGER = Logger.getLogger(LoginController.class.getName());
 
     private final AuthenticationService authService;
-    private final StartupConfigBean config;
 
     public LoginController(StartupConfigBean config) {
         LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Initializing LoginController",
                 Thread.currentThread().getName()));
-        this.config = config;
 
         // Crea i DAO in base alla configurazione
         DAOFactory.DAOPair daos = DAOFactory.createDAOs(config);

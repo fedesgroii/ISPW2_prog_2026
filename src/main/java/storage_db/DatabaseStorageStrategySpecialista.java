@@ -159,7 +159,7 @@ public class DatabaseStorageStrategySpecialista implements DataStorageStrategy<S
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Errore durante la ricerca dello specialista per email: " + email, e);
+            logger.log(Level.SEVERE, e, () -> "Errore durante la ricerca dello specialista per email: " + email);
         }
         return Optional.empty();
     }

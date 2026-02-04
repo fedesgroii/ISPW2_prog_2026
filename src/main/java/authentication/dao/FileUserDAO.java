@@ -41,6 +41,23 @@ public class FileUserDAO<T> implements UserDAO<T> {
     }
 
     @Override
+    public java.util.List<T> getAllInstanceOfActor() {
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering FileUserDAO.getAllInstanceOfActor",
+                Thread.currentThread().getName()));
+        if (fileManager instanceof FileManagerPazienti) {
+            @SuppressWarnings("unchecked")
+            java.util.List<T> result = (java.util.List<T>) ((FileManagerPazienti) fileManager).getAllInstanceOfActor();
+            return result;
+        } else if (fileManager instanceof FileManagerSpecialisti) {
+            @SuppressWarnings("unchecked")
+            java.util.List<T> result = (java.util.List<T>) ((FileManagerSpecialisti) fileManager)
+                    .getAllInstanceOfActor();
+            return result;
+        }
+        return java.util.List.of();
+    }
+
+    @Override
     public Optional<T> authenticateByEmailAndPassword(String email, String password) {
         LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering FileUserDAO.authenticateByEmailAndPassword: %s",
                 Thread.currentThread().getName(), email));

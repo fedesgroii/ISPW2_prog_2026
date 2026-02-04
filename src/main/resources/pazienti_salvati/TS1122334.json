@@ -1,0 +1,10 @@
+{
+    "numeroTesseraSanitaria": "TS1122334",
+    "nome": "Alessandro",
+    "cognome": "Moretti",
+    "dataDiNascita": "1988-12-07",
+    "numeroTelefonico": "3314445556",
+    "email": "alessandro.moretti@example.com",
+    "condizioniMediche": "Artrosi alle ginocchia",
+    "password": "paz000"
+}

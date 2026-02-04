@@ -35,7 +35,7 @@ public class StartupSettingsBoundary extends Application {
         public void start(Stage primaryStage) {
                 logger.info(() -> String.format("[DEBUG][Thread: %s] Entering StartupSettingsBoundary.start",
                                 Thread.currentThread().getName()));
-                // Inizializza il controller che gestirà le azioni dell'utente
+                // Inizializza il Controllore Applicativo (Orchestratore)
                 StartupSettingsController controller = new StartupSettingsController();
 
                 // Configura JavaFX per non terminare automaticamente alla chiusura dell'ultima
@@ -111,11 +111,11 @@ public class StartupSettingsBoundary extends Application {
                         // Recupera i dati selezionati dall'interfaccia incapsulati in un Bean
                         StartupConfigBean bean = getSettingsBean();
 
-                        // Delegazione totale al Controller
-                        controller.completeConfiguration(bean, primaryStage);
+                        // Delega al Controllore Applicativo l'orchestrazione dell'intera operazione
+                        controller.orchestrateConfiguration(bean, primaryStage);
 
                         logger.info(() -> String.format(
-                                        "[DEBUG][Thread: %s] Configuration finalization delegated to controller.",
+                                        "[DEBUG][Thread: %s] Action delegated to Application Controller (Orchestrator).",
                                         Thread.currentThread().getName()));
                 });
 

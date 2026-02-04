@@ -152,6 +152,11 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
     }
 
     @Override
+    public List<Visita> getAllInstanceOfActor() {
+        return getAllVisite();
+    }
+
+    @Override
     public Optional<Visita> findByEmail(String email) {
         // Non ha senso cercare una visita per email (non è un utente)
         return Optional.empty();

@@ -2,6 +2,8 @@ package model;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Entità che rappresenta un Paziente nel sistema.
@@ -19,6 +21,27 @@ public class Paziente {
     private final String email; // Username per autenticazione
     private final String condizioniMediche;
     private final String password; // Password per autenticazione
+
+    // Costruttore annotato per Jackson
+    @JsonCreator
+    public Paziente(
+            @JsonProperty("numeroTesseraSanitaria") String numeroTesseraSanitaria,
+            @JsonProperty("nome") String nome,
+            @JsonProperty("cognome") String cognome,
+            @JsonProperty("dataDiNascita") LocalDate dataDiNascita,
+            @JsonProperty("numeroTelefonico") String numeroTelefonico,
+            @JsonProperty("email") String email,
+            @JsonProperty("condizioniMediche") String condizioniMediche,
+            @JsonProperty("password") String password) {
+        this.numeroTesseraSanitaria = numeroTesseraSanitaria;
+        this.nome = nome;
+        this.cognome = cognome;
+        this.dataDiNascita = dataDiNascita;
+        this.numeroTelefonico = numeroTelefonico;
+        this.email = email;
+        this.condizioniMediche = condizioniMediche;
+        this.password = password;
+    }
 
     // Costruttore privato (si usa il Builder)
     private Paziente(Builder builder) {

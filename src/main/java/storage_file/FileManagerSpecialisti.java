@@ -1,6 +1,8 @@
 package storage_file;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import model.Specialista;
 import storage_db.DataStorageStrategy;
 import java.io.File;
@@ -26,6 +28,8 @@ public class FileManagerSpecialisti implements DataStorageStrategy<Specialista> 
 
     public FileManagerSpecialisti() {
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         File dir = new File(DIRECTORY);
         if (!dir.exists() && !dir.mkdirs()) {
             throw new IllegalStateException("Impossibile creare la directory: " + DIRECTORY);
@@ -198,21 +202,55 @@ public class FileManagerSpecialisti implements DataStorageStrategy<Specialista> 
             return Optional.empty();
         }
         File dir = new File(DIRECTORY);
+        logger.info("[DEBUG] Searching for email " + email + " in directory: " + dir.getAbsolutePath());
+
         if (!dir.exists() || !dir.isDirectory()) {
-            logger.warning("Directory degli specialisti non trovata o non valida.");
+            logger.warning("Directory degli specialisti non trovata o non valida: " + dir.getAbsolutePath());
             return Optional.empty();
         }
+
+        File[] files = dir.listFiles();
+        if (files == null) {
+            logger.warning("Errore nell'accesso ai file della directory: " + dir.getAbsolutePath());
+            return Optional.empty();
+        }
+
+        logger.info("[DEBUG] Found " + files.length + " files in directory.");
+
         // Cerca il file con l'email specificata
-        return Arrays.stream(Objects.requireNonNull(dir.listFiles()))
-                .filter(file -> file.getName().endsWith(FILE_EXTENSION)) // Usa la costante FILE_EXTENSION
-                .map(this::leggiFile) // Leggi il contenuto dei file
-                .flatMap(Optional::stream) // Gestisci i valori Optional
-                .filter(specialista -> specialista.getEmail().equalsIgnoreCase(email)) // Filtra per email
-                .findFirst(); // Restituisce il primo risultato trovato
+        return Arrays.stream(files)
+                .filter(file -> {
+                    boolean isJson = file.getName().endsWith(FILE_EXTENSION);
+                    if (!isJson)
+                        logger.info("[DEBUG] Skipping non-json file: " + file.getName());
+                    return isJson;
+                })
+                .map(file -> {
+                    logger.info("[DEBUG] Reading file: " + file.getName());
+                    Optional<Specialista> s = this.leggiFile(file);
+                    if (s.isEmpty())
+                        logger.warning("[DEBUG] Failed to parse file: " + file.getName());
+                    return s;
+                })
+                .flatMap(Optional::stream)
+                .filter(specialista -> {
+                    boolean match = specialista.getEmail().equalsIgnoreCase(email);
+                    if (match)
+                        logger.info("[DEBUG] MATCH FOUND: " + specialista.getEmail());
+                    else
+                        logger.info("[DEBUG] Email mismatch: " + specialista.getEmail());
+                    return match;
+                })
+                .findFirst();
     }
 
     public static String getFolderPath() {
         return DIRECTORY;
+    }
+
+    @Override
+    public List<Specialista> getAllInstanceOfActor() {
+        return trovaTutti();
     }
 
     @Override

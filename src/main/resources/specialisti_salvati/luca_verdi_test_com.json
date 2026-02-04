@@ -1,0 +1,9 @@
+{
+    "nome": "Luca",
+    "cognome": "Verdi",
+    "dataDiNascita": "1982-11-05",
+    "numeroTelefonico": "3281122334",
+    "email": "luca.verdi@test.com",
+    "specializzazione": "Neurologia",
+    "password": "pass789"
+}

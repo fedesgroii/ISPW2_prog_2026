@@ -20,12 +20,28 @@ public class StartupSettingsController {
     }
 
     /**
-     * Metodo principale per elaborare le impostazioni ricevute dalla Boundary.
+     * Metodo di orchestrazione: riceve i dati, processa la logica di business
+     * e infine usa il controllore grafico per cambiare l'interfaccia.
+     */
+    public void orchestrateConfiguration(StartupConfigBean configBean, javafx.stage.Stage stage) {
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Application Controller orchestrating...",
+                Thread.currentThread().getName()));
+
+        // 1. Logica di business
+        processSettings(configBean);
+
+        // 2. Uso del controllore grafico per la navigazione (Orchestra l'interfaccia)
+        StartupSettingsGraphicController graphicController = new StartupSettingsGraphicController();
+        graphicController.executeNavigation(configBean, stage);
+    }
+
+    /**
+     * Metodo per elaborare le impostazioni (Logica di Business Pura).
      */
     public void processSettings(StartupConfigBean configBean) {
         LOGGER.info(
-                () -> String.format("[DEBUG][Thread: %s] Entering processSettings: interfaceMode=%s, storageOption=%d",
-                        Thread.currentThread().getName(), configBean.isInterfaceMode(), configBean.getStorageOption()));
+                () -> String.format("[DEBUG][Thread: %s] Processing business settings",
+                        Thread.currentThread().getName()));
 
         config.setInterfaceMode(configBean.isInterfaceMode());
         config.setStorageOption(configBean.getStorageOption());
@@ -35,25 +51,5 @@ public class StartupSettingsController {
                     Thread.currentThread().getName()));
             ComandoDaTerminale.avviaServerSQL();
         }
-    }
-
-    /**
-     * Metodo per completare la configurazione e avviare la navigazione.
-     */
-    public void completeConfiguration(StartupConfigBean configBean, javafx.stage.Stage stage) {
-        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering completeConfiguration",
-                Thread.currentThread().getName()));
-
-        // 1. Processa le impostazioni
-        processSettings(configBean);
-
-        // 2. Scelta della factory centralizzata
-        navigation.ViewFactory factory = navigation.ViewFactory.getFactory(configBean.isInterfaceMode());
-        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Factory selected: %s",
-                Thread.currentThread().getName(), factory.getClass().getSimpleName()));
-
-        // 3. Esecuzione della navigazione
-        navigation.AppNavigator navigator = new navigation.AppNavigator(factory);
-        navigator.navigateTo("Login", configBean, stage);
     }
 }

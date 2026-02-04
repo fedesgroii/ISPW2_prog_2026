@@ -2,6 +2,8 @@ package model;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Entità che rappresenta uno Specialista nel sistema.
@@ -18,6 +20,25 @@ public class Specialista {
     private final String email; // Parte della PK + Username per autenticazione
     private final String specializzazione; // Parte della PK
     private final String password; // Password per autenticazione
+
+    // Costruttore annotato per Jackson
+    @JsonCreator
+    public Specialista(
+            @JsonProperty("nome") String nome,
+            @JsonProperty("cognome") String cognome,
+            @JsonProperty("dataDiNascita") LocalDate dataDiNascita,
+            @JsonProperty("numeroTelefonico") String numeroTelefonico,
+            @JsonProperty("email") String email,
+            @JsonProperty("specializzazione") String specializzazione,
+            @JsonProperty("password") String password) {
+        this.nome = nome;
+        this.cognome = cognome;
+        this.dataDiNascita = dataDiNascita;
+        this.numeroTelefonico = numeroTelefonico;
+        this.email = email;
+        this.specializzazione = specializzazione;
+        this.password = password;
+    }
 
     // Costruttore privato (si usa il Builder)
     private Specialista(Builder builder) {

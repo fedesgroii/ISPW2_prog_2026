@@ -40,6 +40,11 @@ public class DatabaseUserDAO<T> implements UserDAO<T> {
         return user.filter(u -> checkPassword(u, password));
     }
 
+    @Override
+    public java.util.List<T> getAllInstanceOfActor() {
+        return strategy.getAllInstanceOfActor();
+    }
+
     /**
      * Verifica la corrispondenza della password.
      * Supporta sia Paziente che Specialista.

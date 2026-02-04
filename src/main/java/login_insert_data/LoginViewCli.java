@@ -4,6 +4,7 @@ import javafx.stage.Stage;
 import navigation.View;
 import startupconfig.StartupConfigBean;
 
+import navigation.ConsoleScanner;
 import java.util.Scanner;
 
 /**
@@ -28,7 +29,7 @@ public class LoginViewCli implements View {
             appController = new LoginController(config);
         }
 
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = ConsoleScanner.getScanner();
         boolean authenticated = false;
 
         while (!authenticated) {
@@ -50,11 +51,23 @@ public class LoginViewCli implements View {
                         Thread.currentThread().getName(), email));
                 printMessage("\n[SUCCESS] Login effettuato con successo come " + result.getUserType() + "!");
 
-                // Avvio sessione
+                // Avvio sessione (il LoginController gestisce la sessione)
                 appController.startUserSession(result);
 
+                // Navigazione verso la dashboard CLI appropriata
+                String dashboardView = "Patient".equals(result.getUserType())
+                        ? "PatientDashboard"
+                        : "SpecialistDashboard";
+
+                LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Navigazione CLI verso Dashboard %s",
+                        Thread.currentThread().getName(), dashboardView));
+
+                navigation.ViewFactory factory = new navigation.CliViewFactory();
+                navigation.AppNavigator navigator = new navigation.AppNavigator(factory);
+                navigator.navigateTo(dashboardView, config, null);
+
                 authenticated = true;
-                // Qui andrebbe la navigazione alla dashboard CLI
+                // Dashboard navigation completed
             } else {
                 LOGGER.warning(() -> String.format("[DEBUG][Thread: %s] Login CLI failed for %s: %s",
                         Thread.currentThread().getName(), email, result.getErrorMessage()));

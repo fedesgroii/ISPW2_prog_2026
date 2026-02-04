@@ -22,13 +22,13 @@ public class ListaSpecialisti {
         this.observableListaSpecialisti = FXCollections.observableList(new CopyOnWriteArrayList<>());
         // Aggiunta specialisti di test per verifica In-Memory
         this.observableListaSpecialisti.add(new Specialista.Builder()
-                .nome("Luigi")
-                .cognome("Verdi")
-                .dataDiNascita(java.time.LocalDate.of(1980, 5, 20))
-                .numeroTelefonico("0987654321")
+                .nome("Federico")
+                .cognome("Sgroi")
+                .dataDiNascita(java.time.LocalDate.of(2003, 3, 1))
+                .numeroTelefonico("3202345678")
                 .email("specialista@test.it")
                 .specializzazione("Cardiologia")
-                .password("password456")
+                .password("pass")
                 .build());
     }
 

@@ -46,6 +46,38 @@ public abstract class LoginViewBase implements View {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
+        VBox rootContent = createContent();
+
+        // Fluid Transition: Swap root if scene exists, otherwise create new Scene
+        if (primaryStage.getScene() == null) {
+            Scene scene = new Scene(rootContent, 800, 600);
+            loadStyleSheet(scene);
+            primaryStage.setScene(scene);
+        } else {
+            primaryStage.getScene().setRoot(rootContent);
+            loadStyleSheet(primaryStage.getScene());
+        }
+
+        primaryStage.setTitle(getTitleText());
+        primaryStage.setFullScreen(true);
+        primaryStage.setFullScreenExitHint("");
+        primaryStage.setResizable(false);
+        primaryStage.show();
+    }
+
+    private void loadStyleSheet(Scene scene) {
+        // Ora carichiamo sempre lo stile a colori, come da nuovi requisiti
+        try {
+            String styleSheet = Objects.requireNonNull(
+                    getClass().getResource(CSS_PATH),
+                    "Resource non trovata: " + CSS_PATH).toExternalForm();
+            scene.getStylesheets().add(styleSheet);
+        } catch (Exception _) {
+            LOGGER.log(Level.WARNING, "Impossibile caricare il CSS: {0}. Uso stile di sistema.", CSS_PATH);
+        }
+    }
+
+    private VBox createContent() {
         Text title = new Text(getTitleText());
         title.setId("title");
 
@@ -64,31 +96,6 @@ public abstract class LoginViewBase implements View {
         passwordField.setPromptText("Inserisci la tua password");
         passwordField.setId("inputField");
 
-        Scene scene = getScene(title, subtitle);
-
-        loadStyleSheet(scene);
-
-        primaryStage.setTitle(getTitleText());
-        primaryStage.setScene(scene);
-        primaryStage.setFullScreen(true);
-        primaryStage.setResizable(false);
-
-        primaryStage.show();
-    }
-
-    private void loadStyleSheet(Scene scene) {
-        // Ora carichiamo sempre lo stile a colori, come da nuovi requisiti
-        try {
-            String styleSheet = Objects.requireNonNull(
-                    getClass().getResource(CSS_PATH),
-                    "Resource non trovata: " + CSS_PATH).toExternalForm();
-            scene.getStylesheets().add(styleSheet);
-        } catch (Exception _) {
-            LOGGER.log(Level.WARNING, "Impossibile caricare il CSS: {0}. Uso stile di sistema.", CSS_PATH);
-        }
-    }
-
-    private Scene getScene(Text title, Text subtitle) {
         // Logo
         javafx.scene.image.ImageView logoView = new javafx.scene.image.ImageView();
         try {
@@ -124,7 +131,7 @@ public abstract class LoginViewBase implements View {
         mainLayout.setAlignment(javafx.geometry.Pos.CENTER);
         mainLayout.setStyle("-fx-background-color: transparent;"); // Background handled by .root in CSS
 
-        return new Scene(mainLayout, 800, 600);
+        return mainLayout;
     }
 
     public void showError() {
@@ -151,6 +158,10 @@ public abstract class LoginViewBase implements View {
 
     private String getSwitchButtonText() {
         return "Patient".equals(getTipo()) ? "Accedi come Specialista" : "Accedi come Paziente";
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 
     public StartupConfigBean getConfigBean() {

@@ -41,6 +41,11 @@ public class InMemoryUserDAO<T> implements UserDAO<T> {
                 .filter(u -> getPassword(u).equals(password));
     }
 
+    @Override
+    public java.util.List<T> getAllInstanceOfActor() {
+        return new java.util.ArrayList<>(lista);
+    }
+
     // Helper per estrarre email genericamente in base al tipo
     private String getEmail(T user) {
         if (user instanceof Paziente paziente) {

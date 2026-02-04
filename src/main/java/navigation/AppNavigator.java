@@ -1,6 +1,7 @@
 package navigation; // Package di navigazione
 
 import javafx.stage.Stage; // Importa Stage per gestire le finestre JavaFX
+import javafx.application.Platform;
 import startupconfig.StartupConfigBean; // Importa il bean per le configurazioni
 
 import java.util.logging.Logger;
@@ -27,9 +28,9 @@ public class AppNavigator {
     // config: I dati di configurazione necessari alla vista
     // currentStage: Lo Stage della vista precedente, da chiudere (può essere null
     // per la CLI)
-    public void navigateTo(String viewName, StartupConfigBean config, Stage currentStage) {
+    public void navigateTo(String viewName, StartupConfigBean config, Stage stage) {
         LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering navigateTo: viewName=%s, currentStage=%s",
-                Thread.currentThread().getName(), viewName, (currentStage != null ? "active" : "null")));
+                Thread.currentThread().getName(), viewName, (stage != null ? "active" : "null")));
 
         // 1. Creazione della nuova vista tramite Factory Method
         View view = factory.createView(viewName);
@@ -41,33 +42,37 @@ public class AppNavigator {
             if (config.isInterfaceMode()) {
                 LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Navigating in GUI mode",
                         Thread.currentThread().getName()));
-                // GUI Mode: Creiamo una nuova finestra (Stage) per la nuova vista
-                Stage newStage = new Stage();
-                view.show(newStage, config);
-
-                // Gestione della chiusura della finestra precedente per GUI
-                if (currentStage != null) {
-                    LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Closing current GUI stage",
-                            Thread.currentThread().getName()));
-                    currentStage.close();
-                }
+                // GUI Mode: Riutilizziamo lo stage esistente per continuità
+                view.show(stage, config);
             } else {
                 LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Navigating in CLI mode",
                         Thread.currentThread().getName()));
-                // CLI Mode: Chiudiamo la finestra grafica PRIMA di avviare il loop della CLI.
-                if (currentStage != null) {
+                // CLI Mode: Chiudiamo la finestra grafica se presente
+                if (stage != null) {
                     LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Closing current stage before CLI",
                             Thread.currentThread().getName()));
-                    currentStage.close();
+                    Platform.runLater(stage::close);
                 }
 
-                // Avvio della CLI (bloccante)
-                view.show(null, config);
+                // Avvio della CLI: in un nuovo thread se siamo sulla JavaFX Thread,
+                // altrimenti sincrono per mantenere l'ordine delle chiamate in console.
+                if (Platform.isFxApplicationThread()) {
+                    new Thread(() -> {
+                        try {
+                            view.show(null, config);
+                        } catch (Exception e) {
+                            LOGGER.severe(() -> String.format("[DEBUG][Thread: %s] Error in CLI view: %s",
+                                    Thread.currentThread().getName(), e.getMessage()));
+                        }
+                    }).start();
+                } else {
+                    view.show(null, config);
+                }
             }
         } else {
             LOGGER.severe(() -> String.format("[DEBUG][Thread: %s] Failed to create view: %s",
                     Thread.currentThread().getName(), viewName));
-            throw new IllegalArgumentException("Vista non inserita");
+            throw new IllegalArgumentException("Vista non inserita nella Factory: " + viewName);
         }
     }
 }

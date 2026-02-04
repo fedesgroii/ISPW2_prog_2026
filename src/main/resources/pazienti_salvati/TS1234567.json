@@ -1,0 +1,10 @@
+{
+    "numeroTesseraSanitaria": "TS1234567",
+    "nome": "Anna",
+    "cognome": "Ferrari",
+    "dataDiNascita": "2000-05-18",
+    "numeroTelefonico": "3398765432",
+    "email": "anna.ferrari@example.com",
+    "condizioniMediche": "Ipertensione arteriosa, diabete di tipo 2",
+    "password": "paz123"
+}

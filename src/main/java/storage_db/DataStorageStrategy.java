@@ -13,4 +13,7 @@ public interface DataStorageStrategy<T> {
 
     // Metodo aggiunto per supportare l'autenticazione
     Optional<T> findByEmail(String email);
+
+    // Metodo aggiunto per recuperare tutte le istanze (es. tutti gli specialisti)
+    java.util.List<T> getAllInstanceOfActor();
 }

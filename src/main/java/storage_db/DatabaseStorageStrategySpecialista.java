@@ -20,7 +20,7 @@ public class DatabaseStorageStrategySpecialista implements DataStorageStrategy<S
     private static final String SELECT_QUERY = "SELECT nome, cognome, dataDiNascita, numeroTelefonico, email, specializzazione, password FROM specialista WHERE nome = ? AND cognome = ? AND email = ?";
     private static final String UPDATE_QUERY = "UPDATE specialista SET dataDiNascita = ?, numeroTelefonico = ?, specializzazione = ?, password = ? WHERE nome = ? AND cognome = ? AND email = ?";
     private static final String DELETE_QUERY = "DELETE FROM specialista WHERE nome = ? AND cognome = ? AND email = ?";
-    private static final String SELECT_ALL_QUERY = "SELECT nome, cognome, dataDiNascita, numeroTelefonico, email, specializzazione, password FROM specialisti";
+    private static final String SELECT_ALL_QUERY = "SELECT nome, cognome, dataDiNascita, numeroTelefonico, email, specializzazione, password FROM specialista";
 
     @Override
     public boolean salva(Specialista specialista) {
@@ -92,7 +92,8 @@ public class DatabaseStorageStrategySpecialista implements DataStorageStrategy<S
     /**
      * Recupera tutti gli specialisti dal database.
      */
-    public List<Specialista> getAllSpecialisti() {
+    @Override
+    public List<Specialista> getAllInstanceOfActor() {
         List<Specialista> specialisti = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(SELECT_ALL_QUERY);

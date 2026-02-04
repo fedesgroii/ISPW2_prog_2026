@@ -1,0 +1,9 @@
+{
+    "nome": "Federico",
+    "cognome": "Sgroi",
+    "dataDiNascita": "2003-03-01",
+    "numeroTelefonico": "3456789012",
+    "email": "fedes@test.com",
+    "specializzazione": "Dermatologia",
+    "password": "pass"
+}

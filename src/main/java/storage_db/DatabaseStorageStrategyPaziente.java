@@ -84,7 +84,8 @@ public class DatabaseStorageStrategyPaziente implements DataStorageStrategy<Pazi
         }
     }
 
-    public List<Paziente> getAllPazienti() {
+    @Override
+    public List<Paziente> getAllInstanceOfActor() {
         List<Paziente> pazienti = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(SELECT_ALL_QUERY);

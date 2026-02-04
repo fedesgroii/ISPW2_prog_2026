@@ -1,0 +1,10 @@
+{
+    "numeroTesseraSanitaria": "TS9876543",
+    "nome": "Sofia",
+    "cognome": "Ricci",
+    "dataDiNascita": "2003-01-14",
+    "numeroTelefonico": "3662223334",
+    "email": "sofia.ricci@example.com",
+    "condizioniMediche": "Allergia al polline",
+    "password": "paz789"
+}

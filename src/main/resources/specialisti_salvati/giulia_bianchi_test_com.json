@@ -1,0 +1,9 @@
+{
+    "nome": "Giulia",
+    "cognome": "Bianchi",
+    "dataDiNascita": "1990-07-22",
+    "numeroTelefonico": "3456789012",
+    "email": "giulia.bianchi@test.com",
+    "specializzazione": "Dermatologia",
+    "password": "pass456"
+}

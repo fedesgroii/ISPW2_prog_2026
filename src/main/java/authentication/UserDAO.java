@@ -28,4 +28,11 @@ public interface UserDAO<T> {
      *         Optional.empty() altrimenti
      */
     Optional<T> authenticateByEmailAndPassword(String email, String password);
+
+    /**
+     * Recupera tutte le istanze degli attori gestiti da questo DAO.
+     * 
+     * @return Una lista contenente tutti gli utenti trovati
+     */
+    java.util.List<T> getAllInstanceOfActor();
 }

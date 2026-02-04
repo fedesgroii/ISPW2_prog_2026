@@ -28,29 +28,29 @@ public class LoginViewBoundaryGui implements navigation.View {
         this.start(stage);
     }
 
-    public void start(Stage primaryStage) { // Metodo principale avviato da JavaFX per costruire la GUI
-        primaryStage.setTitle("Portale MindLab"); // Imposta il titolo visibile nella barra della finestra
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Portale MindLab");
 
-        VBox mainLayout = createMainLayout(primaryStage); // Chiama il metodo helper per creare il layout principale con
-                                                          // i bottoni
+        VBox mainLayout = createMainLayout(primaryStage);
+        StackPane root = new StackPane(mainLayout);
+        root.setId(ROOT_ID);
 
-        StackPane root = new StackPane(mainLayout); // Crea un pannello radice che centra il contenuto
-        root.setId(ROOT_ID); // Assegna l'ID CSS al pannello radice
+        // Fluid Transition: Swap root if scene exists, otherwise create new Scene
+        if (primaryStage.getScene() == null) {
+            Scene scene = new Scene(root, 800, 600);
+            loadStyle(scene, "/style/style_login_a_colori.css");
+            primaryStage.setScene(scene);
+        } else {
+            primaryStage.getScene().setRoot(root);
+            loadStyle(primaryStage.getScene(), "/style/style_login_a_colori.css");
+        }
 
-        Scene scene = new Scene(root, 800, 600); // Crea la scena di dimensioni 800x600 pixel contenente il root
+        primaryStage.setFullScreen(true);
+        primaryStage.setFullScreenExitHint("");
+        primaryStage.setResizable(false);
+        primaryStage.show();
 
-        // Note: Dynamic style loading should be handled by the Controller passing data
-        // to the View
-        // For now, we load a default style or ensure the method is available for the
-        // controller.
-        loadStyle(scene, "/style/style_login_a_colori.css"); // Carica il foglio di stile CSS di default (a colori)
-
-        primaryStage.setScene(scene); // Imposta la scena creata all'interno della finestra (Stage)
-        primaryStage.setFullScreen(true); // Imposta la finestra in modalità schermo intero
-        primaryStage.setResizable(false); // Impedisce all'utente di ridimensionare la finestra manualmente
-        primaryStage.show(); // Rende visibile la finestra all'utente
-
-        logger.info("Login Selection View initialized."); // Registra nel log che la vista è stata inizializzata
+        logger.info("Login Selection View initialized.");
     }
 
     private VBox createMainLayout(Stage stage) { // Metodo helper privato per costruire la struttura verticale della

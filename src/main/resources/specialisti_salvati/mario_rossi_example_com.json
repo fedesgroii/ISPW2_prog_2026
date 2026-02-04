@@ -1,0 +1,9 @@
+{
+    "nome": "Mario",
+    "cognome": "Rossi",
+    "dataDiNascita": "1980-01-01",
+    "numeroTelefonico": "1234567890",
+    "email": "mario.rossi@example.com",
+    "specializzazione": "Cardiologia",
+    "password": "password123"
+}

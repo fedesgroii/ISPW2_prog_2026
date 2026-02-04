@@ -204,6 +204,11 @@ public class FileManagerPazienti implements DataStorageStrategy<Paziente> {
     }
 
     @Override
+    public List<Paziente> getAllInstanceOfActor() {
+        return trovaTutti();
+    }
+
+    @Override
     public Optional<Paziente> findByEmail(String email) {
         if (email == null || email.isEmpty()) {
             logger.warning("Email non valida per la ricerca.");

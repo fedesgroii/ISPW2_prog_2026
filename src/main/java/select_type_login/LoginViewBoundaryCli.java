@@ -18,7 +18,7 @@ public class LoginViewBoundaryCli implements navigation.View { // Definizione de
     }
 
     public void start() { // Metodo principale per avviare l'interfaccia CLI
-        Scanner scanner = new Scanner(System.in); // Crea un oggetto Scanner collegato allo standard input (tastiera)
+        Scanner scanner = navigation.ConsoleScanner.getScanner(); // Usa lo scanner condiviso per evitare leak
         while (true) { // Inizio del ciclo per mantenere l'interfaccia attiva finché l'utente non esce
                        // o completa un'azione
             printLine("--------------------------------------------------"); // Stampa una linea separatrice per

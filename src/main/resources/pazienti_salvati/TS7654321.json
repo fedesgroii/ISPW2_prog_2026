@@ -1,0 +1,10 @@
+{
+    "numeroTesseraSanitaria": "TS7654321",
+    "nome": "Marco",
+    "cognome": "Esposito",
+    "dataDiNascita": "1995-09-30",
+    "numeroTelefonico": "3471112223",
+    "email": "marco.esposito@example.com",
+    "condizioniMediche": "Asma bronchiale",
+    "password": "paz456"
+}

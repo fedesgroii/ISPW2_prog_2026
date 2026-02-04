@@ -234,6 +234,24 @@ public class FileManagerVisite implements DataStorageStrategy<Visita> {
     }
 
     @Override
+    public List<Visita> getAllInstanceOfActor() {
+        File dir = new File(DIRECTORY);
+        if (!dir.exists() || !dir.isDirectory()) {
+            logger.warning("Directory delle visite non trovata o non valida.");
+            return List.of();
+        }
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return List.of();
+        }
+        return Arrays.stream(files)
+                .filter(file -> file.getName().endsWith(".json"))
+                .map(this::leggiFile)
+                .flatMap(Optional::stream)
+                .toList();
+    }
+
+    @Override
     public Optional<Visita> findByEmail(String email) {
         return Optional.empty();
     }

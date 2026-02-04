@@ -46,12 +46,21 @@ public class LoginGraphicController {
             LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Login riuscito come: %s",
                     Thread.currentThread().getName(), result.getUserType()));
 
-            // Avvio della sessione (ECB: il controller gestisce la sessione)
+            // Avvio della sessione (il LoginController gestisce la sessione)
             getAppController().startUserSession(result);
 
-            // Navigazione verso la dashboard
+            // Navigazione verso la dashboard appropriata
+            String dashboardView = "Patient".equals(result.getUserType())
+                    ? "PatientDashboard"
+                    : "SpecialistDashboard";
+
             LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Navigazione verso Dashboard %s",
-                    Thread.currentThread().getName(), result.getUserType()));
+                    Thread.currentThread().getName(), dashboardView));
+
+            StartupConfigBean configBean = guiView.getConfigBean();
+            navigation.ViewFactory factory = new navigation.GuiViewFactory();
+            navigation.AppNavigator navigator = new navigation.AppNavigator(factory);
+            navigator.navigateTo(dashboardView, configBean, guiView.getPrimaryStage());
         } else {
             LOGGER.warning(() -> String.format("[DEBUG][Thread: %s] Login fallito: %s",
                     Thread.currentThread().getName(), result.getErrorMessage()));

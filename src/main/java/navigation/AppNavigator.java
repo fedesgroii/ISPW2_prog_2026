@@ -83,8 +83,11 @@ public class AppNavigator {
     }
 
     private void logDebug(String format, Object... args) {
-        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] " + format,
-                combineArgs(Thread.currentThread().getName(), args)));
+        String messageTemplate = "[DEBUG][Thread: %s] " + format;
+        Object[] allArgs = new Object[args.length + 1];
+        allArgs[0] = Thread.currentThread().getName();
+        System.arraycopy(args, 0, allArgs, 1, args.length);
+        LOGGER.info(() -> String.format(messageTemplate, allArgs));
     }
 
     private Object[] combineArgs(String first, Object[] rest) {

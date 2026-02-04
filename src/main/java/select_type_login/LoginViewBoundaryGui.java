@@ -73,16 +73,16 @@ public class LoginViewBoundaryGui implements navigation.View {
 
         Button registerButton = createButton("Registrati", "registrazione", 200); // Crea il bottone per la
                                                                                   // registrazione
-        registerButton.setOnAction(e -> handleRegistration(stage)); // Imposta l'azione al click: chiama
-                                                                    // handleRegistration
+        registerButton.setOnAction(e -> handleRegistration()); // Imposta l'azione al click: chiama
+                                                               // handleRegistration
 
         Text subtitle3 = createSubtitle("altrimenti"); // Crea un altro testo di collegamento
 
         Button appointmentButton = createButton("Prenota un appuntamento senza registrarti", "appointmentButton", 400); // Crea
                                                                                                                         // bottone
                                                                                                                         // appuntamento
-        appointmentButton.setOnAction(e -> handleAppointment(stage)); // Imposta l'azione al click: chiama
-                                                                      // handleAppointment
+        appointmentButton.setOnAction(e -> handleAppointment()); // Imposta l'azione al click: chiama
+                                                                 // handleAppointment
 
         HBox buttonBox = new HBox(20, specialistButton, patientButton); // Crea un contenitore orizzontale per
                                                                         // affiancare i primi due bottoni con spaziatura

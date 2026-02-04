@@ -134,57 +134,49 @@ public class BookAppointmentControllerApp {
         LocalDate date = (bean != null) ? bean.getDate() : null;
         String specialistId = (bean != null) ? bean.getSpecialist() : null;
 
-        try {
-            if (date == null || specialistId == null || specialistId.trim().isEmpty()) {
-                return new ArrayList<>();
-            }
-
-            // 1. Generazione di tutti gli slot (08:00 - 20:00, step 1 ora)
-            List<LocalTime> allSlots = new ArrayList<>();
-            for (int hour = 8; hour <= 20; hour++) {
-                allSlots.add(LocalTime.of(hour, 0));
-            }
-
-            // 2. Recupero del repository tramite la configurazione attuale
-            StartupSettingsEntity settings = StartupSettingsEntity.getInstance();
-            if (settings == null) {
-                LOGGER.severe("StartupSettingsEntity.getInstance() returned null!");
-                return new ArrayList<>();
-            }
-
-            StartupConfigBean config = new StartupConfigBean(settings.isInterfaceMode(), settings.getStorageOption());
-            LOGGER.info(() -> "[DEBUG] Using storage option: " + config.getStorageOption());
-
-            authentication.factory.DAOFactory.DAOPair daos = authentication.factory.DAOFactory.createDAOs(config);
-            if (daos == null || daos.appointmentRepository == null) {
-                LOGGER.severe("DAOFactory failed to provide appointmentRepository!");
-                return new ArrayList<>();
-            }
-
-            AppointmentRepository repo = daos.appointmentRepository;
-
-            // 3. Recupero prenotazioni esistenti
-            List<Visita> existingAppointments = repo.findByDateAndSpecialist(date, specialistId);
-            if (existingAppointments == null) {
-                existingAppointments = new ArrayList<>();
-            }
-
-            // 4. Filtraggio degli slot occupati
-            List<LocalTime> occupiedTimes = existingAppointments.stream()
-                    .filter(v -> v != null && v.getOrario() != null)
-                    .map(Visita::getOrario)
-                    .toList();
-
-            List<LocalTime> availableSlots = allSlots.stream()
-                    .filter(slot -> !occupiedTimes.contains(slot))
-                    .sorted()
-                    .toList();
-
-            LOGGER.info(() -> String.format("[DEBUG] Returning %d available slots", availableSlots.size()));
-            return availableSlots;
-        } catch (Exception e) {
-            LOGGER.severe(
-                    () -> "CRITICAL ERROR in getAvailableSlots: " + e.getClass().getName() + " - " + e.getMessage());
+        if (date == null || specialistId == null || specialistId.trim().isEmpty()) {
+            return new ArrayList<>();
         }
+
+        // 1. Generazione di tutti gli slot (08:00 - 20:00, step 1 ora)
+        List<LocalTime> allSlots = new ArrayList<>();
+        for (int hour = 8; hour <= 20; hour++) {
+            allSlots.add(LocalTime.of(hour, 0));
+        }
+
+        // 2. Recupero del repository tramite la configurazione attuale
+        StartupSettingsEntity settings = StartupSettingsEntity.getInstance();
+        if (settings == null) {
+            LOGGER.severe("StartupSettingsEntity.getInstance() returned null!");
+            return new ArrayList<>();
+        }
+
+        StartupConfigBean config = new StartupConfigBean(settings.isInterfaceMode(), settings.getStorageOption());
+        LOGGER.info(() -> "[DEBUG] Using storage option: " + config.getStorageOption());
+
+        authentication.factory.DAOFactory.DAOPair daos = authentication.factory.DAOFactory.createDAOs(config);
+        if (daos == null || daos.appointmentRepository == null) {
+            LOGGER.severe("DAOFactory failed to provide appointmentRepository!");
+            return new ArrayList<>();
+        }
+
+        AppointmentRepository repo = daos.appointmentRepository;
+
+        // 3. Recupero prenotazioni esistenti
+        List<Visita> existingAppointments = repo.findByDateAndSpecialist(date, specialistId);
+        if (existingAppointments == null) {
+            existingAppointments = new ArrayList<>();
+        }
+
+        // 4. Filtraggio degli slot occupati
+        List<LocalTime> occupiedTimes = existingAppointments.stream()
+                .filter(v -> v != null && v.getOrario() != null)
+                .map(Visita::getOrario)
+                .toList();
+
+        return allSlots.stream()
+                .filter(slot -> !occupiedTimes.contains(slot))
+                .sorted()
+                .toList();
     }
 }

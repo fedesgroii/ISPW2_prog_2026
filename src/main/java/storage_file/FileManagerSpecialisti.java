@@ -216,7 +216,7 @@ public class FileManagerSpecialisti implements DataStorageStrategy<Specialista> 
             return Optional.empty();
         }
 
-        logger.info("[DEBUG] Found " + files.length + " files in directory.");
+        logger.log(Level.INFO, "[DEBUG] Found {0} files in directory.", files.length);
 
         // Cerca il file con l'email specificata
         return Arrays.stream(files)

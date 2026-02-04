@@ -29,7 +29,6 @@ public class SpecialistDashboardGraphicController {
         } catch (Exception e) {
             String message = String.format("Navigation to %s failed", viewName);
             LOGGER.log(java.util.logging.Level.SEVERE, message, e);
-            throw new IllegalStateException(message, e);
         }
     }
 }

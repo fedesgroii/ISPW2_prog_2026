@@ -41,19 +41,20 @@ public class BookAppointmentViewCli implements View {
             printMessage("Seleziona specialista:");
             if (specialists.isEmpty()) {
                 printMessage("[WARNING] Nessun specialista trovato nel sistema.");
-                System.out.print("Inserisci nome specialista manualmente: ");
+                printMessage("Inserisci nome specialista manualmente: ");
                 bean.setSpecialist(scanner.nextLine());
             } else {
                 for (int i = 0; i < specialists.size(); i++) {
                     model.Specialista s = specialists.get(i);
-                    System.out.printf("%d) %s %s (%s)%n", i + 1, s.getNome(), s.getCognome(), s.getSpecializzazione());
+                    printMessage(String.format("%d) %s %s (%s)", i + 1, s.getNome(), s.getCognome(),
+                            s.getSpecializzazione()));
                 }
                 int specChoice = readInt(1, specialists.size());
                 model.Specialista selected = specialists.get(specChoice - 1);
                 bean.setSpecialist(selected.getNome() + " " + selected.getCognome());
             }
 
-            System.out.print("Motivo della visita (invio per saltare): ");
+            printMessage("Motivo della visita (invio per saltare): ");
             bean.setReason(scanner.nextLine());
 
             // 3. Date & Time
@@ -68,9 +69,9 @@ public class BookAppointmentViewCli implements View {
                 bean.setName(loggedPatient.getNome());
                 bean.setSurname(loggedPatient.getCognome());
             } else {
-                System.out.print("Inserisci nome: ");
+                printMessage("Inserisci nome: ");
                 bean.setName(scanner.nextLine());
-                System.out.print("Inserisci cognome: ");
+                printMessage("Inserisci cognome: ");
                 bean.setSurname(scanner.nextLine());
             }
 
@@ -97,7 +98,7 @@ public class BookAppointmentViewCli implements View {
     private int readInt(int min, int max) {
         while (true) {
             try {
-                System.out.print("> ");
+                printMessage("> ");
                 int val = Integer.parseInt(scanner.nextLine());
                 if (val >= min && val <= max)
                     return val;
@@ -111,10 +112,10 @@ public class BookAppointmentViewCli implements View {
     private LocalDate readDate(String prompt) {
         while (true) {
             try {
-                System.out.print(prompt);
+                printMessage(prompt);
                 String input = scanner.nextLine();
                 return LocalDate.parse(input, dateFormatter);
-            } catch (DateTimeParseException e) {
+            } catch (DateTimeParseException _) {
                 printMessage("Formato data non valido. Usa GG/MM/AAAA.");
             }
         }
@@ -123,10 +124,10 @@ public class BookAppointmentViewCli implements View {
     private LocalTime readTime(String prompt) {
         while (true) {
             try {
-                System.out.print(prompt);
+                printMessage(prompt);
                 String input = scanner.nextLine();
                 return LocalTime.parse(input, timeFormatter);
-            } catch (DateTimeParseException e) {
+            } catch (DateTimeParseException _) {
                 printMessage("Formato orario non valido. Usa HH:mm (es. 14:30).");
             }
         }

@@ -4,6 +4,7 @@ import java.io.Serializable; // Importa interfaccia per rendere l'oggetto serial
 
 // Classe Model (Entity) che rappresenta i dati di configurazione
 // Implementa Serializable per permettere la persistenza dello stato se necessario
+@SuppressWarnings("java:S6548")
 public class StartupSettingsEntity implements Serializable {
     // Identificativo univoco per la serializzazione, garantisce compatibilità tra
     // versioni

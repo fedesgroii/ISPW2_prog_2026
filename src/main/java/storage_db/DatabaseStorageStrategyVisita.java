@@ -23,6 +23,7 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
     private static final String UPDATE_QUERY = "UPDATE visite SET specialista = ?, tipo_visita = ?, motivo_visita = ?, stato = ? WHERE paziente_codice_fiscale = ? AND data = ? AND orario = ?";
     private static final String DELETE_QUERY = "DELETE FROM visite WHERE paziente_codice_fiscale = ? AND data = ? AND orario = ?";
     private static final String SELECT_ALL_QUERY = "SELECT paziente_codice_fiscale, data, orario, specialista, tipo_visita, motivo_visita, stato FROM visite";
+    private static final String SELECT_BY_DATE_AND_SPEC_QUERY = "SELECT paziente_codice_fiscale, data, orario, specialista, tipo_visita, motivo_visita, stato FROM visite WHERE data=? AND specialista=?";
 
     @Override
     public boolean salva(Visita visita) {
@@ -108,6 +109,23 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
         return visite;
     }
 
+    public List<Visita> findByDateAndSpecialist(LocalDate data, String specialista) {
+        List<Visita> visite = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(SELECT_BY_DATE_AND_SPEC_QUERY)) {
+            stmt.setObject(1, data);
+            stmt.setString(2, specialista);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    visite.add(mapResultSetToVisita(rs, null));
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Errore durante il recupero delle visite per data e specialista", e);
+        }
+        return visite;
+    }
+
     private void setKeyParameters(PreparedStatement stmt, int startIndex, Visita visita) throws SQLException {
         stmt.setString(startIndex, visita.getPaziente().getCodiceFiscalePaziente());
         stmt.setObject(startIndex + 1, visita.getData());
@@ -117,7 +135,11 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
     private Visita mapResultSetToVisita(ResultSet rs, Paziente paziente) throws SQLException {
         return new Visita(
                 (paziente != null) ? paziente
-                        : new Paziente.Builder().codiceFiscalePaziente(rs.getString("paziente_codice_fiscale")).build(),
+                        : new Paziente.Builder()
+                                .codiceFiscalePaziente(rs.getString("paziente_codice_fiscale"))
+                                .email("placeholder@email.com") // Mandatory fields for Builder
+                                .password("placeholder")
+                                .build(),
                 rs.getObject("data", LocalDate.class),
                 rs.getObject("orario", LocalTime.class),
                 rs.getString("specialista"),

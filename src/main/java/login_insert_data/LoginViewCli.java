@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class LoginViewCli implements View {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger
             .getLogger(LoginViewCli.class.getName());
-    private LoginController appController;
+
     private final String tipo;
 
     public LoginViewCli(String tipo) {
@@ -25,10 +25,7 @@ public class LoginViewCli implements View {
         LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering LoginViewCli.show for tipo: %s",
                 Thread.currentThread().getName(), tipo));
 
-        if (appController == null) {
-            appController = new LoginController(config);
-        }
-
+        LoginGraphicControllerCli grafCon = new LoginGraphicControllerCli(config);
         Scanner scanner = ConsoleScanner.getScanner();
         boolean authenticated = false;
 
@@ -43,36 +40,8 @@ public class LoginViewCli implements View {
             printMessage("Password: ");
             String password = scanner.nextLine();
 
-            LoginBean bean = new LoginBean(email, password);
-            authentication.AuthenticationResult result = appController.authenticate(bean);
-
-            if (result.isSuccess()) {
-                LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Login CLI successful for %s",
-                        Thread.currentThread().getName(), email));
-                printMessage("\n[SUCCESS] Login effettuato con successo come " + result.getUserType() + "!");
-
-                // Avvio sessione (il LoginController gestisce la sessione)
-                appController.startUserSession(result);
-
-                // Navigazione verso la dashboard CLI appropriata
-                String dashboardView = "Patient".equals(result.getUserType())
-                        ? "PatientDashboard"
-                        : "SpecialistDashboard";
-
-                LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Navigazione CLI verso Dashboard %s",
-                        Thread.currentThread().getName(), dashboardView));
-
-                navigation.ViewFactory factory = new navigation.CliViewFactory();
-                navigation.AppNavigator navigator = new navigation.AppNavigator(factory);
-                navigator.navigateTo(dashboardView, config, null);
-
-                authenticated = true;
-                // Dashboard navigation completed
-            } else {
-                LOGGER.warning(() -> String.format("[DEBUG][Thread: %s] Login CLI failed for %s: %s",
-                        Thread.currentThread().getName(), email, result.getErrorMessage()));
-                printMessage("\n[ERROR] Login fallito: " + result.getErrorMessage() + ". Riprova.");
-            }
+            // Delega la logica al Controller Grafico
+            authenticated = grafCon.handleLogin(email, password, config);
         }
     }
 

@@ -3,7 +3,6 @@ package patient_dashboard.book_appointment;
 import model.Paziente;
 import navigation.View;
 import startupconfig.StartupConfigBean;
-import patient_dashboard.PatientDashboardController;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -15,8 +14,7 @@ import java.util.Scanner;
  * Interactive terminal interface that mimics the GUI fields.
  */
 public class BookAppointmentViewCli implements View {
-    private final BookAppointmentControllerApp appController = new BookAppointmentControllerApp();
-    private final PatientDashboardController dashboardController = new PatientDashboardController();
+    private final BookAppointmentGraphicControllerCli graphicController = new BookAppointmentGraphicControllerCli();
     private final Scanner scanner = new Scanner(System.in);
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -26,7 +24,6 @@ public class BookAppointmentViewCli implements View {
         printMessage("\n--- MindLab: Prenotazione Visita ---");
 
         try {
-            Paziente loggedPatient = dashboardController.getLoggedPatient();
             BookAppointmentBean bean = new BookAppointmentBean();
 
             // 1. Service Type
@@ -37,7 +34,7 @@ public class BookAppointmentViewCli implements View {
             bean.setServiceType(choice == 1 ? "Online" : "In presenza");
 
             // 2. Details
-            java.util.List<model.Specialista> specialists = appController.getAvailableSpecialists(config);
+            java.util.List<model.Specialista> specialists = graphicController.getAvailableSpecialists(config);
             printMessage("Seleziona specialista:");
             if (specialists.isEmpty()) {
                 printMessage("[WARNING] Nessun specialista trovato nel sistema.");
@@ -58,25 +55,42 @@ public class BookAppointmentViewCli implements View {
             bean.setReason(scanner.nextLine());
 
             // 3. Date & Time
-            bean.setDate(readDate("Data della visita (GG/MM/AAAA): "));
-            bean.setTime(readTime("Orario della visita (HH:mm): "));
+            LocalDate selectedDate = readDate("Data della visita (GG/MM/AAAA): ");
+            bean.setDate(selectedDate);
 
-            // 4. Confirm personal details
-            printMessage("\nConferma dati personali di " + loggedPatient.getNome() + " "
-                    + loggedPatient.getCognome() + "? (S/N)");
+            LocalTime selectedTime = selectSlot(selectedDate, bean.getSpecialist());
+            if (selectedTime == null) {
+                printMessage("\n[INFO] Operazione annullata.");
+                return;
+            }
+            bean.setTime(selectedTime);
+
+            // 4. Personal details (Confirmation or new)
+            printMessage("\nDati Personali:");
+            Paziente loggedPatient = graphicController.getLoggedPatient();
+            printMessage("Conferma dati di " + loggedPatient.getNome() + " " + loggedPatient.getCognome() + "? (S/N)");
             String confirm = scanner.nextLine();
             if (confirm.equalsIgnoreCase("S") || confirm.isEmpty()) {
                 bean.setName(loggedPatient.getNome());
                 bean.setSurname(loggedPatient.getCognome());
+                bean.setEmail(loggedPatient.getEmail());
+                bean.setPhone(loggedPatient.getNumeroTelefonico());
+                bean.setDateOfBirth(loggedPatient.getDataDiNascita().format(dateFormatter));
             } else {
                 printMessage("Inserisci nome: ");
                 bean.setName(scanner.nextLine());
                 printMessage("Inserisci cognome: ");
                 bean.setSurname(scanner.nextLine());
+                printMessage("Inserisci email: ");
+                bean.setEmail(scanner.nextLine());
+                printMessage("Inserisci telefono: ");
+                bean.setPhone(scanner.nextLine());
+                printMessage("Inserisci data di nascita (GG/MM/AAAA): ");
+                bean.setDateOfBirth(scanner.nextLine());
             }
 
             // 5. Submit
-            String result = appController.bookAppointment(bean, loggedPatient);
+            String result = graphicController.bookAppointment(bean);
             if ("SUCCESS".equals(result)) {
                 printMessage("\n[SUCCESSO] Visita prenotata correttamente!");
             } else {
@@ -114,23 +128,47 @@ public class BookAppointmentViewCli implements View {
             try {
                 printMessage(prompt);
                 String input = scanner.nextLine();
-                return LocalDate.parse(input, dateFormatter);
+                LocalDate date = LocalDate.parse(input, dateFormatter);
+
+                BookAppointmentBean tempBean = new BookAppointmentBean();
+                tempBean.setDate(date);
+                String error = graphicController.validateDate(tempBean);
+                if (error != null) {
+                    printMessage("[errore] " + error);
+                    continue;
+                }
+                return date;
             } catch (DateTimeParseException _) {
                 printMessage("Formato data non valido. Usa GG/MM/AAAA.");
             }
         }
     }
 
-    private LocalTime readTime(String prompt) {
-        while (true) {
-            try {
-                printMessage(prompt);
-                String input = scanner.nextLine();
-                return LocalTime.parse(input, timeFormatter);
-            } catch (DateTimeParseException _) {
-                printMessage("Formato orario non valido. Usa HH:mm (es. 14:30).");
-            }
+    private LocalTime selectSlot(LocalDate date, String specialistId) {
+        printMessage("Caricamento orari disponibili...");
+        BookAppointmentBean tempBean = new BookAppointmentBean();
+        tempBean.setDate(date);
+        tempBean.setSpecialist(specialistId);
+
+        java.util.List<LocalTime> slots = graphicController.getAvailableSlots(tempBean);
+
+        if (slots.isEmpty()) {
+            printMessage("[ATTENZIONE] Nessun orario disponibile per questa data e specialista.");
+            printMessage("Seleziona un'altra data o specialista.");
+            return null;
         }
+
+        printMessage("Orari disponibili:");
+        for (int i = 0; i < slots.size(); i++) {
+            printMessage(String.format("%d) %s", i + 1, slots.get(i).format(timeFormatter)));
+        }
+        printMessage(String.format("%d) Annulla e torna alla dashboard", slots.size() + 1));
+
+        int choice = readInt(1, slots.size() + 1);
+        if (choice > slots.size())
+            return null;
+
+        return slots.get(choice - 1);
     }
 
     /**

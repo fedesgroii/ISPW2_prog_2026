@@ -15,9 +15,14 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import navigation.View;
 import startupconfig.StartupConfigBean;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * GUI Boundary for booking an appointment.
@@ -25,8 +30,8 @@ import java.util.logging.Logger;
  */
 public class BookAppointmentViewGui implements View {
     private static final Logger LOGGER = Logger.getLogger(BookAppointmentViewGui.class.getName());
-    private final BookAppointmentGraphicController graphicController = new BookAppointmentGraphicController();
-    private final BookAppointmentControllerApp appController = new BookAppointmentControllerApp();
+    private static final String CSS_PATH = "/style/style_prenotazione_visita_view_a_colori.css";
+    private final BookAppointmentGraphicControllerGui graphicController = new BookAppointmentGraphicControllerGui();
 
     @Override
     public void show(Stage stage, StartupConfigBean config) {
@@ -42,6 +47,16 @@ public class BookAppointmentViewGui implements View {
         rootContent.setAlignment(Pos.TOP_CENTER);
         rootContent.setSpacing(15);
 
+        // Fluid Transition: Swap root if scene exists, otherwise create new Scene
+        if (stage.getScene() == null) {
+            Scene scene = new Scene(rootContent, 800, 750);
+            loadStyleSheet(scene);
+            stage.setScene(scene);
+        } else {
+            stage.getScene().setRoot(rootContent);
+            loadStyleSheet(stage.getScene());
+        }
+
         // Header mimicking HTML
         VBox header = createHeader();
 
@@ -56,8 +71,8 @@ public class BookAppointmentViewGui implements View {
         formContainer.setStyle(
                 "-fx-background-color: white; -fx-border-color: #e5e7eb; -fx-border-radius: 12; -fx-background-radius: 12;");
 
-        // Fetch specialists from controller
-        java.util.List<model.Specialista> availableSpecialists = appController.getAvailableSpecialists(config);
+        // Fetch specialists from graphic controller
+        java.util.List<model.Specialista> availableSpecialists = graphicController.getAvailableSpecialists(config);
 
         // Fields
         ComboBox<String> serviceTypeCombo = new ComboBox<>();
@@ -92,8 +107,66 @@ public class BookAppointmentViewGui implements View {
         DatePicker datePicker = new DatePicker();
         datePicker.setMaxWidth(Double.MAX_VALUE);
         datePicker.setPromptText("Scegli la data");
+        // Disabilita weekend e festivi
+        datePicker.setDayCellFactory(_ -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null) {
+                    BookAppointmentBean tempBean = new BookAppointmentBean();
+                    tempBean.setDate(item);
+                    if (empty || graphicController.validateDate(tempBean) != null) {
+                        setDisable(true);
+                        setStyle("-fx-background-color: #8a3737;");
+                    }
+                }
+            }
+        });
 
-        TextField timeField = createTextField("Orario (HH:mm)");
+        ComboBox<String> timeCombo = new ComboBox<>();
+        timeCombo.setMaxWidth(Double.MAX_VALUE);
+        timeCombo.setPromptText("Scegli prima data e specialista");
+        timeCombo.setDisable(true);
+
+        // Listener per caricamento orari
+        Runnable updateSlots = () -> {
+            LocalDate date = datePicker.getValue();
+            model.Specialista specialist = specialistCombo.getValue();
+            if (date != null && specialist != null) {
+                timeCombo.setDisable(true);
+                timeCombo.getItems().clear();
+                timeCombo.setPromptText("Caricamento...");
+
+                BookAppointmentBean tempBean = new BookAppointmentBean();
+                tempBean.setDate(date);
+                tempBean.setSpecialist(specialist.getNome() + " " + specialist.getCognome());
+
+                CompletableFuture
+                        .supplyAsync(() -> graphicController.getAvailableSlots(tempBean))
+                        .thenAccept(slots -> Platform.runLater(() -> {
+                            if (slots.isEmpty()) {
+                                timeCombo.setPromptText("Nessun orario disponibile");
+                            } else {
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                                List<String> formattedSlots = slots.stream().map(s -> s.format(formatter))
+                                        .collect(Collectors.toList());
+                                timeCombo.getItems().setAll(formattedSlots);
+                                timeCombo.setDisable(false);
+                                timeCombo.setPromptText("Seleziona orario");
+                            }
+                        }))
+                        .exceptionally(ex -> {
+                            Platform.runLater(() -> {
+                                timeCombo.setPromptText("Errore nel caricamento");
+                                LOGGER.severe(() -> "Async slot loading failed: " + ex.getMessage());
+                            });
+                            return null;
+                        });
+            }
+        };
+
+        datePicker.valueProperty().addListener((_, _, _) -> updateSlots.run());
+        specialistCombo.valueProperty().addListener((_, _, _) -> updateSlots.run());
 
         // Layout
         formContainer.getChildren().addAll(
@@ -105,7 +178,7 @@ public class BookAppointmentViewGui implements View {
                 createLabel("Telefono"), phoneField,
                 createLabel("Email"), emailField,
                 createLabel("Data Visita"), datePicker,
-                createLabel("Orario Visita"), timeField,
+                createLabel("Orario Visita"), timeCombo,
                 createLabel("Motivo"), reasonField);
 
         // Buttons
@@ -132,8 +205,9 @@ public class BookAppointmentViewGui implements View {
             bean.setReason(reasonField.getText());
             bean.setDate(datePicker.getValue());
             try {
-                if (timeField.getText() != null && !timeField.getText().isEmpty()) {
-                    bean.setTime(LocalTime.parse(timeField.getText()));
+                String timeStr = timeCombo.getValue();
+                if (timeStr != null && !timeStr.isEmpty()) {
+                    bean.setTime(LocalTime.parse(timeStr));
                 }
             } catch (DateTimeParseException _) {
                 // Controller will handle validation error
@@ -153,18 +227,21 @@ public class BookAppointmentViewGui implements View {
         scrollPane.setContent(centeredWrapper);
         rootContent.getChildren().addAll(header, scrollPane);
 
-        // Fluid Transition: Swap root if scene exists, otherwise create new Scene
-        if (stage.getScene() == null) {
-            Scene scene = new Scene(rootContent, 800, 750);
-            stage.setScene(scene);
-        } else {
-            stage.getScene().setRoot(rootContent);
-        }
-
         stage.setTitle("MindLab - Prenotazione");
         stage.setFullScreen(true);
         stage.setFullScreenExitHint("");
         stage.show();
+    }
+
+    private void loadStyleSheet(Scene scene) {
+        try {
+            String styleSheet = java.util.Objects.requireNonNull(
+                    getClass().getResource(CSS_PATH),
+                    "Resource non trovata: " + CSS_PATH).toExternalForm();
+            scene.getStylesheets().add(styleSheet);
+        } catch (Exception e) {
+            LOGGER.warning("Impossibile caricare il CSS: " + CSS_PATH + ". Errore: " + e.getMessage());
+        }
     }
 
     private VBox createHeader() {

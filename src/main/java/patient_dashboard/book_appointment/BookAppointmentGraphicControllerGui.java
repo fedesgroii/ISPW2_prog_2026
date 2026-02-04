@@ -6,7 +6,10 @@ import navigation.AppNavigator;
 import navigation.GuiViewFactory;
 import startupconfig.StartupConfigBean;
 import model.Paziente;
+import model.Specialista;
 import patient_dashboard.PatientDashboardController;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -14,13 +17,13 @@ import java.util.logging.Logger;
  * Handles data collection from the UI, communication with the App Controller,
  * and navigation.
  */
-public class BookAppointmentGraphicController {
-    private static final Logger LOGGER = Logger.getLogger(BookAppointmentGraphicController.class.getName());
+public class BookAppointmentGraphicControllerGui {
+    private static final Logger LOGGER = Logger.getLogger(BookAppointmentGraphicControllerGui.class.getName());
     private final BookAppointmentControllerApp appController = new BookAppointmentControllerApp();
     private final PatientDashboardController dashboardController = new PatientDashboardController();
 
     public void bookAppointment(BookAppointmentBean bean, StartupConfigBean config, Stage stage) {
-        LOGGER.info("[DEBUG] BookAppointmentGraphicController.bookAppointment called");
+        LOGGER.info("[DEBUG] BookAppointmentGraphicControllerGui.bookAppointment called");
 
         try {
             // Get the logged-in patient
@@ -39,6 +42,18 @@ public class BookAppointmentGraphicController {
             LOGGER.severe("[DEBUG] Error during booking: " + e.getMessage());
             showErrorAlert("Errore", "Si è verificato un errore imprevisto: " + e.getMessage());
         }
+    }
+
+    public List<Specialista> getAvailableSpecialists(StartupConfigBean config) {
+        return appController.getAvailableSpecialists(config);
+    }
+
+    public List<LocalTime> getAvailableSlots(BookAppointmentBean bean) {
+        return appController.getAvailableSlots(bean);
+    }
+
+    public String validateDate(BookAppointmentBean bean) {
+        return appController.validateDate(bean);
     }
 
     public void navigateToDashboard(StartupConfigBean config, Stage stage) {

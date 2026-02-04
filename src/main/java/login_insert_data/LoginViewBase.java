@@ -24,7 +24,7 @@ public abstract class LoginViewBase implements View {
     private static final String CSS_PATH = "/style/style_login_insert_specialist_a_colori.css";
     private static final int ERROR_TIMEOUT_SECONDS = 5;
 
-    private final LoginGraphicController grafCon = new LoginGraphicController(this);
+    private final LoginGraphicControllerGui grafCon = new LoginGraphicControllerGui(this);
     private Text errorText;
     private TextField emailField;
     private PasswordField passwordField;

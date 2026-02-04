@@ -106,3 +106,8 @@
 #backButton:hover {
     -fx-background-color: #c0392b;
 }
+
+/* Fix DatePicker Popup month/year label being white and invisible */
+.date-picker-popup > .month-year-pane > .label {
+    -fx-text-fill: #111111; /* Nero per visibilità */
+}

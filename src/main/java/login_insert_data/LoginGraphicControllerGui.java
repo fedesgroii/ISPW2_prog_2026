@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 /**
  * Controller Grafico per la gestione dell'inserimento dati di login.
  */
-public class LoginGraphicController {
-        private static final Logger LOGGER = Logger.getLogger(LoginGraphicController.class.getName());
+public class LoginGraphicControllerGui {
+        private static final Logger LOGGER = Logger.getLogger(LoginGraphicControllerGui.class.getName());
         private LoginController appController; // Changed to non-final
         private final LoginViewBase guiView;
 
@@ -20,7 +20,7 @@ public class LoginGraphicController {
         private static final String USER_TYPE_PATIENT = "Patient";
         private static final String USER_TYPE_SPECIALIST = "Specialist";
 
-        public LoginGraphicController(LoginViewBase guiView) {
+        public LoginGraphicControllerGui(LoginViewBase guiView) {
                 this.guiView = guiView;
                 // appController initialization removed from constructor
         }

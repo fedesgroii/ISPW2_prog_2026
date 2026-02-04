@@ -4,6 +4,8 @@ import authentication.UserDAO;
 import authentication.dao.DatabaseUserDAO;
 import authentication.dao.FileUserDAO;
 import authentication.dao.InMemoryUserDAO;
+import patient_dashboard.book_appointment.AppointmentDAO;
+import patient_dashboard.book_appointment.AppointmentRepository;
 import model.Paziente;
 import model.Specialista;
 import startupconfig.StartupConfigBean;
@@ -50,21 +52,24 @@ public class DAOFactory {
                                                                 .getObservableListaPazienti()),
                                                 new InMemoryUserDAO<>(
                                                                 ListaSpecialisti.getIstanzaListaSpecialisti()
-                                                                                .getObservableListaSpecialisti()));
+                                                                                .getObservableListaSpecialisti()),
+                                                new AppointmentDAO(0));
 
                         case 1: // Database
                                 LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Creating Database DAOs",
                                                 Thread.currentThread().getName()));
                                 return new DAOPair(
                                                 new DatabaseUserDAO<>(new DatabaseStorageStrategyPaziente()),
-                                                new DatabaseUserDAO<>(new DatabaseStorageStrategySpecialista()));
+                                                new DatabaseUserDAO<>(new DatabaseStorageStrategySpecialista()),
+                                                new AppointmentDAO(1));
 
                         case 2: // File
                                 LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Creating File DAOs",
                                                 Thread.currentThread().getName()));
                                 return new DAOPair(
                                                 new FileUserDAO<>(new FileManagerPazienti()),
-                                                new FileUserDAO<>(new FileManagerSpecialisti()));
+                                                new FileUserDAO<>(new FileManagerSpecialisti()),
+                                                new AppointmentDAO(2));
 
                         default:
                                 LOGGER.severe(() -> String.format("[DEBUG][Thread: %s] Invalid storage option: %d",
@@ -80,10 +85,12 @@ public class DAOFactory {
         public static class DAOPair {
                 public final UserDAO<Paziente> pazienteDAO;
                 public final UserDAO<Specialista> specialistaDAO;
+                public final AppointmentRepository appointmentRepository;
 
-                public DAOPair(UserDAO<Paziente> pDAO, UserDAO<Specialista> sDAO) {
+                public DAOPair(UserDAO<Paziente> pDAO, UserDAO<Specialista> sDAO, AppointmentRepository aRepo) {
                         this.pazienteDAO = pDAO;
                         this.specialistaDAO = sDAO;
+                        this.appointmentRepository = aRepo;
                 }
         }
 }

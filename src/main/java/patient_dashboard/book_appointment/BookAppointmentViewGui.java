@@ -22,7 +22,6 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * GUI Boundary for booking an appointment.
@@ -47,54 +46,30 @@ public class BookAppointmentViewGui implements View {
         rootContent.setAlignment(Pos.TOP_CENTER);
         rootContent.setSpacing(15);
 
-        // Fluid Transition: Swap root if scene exists, otherwise create new Scene
-        if (stage.getScene() == null) {
-            Scene scene = new Scene(rootContent, 800, 750);
-            loadStyleSheet(scene);
-            stage.setScene(scene);
-        } else {
-            stage.getScene().setRoot(rootContent);
-            loadStyleSheet(stage.getScene());
-        }
+        setupScene(stage, rootContent);
 
-        // Header mimicking HTML
+        // Header
         VBox header = createHeader();
 
-        // Form mimicking HTML structure
+        // Form
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0;");
 
         VBox formContainer = new VBox(12);
         formContainer.setPadding(new Insets(20, 40, 20, 40));
-        formContainer.setMaxWidth(460); // Reduced size for better look
+        formContainer.setMaxWidth(460);
         formContainer.setStyle(
                 "-fx-background-color: white; -fx-border-color: #e5e7eb; -fx-border-radius: 12; -fx-background-radius: 12;");
 
-        // Fetch specialists from graphic controller
-        java.util.List<model.Specialista> availableSpecialists = graphicController.getAvailableSpecialists(config);
-
-        // Fields
+        // UI Components
         ComboBox<String> serviceTypeCombo = new ComboBox<>();
         serviceTypeCombo.getItems().addAll("Online", "In presenza");
         serviceTypeCombo.setPromptText("Seleziona un'opzione...");
         serviceTypeCombo.setMaxWidth(Double.MAX_VALUE);
 
-        ComboBox<model.Specialista> specialistCombo = new ComboBox<>();
-        specialistCombo.getItems().addAll(availableSpecialists);
-        specialistCombo.setPromptText("Seleziona uno specialista...");
-        specialistCombo.setMaxWidth(Double.MAX_VALUE);
-        specialistCombo.setConverter(new javafx.util.StringConverter<model.Specialista>() {
-            @Override
-            public String toString(model.Specialista s) {
-                return (s == null) ? "" : s.getNome() + " " + s.getCognome() + " (" + s.getSpecializzazione() + ")";
-            }
-
-            @Override
-            public model.Specialista fromString(String string) {
-                return null; // Not needed for read-only ComboBox
-            }
-        });
+        ComboBox<model.Specialista> specialistCombo = createSpecialistCombo(
+                graphicController.getAvailableSpecialists(config));
 
         TextField nameField = createTextField("Nome");
         TextField surnameField = createTextField("Cognome");
@@ -103,72 +78,14 @@ public class BookAppointmentViewGui implements View {
         TextField emailField = createTextField("E-mail");
         TextField reasonField = createTextField("Motivo visita (facoltativo)");
 
-        // Additional fields for Visita model (needed for functional booking)
-        DatePicker datePicker = new DatePicker();
-        datePicker.setMaxWidth(Double.MAX_VALUE);
-        datePicker.setPromptText("Scegli la data");
-        // Disabilita weekend e festivi
-        datePicker.setDayCellFactory(_ -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item != null) {
-                    BookAppointmentBean tempBean = new BookAppointmentBean();
-                    tempBean.setDate(item);
-                    if (empty || graphicController.validateDate(tempBean) != null) {
-                        setDisable(true);
-                        setStyle("-fx-background-color: #8a3737;");
-                    }
-                }
-            }
-        });
-
+        DatePicker datePicker = createDatePicker();
         ComboBox<String> timeCombo = new ComboBox<>();
         timeCombo.setMaxWidth(Double.MAX_VALUE);
         timeCombo.setPromptText("Scegli prima data e specialista");
         timeCombo.setDisable(true);
 
-        // Listener per caricamento orari
-        Runnable updateSlots = () -> {
-            LocalDate date = datePicker.getValue();
-            model.Specialista specialist = specialistCombo.getValue();
-            if (date != null && specialist != null) {
-                timeCombo.setDisable(true);
-                timeCombo.getItems().clear();
-                timeCombo.setPromptText("Caricamento...");
+        setupSlotUpdateListener(datePicker, specialistCombo, timeCombo);
 
-                BookAppointmentBean tempBean = new BookAppointmentBean();
-                tempBean.setDate(date);
-                tempBean.setSpecialist(specialist.getNome() + " " + specialist.getCognome());
-
-                CompletableFuture
-                        .supplyAsync(() -> graphicController.getAvailableSlots(tempBean))
-                        .thenAccept(slots -> Platform.runLater(() -> {
-                            if (slots.isEmpty()) {
-                                timeCombo.setPromptText("Nessun orario disponibile");
-                            } else {
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-                                List<String> formattedSlots = slots.stream().map(s -> s.format(formatter))
-                                        .collect(Collectors.toList());
-                                timeCombo.getItems().setAll(formattedSlots);
-                                timeCombo.setDisable(false);
-                                timeCombo.setPromptText("Seleziona orario");
-                            }
-                        }))
-                        .exceptionally(ex -> {
-                            Platform.runLater(() -> {
-                                timeCombo.setPromptText("Errore nel caricamento");
-                                LOGGER.severe(() -> "Async slot loading failed: " + ex.getMessage());
-                            });
-                            return null;
-                        });
-            }
-        };
-
-        datePicker.valueProperty().addListener((_, _, _) -> updateSlots.run());
-        specialistCombo.valueProperty().addListener((_, _, _) -> updateSlots.run());
-
-        // Layout
         formContainer.getChildren().addAll(
                 createLabel("Tipo di prestazione"), serviceTypeCombo,
                 createLabel("Specialista"), specialistCombo,
@@ -190,39 +107,15 @@ public class BookAppointmentViewGui implements View {
         Button submitButton = DashboardStyleHelper.createStyledButton("Prenota ora", true);
 
         cancelButton.setOnAction(_ -> graphicController.navigateToDashboard(config, stage));
-        submitButton.setOnAction(_ -> {
-            BookAppointmentBean bean = new BookAppointmentBean();
-            bean.setServiceType(serviceTypeCombo.getValue());
-            model.Specialista selectedSpec = specialistCombo.getValue();
-            if (selectedSpec != null) {
-                bean.setSpecialist(selectedSpec.getNome() + " " + selectedSpec.getCognome());
-            }
-            bean.setName(nameField.getText());
-            bean.setSurname(surnameField.getText());
-            bean.setDateOfBirth(dobField.getText());
-            bean.setPhone(phoneField.getText());
-            bean.setEmail(emailField.getText());
-            bean.setReason(reasonField.getText());
-            bean.setDate(datePicker.getValue());
-            try {
-                String timeStr = timeCombo.getValue();
-                if (timeStr != null && !timeStr.isEmpty()) {
-                    bean.setTime(LocalTime.parse(timeStr));
-                }
-            } catch (DateTimeParseException _) {
-                // Controller will handle validation error
-            }
-
-            graphicController.bookAppointment(bean, config, stage);
-        });
+        submitButton.setOnAction(_ -> handleBookingSubmit(serviceTypeCombo, specialistCombo, nameField, surnameField,
+                dobField, phoneField, emailField, reasonField, datePicker, timeCombo, config, stage));
 
         buttonBox.getChildren().addAll(cancelButton, submitButton);
         formContainer.getChildren().add(buttonBox);
 
-        // Center the form container horizontally
         StackPane centeredWrapper = new StackPane(formContainer);
         centeredWrapper.setAlignment(Pos.CENTER);
-        centeredWrapper.setPadding(new Insets(0, 0, 40, 0)); // Bottom margin
+        centeredWrapper.setPadding(new Insets(0, 0, 40, 0));
 
         scrollPane.setContent(centeredWrapper);
         rootContent.getChildren().addAll(header, scrollPane);
@@ -231,6 +124,128 @@ public class BookAppointmentViewGui implements View {
         stage.setFullScreen(true);
         stage.setFullScreenExitHint("");
         stage.show();
+    }
+
+    private void setupScene(Stage stage, VBox rootContent) {
+        if (stage.getScene() == null) {
+            Scene scene = new Scene(rootContent, 800, 750);
+            loadStyleSheet(scene);
+            stage.setScene(scene);
+        } else {
+            stage.getScene().setRoot(rootContent);
+            loadStyleSheet(stage.getScene());
+        }
+    }
+
+    private ComboBox<model.Specialista> createSpecialistCombo(List<model.Specialista> specialists) {
+        ComboBox<model.Specialista> combo = new ComboBox<>();
+        combo.getItems().addAll(specialists);
+        combo.setPromptText("Seleziona uno specialista...");
+        combo.setMaxWidth(Double.MAX_VALUE);
+        combo.setConverter(new javafx.util.StringConverter<>() {
+            @Override
+            public String toString(model.Specialista s) {
+                return (s == null) ? "" : s.getNome() + " " + s.getCognome() + " (" + s.getSpecializzazione() + ")";
+            }
+
+            @Override
+            public model.Specialista fromString(String string) {
+                return null;
+            }
+        });
+        return combo;
+    }
+
+    private DatePicker createDatePicker() {
+        DatePicker dp = new DatePicker();
+        dp.setMaxWidth(Double.MAX_VALUE);
+        dp.setPromptText("Scegli la data");
+        dp.setDayCellFactory(_ -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null) {
+                    BookAppointmentBean tempBean = new BookAppointmentBean();
+                    tempBean.setDate(item);
+                    if (empty || graphicController.validateDate(tempBean) != null) {
+                        setDisable(true);
+                        setStyle("-fx-background-color: #8a3737;");
+                    }
+                }
+            }
+        });
+        return dp;
+    }
+
+    private void setupSlotUpdateListener(DatePicker datePicker, ComboBox<model.Specialista> specialistCombo,
+            ComboBox<String> timeCombo) {
+        Runnable updateSlots = () -> {
+            LocalDate date = datePicker.getValue();
+            model.Specialista specialist = specialistCombo.getValue();
+            if (date != null && specialist != null) {
+                timeCombo.setDisable(true);
+                timeCombo.getItems().clear();
+                timeCombo.setPromptText("Caricamento...");
+
+                BookAppointmentBean tempBean = new BookAppointmentBean();
+                tempBean.setDate(date);
+                tempBean.setSpecialist(specialist.getNome() + " " + specialist.getCognome());
+
+                CompletableFuture
+                        .supplyAsync(() -> graphicController.getAvailableSlots(tempBean))
+                        .thenAccept(slots -> Platform.runLater(() -> {
+                            if (slots.isEmpty()) {
+                                timeCombo.setPromptText("Nessun orario disponibile");
+                            } else {
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                                List<String> formattedSlots = slots.stream().map(s -> s.format(formatter))
+                                        .toList();
+                                timeCombo.getItems().setAll(formattedSlots);
+                                timeCombo.setDisable(false);
+                                timeCombo.setPromptText("Seleziona orario");
+                            }
+                        }))
+                        .exceptionally(ex -> {
+                            Platform.runLater(() -> {
+                                timeCombo.setPromptText("Errore nel caricamento");
+                                LOGGER.severe(() -> "Async slot loading failed: " + ex.getMessage());
+                            });
+                            return null;
+                        });
+            }
+        };
+        datePicker.valueProperty().addListener((_, _, _) -> updateSlots.run());
+        specialistCombo.valueProperty().addListener((_, _, _) -> updateSlots.run());
+    }
+
+    private void handleBookingSubmit(ComboBox<String> serviceTypeCombo, ComboBox<model.Specialista> specialistCombo,
+            TextField nameField, TextField surnameField, TextField dobField,
+            TextField phoneField, TextField emailField, TextField reasonField,
+            DatePicker datePicker, ComboBox<String> timeCombo,
+            StartupConfigBean config, Stage stage) {
+        BookAppointmentBean bean = new BookAppointmentBean();
+        bean.setServiceType(serviceTypeCombo.getValue());
+        model.Specialista selectedSpec = specialistCombo.getValue();
+        if (selectedSpec != null) {
+            bean.setSpecialist(selectedSpec.getNome() + " " + selectedSpec.getCognome());
+        }
+        bean.setName(nameField.getText());
+        bean.setSurname(surnameField.getText());
+        bean.setDateOfBirth(dobField.getText());
+        bean.setPhone(phoneField.getText());
+        bean.setEmail(emailField.getText());
+        bean.setReason(reasonField.getText());
+        bean.setDate(datePicker.getValue());
+        try {
+            String timeStr = timeCombo.getValue();
+            if (timeStr != null && !timeStr.isEmpty()) {
+                bean.setTime(LocalTime.parse(timeStr));
+            }
+        } catch (DateTimeParseException _) {
+            // Controller will handle validation error
+        }
+
+        graphicController.bookAppointment(bean, config, stage);
     }
 
     private void loadStyleSheet(Scene scene) {

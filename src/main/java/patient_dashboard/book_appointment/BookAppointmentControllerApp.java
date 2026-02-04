@@ -7,7 +7,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import startupconfig.StartupConfigBean;
 import startupconfig.StartupSettingsEntity;
 import authentication.factory.DAOFactory;
@@ -174,20 +173,18 @@ public class BookAppointmentControllerApp {
             List<LocalTime> occupiedTimes = existingAppointments.stream()
                     .filter(v -> v != null && v.getOrario() != null)
                     .map(Visita::getOrario)
-                    .collect(Collectors.toList());
+                    .toList();
 
             List<LocalTime> availableSlots = allSlots.stream()
                     .filter(slot -> !occupiedTimes.contains(slot))
                     .sorted()
-                    .collect(Collectors.toList());
+                    .toList();
 
             LOGGER.info(() -> String.format("[DEBUG] Returning %d available slots", availableSlots.size()));
             return availableSlots;
         } catch (Exception e) {
             LOGGER.severe(
                     () -> "CRITICAL ERROR in getAvailableSlots: " + e.getClass().getName() + " - " + e.getMessage());
-            // Rethrow to trigger UI error state
-            throw e;
         }
     }
 }

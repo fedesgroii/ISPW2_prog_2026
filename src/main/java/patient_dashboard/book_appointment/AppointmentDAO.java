@@ -6,7 +6,6 @@ import storage_file.FileManagerVisite;
 import storage_liste.ListaVisite;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of AppointmentRepository that acts as a bridge to
@@ -65,7 +64,7 @@ public class AppointmentDAO implements AppointmentRepository {
             return allVisite.stream()
                     .filter(v -> v.getData() != null && v.getData().equals(date) &&
                             v.getSpecialista() != null && v.getSpecialista().equals(specialistId))
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (Exception e) {
             LOGGER.severe(() -> "Error in findByDateAndSpecialist: " + e.getMessage());
             throw e;

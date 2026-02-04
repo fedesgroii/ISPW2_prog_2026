@@ -90,10 +90,4 @@ public class AppNavigator {
         LOGGER.info(() -> String.format(messageTemplate, allArgs));
     }
 
-    private Object[] combineArgs(String first, Object[] rest) {
-        Object[] all = new Object[rest.length + 1];
-        all[0] = first;
-        System.arraycopy(rest, 0, all, 1, rest.length);
-        return all;
-    }
 }

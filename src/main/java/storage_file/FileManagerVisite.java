@@ -21,6 +21,8 @@ import java.time.LocalTime;
 
 public class FileManagerVisite implements DataStorageStrategy<Visita> {
     private static final String DIRECTORY = "src/main/resources/visite_salvate/"; // Directory di salvataggio
+    private static final String JSON_EXTENSION = ".json";
+    private static final String ERR_DIR_NOT_FOUND = "Directory delle visite non trovata o non valida.";
     private final ObjectMapper objectMapper; // Gestore JSON
     private static final Logger logger = Logger.getLogger(FileManagerVisite.class.getName()); // Logger per debugging
     // Formati per data e ora
@@ -46,7 +48,7 @@ public class FileManagerVisite implements DataStorageStrategy<Visita> {
         }
         return visita.getPaziente().getCodiceFiscalePaziente() + "_" +
                 visita.getData().format(DATE_FORMAT) + "_" +
-                visita.getOrario().format(TIME_FORMAT) + ".json"; // Nome file univoco
+                visita.getOrario().format(TIME_FORMAT) + JSON_EXTENSION; // Nome file univoco
     }
 
     /**
@@ -142,7 +144,7 @@ public class FileManagerVisite implements DataStorageStrategy<Visita> {
     public List<Visita> trovaPerPaziente(String codiceFiscalePaziente) {
         File dir = new File(DIRECTORY);
         if (!dir.exists() || !dir.isDirectory()) {
-            logger.warning("Directory delle visite non trovata o non valida.");
+            logger.warning(ERR_DIR_NOT_FOUND);
             return List.of();
         }
         return Arrays.stream(Objects.requireNonNull(dir.listFiles()))
@@ -205,7 +207,7 @@ public class FileManagerVisite implements DataStorageStrategy<Visita> {
         synchronized (fileLock) {
             File dir = new File(DIRECTORY);
             if (!dir.exists() || !dir.isDirectory()) {
-                logger.warning("Directory delle visite non trovata o non valida.");
+                logger.warning(ERR_DIR_NOT_FOUND);
                 // Se la directory non esiste, possiamo considerare lo slot come disponibile
                 return true;
             }
@@ -214,7 +216,7 @@ public class FileManagerVisite implements DataStorageStrategy<Visita> {
             String dateStr = data.format(DATE_FORMAT);
             String timeStr = orario.format(TIME_FORMAT);
             // Il suffisso del file da cercare (es: _20250219_1530.json)
-            String suffix = "_" + dateStr + "_" + timeStr + ".json";
+            String suffix = "_" + dateStr + "_" + timeStr + JSON_EXTENSION;
 
             // Elenca tutti i file presenti nella directory
             File[] files = dir.listFiles();
@@ -237,7 +239,7 @@ public class FileManagerVisite implements DataStorageStrategy<Visita> {
     public List<Visita> getAllInstanceOfActor() {
         File dir = new File(DIRECTORY);
         if (!dir.exists() || !dir.isDirectory()) {
-            logger.warning("Directory delle visite non trovata o non valida.");
+            logger.warning(ERR_DIR_NOT_FOUND);
             return List.of();
         }
         File[] files = dir.listFiles();
@@ -245,7 +247,7 @@ public class FileManagerVisite implements DataStorageStrategy<Visita> {
             return List.of();
         }
         return Arrays.stream(files)
-                .filter(file -> file.getName().endsWith(".json"))
+                .filter(file -> file.getName().endsWith(JSON_EXTENSION))
                 .map(this::leggiFile)
                 .flatMap(Optional::stream)
                 .toList();

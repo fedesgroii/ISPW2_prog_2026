@@ -119,9 +119,9 @@ public class SpecialistDashboardView implements View {
                     Thread.currentThread().getName()));
 
         } catch (Exception e) {
-            LOGGER.severe(() -> String.format("[DEBUG][Thread: %s] Error displaying SpecialistDashboardView: %s",
-                    Thread.currentThread().getName(), e.getMessage()));
-            throw e;
+            String msg = String.format("Error displaying SpecialistDashboardView: %s", e.getMessage());
+            LOGGER.log(java.util.logging.Level.SEVERE, msg, e);
+            throw new IllegalStateException(msg, e);
         }
     }
 

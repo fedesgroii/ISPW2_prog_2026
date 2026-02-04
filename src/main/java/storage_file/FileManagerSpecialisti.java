@@ -202,7 +202,8 @@ public class FileManagerSpecialisti implements DataStorageStrategy<Specialista> 
             return Optional.empty();
         }
         File dir = new File(DIRECTORY);
-        logger.info("[DEBUG] Searching for email " + email + " in directory: " + dir.getAbsolutePath());
+        logger.log(Level.INFO, "[DEBUG] Searching for email {0} in directory: {1}",
+                new Object[] { email, dir.getAbsolutePath() });
 
         if (!dir.exists() || !dir.isDirectory()) {
             logger.warning("Directory degli specialisti non trovata o non valida: " + dir.getAbsolutePath());

@@ -27,8 +27,9 @@ public class PatientDashboardGraphicController {
             AppNavigator navigator = new AppNavigator(factory);
             navigator.navigateTo(viewName, config, currentStage);
         } catch (Exception e) {
-            LOGGER.severe(() -> String.format("Navigation to %s failed: %s", viewName, e.getMessage()));
-            throw e; // View will handle showing the alert
+            String message = String.format("Navigation to %s failed", viewName);
+            LOGGER.log(java.util.logging.Level.SEVERE, message, e);
+            throw new IllegalStateException(message, e);
         }
     }
 }

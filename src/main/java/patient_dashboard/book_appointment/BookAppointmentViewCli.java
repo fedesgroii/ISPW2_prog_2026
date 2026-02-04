@@ -23,24 +23,24 @@ public class BookAppointmentViewCli implements View {
 
     @Override
     public void show(javafx.stage.Stage stage, StartupConfigBean config) {
-        System.out.println("\n--- MindLab: Prenotazione Visita ---");
+        printMessage("\n--- MindLab: Prenotazione Visita ---");
 
         try {
             Paziente loggedPatient = dashboardController.getLoggedPatient();
             BookAppointmentBean bean = new BookAppointmentBean();
 
             // 1. Service Type
-            System.out.println("Seleziona tipo di prestazione:");
-            System.out.println("1) Online");
-            System.out.println("2) In presenza");
+            printMessage("Seleziona tipo di prestazione:");
+            printMessage("1) Online");
+            printMessage("2) In presenza");
             int choice = readInt(1, 2);
             bean.setServiceType(choice == 1 ? "Online" : "In presenza");
 
             // 2. Details
             java.util.List<model.Specialista> specialists = appController.getAvailableSpecialists(config);
-            System.out.println("Seleziona specialista:");
+            printMessage("Seleziona specialista:");
             if (specialists.isEmpty()) {
-                System.out.println("[WARNING] Nessun specialista trovato nel sistema.");
+                printMessage("[WARNING] Nessun specialista trovato nel sistema.");
                 System.out.print("Inserisci nome specialista manualmente: ");
                 bean.setSpecialist(scanner.nextLine());
             } else {
@@ -61,7 +61,7 @@ public class BookAppointmentViewCli implements View {
             bean.setTime(readTime("Orario della visita (HH:mm): "));
 
             // 4. Confirm personal details
-            System.out.println("\nConferma dati personali di " + loggedPatient.getNome() + " "
+            printMessage("\nConferma dati personali di " + loggedPatient.getNome() + " "
                     + loggedPatient.getCognome() + "? (S/N)");
             String confirm = scanner.nextLine();
             if (confirm.equalsIgnoreCase("S") || confirm.isEmpty()) {
@@ -77,10 +77,10 @@ public class BookAppointmentViewCli implements View {
             // 5. Submit
             String result = appController.bookAppointment(bean, loggedPatient);
             if ("SUCCESS".equals(result)) {
-                System.out.println("\n[SUCCESSO] Visita prenotata correttamente!");
+                printMessage("\n[SUCCESSO] Visita prenotata correttamente!");
             } else {
-                System.out.println("\n[ERRORE] " + result);
-                System.out.println("Premi invio per riprovare o digita 'esci' per annullare.");
+                printMessage("\n[ERRORE] " + result);
+                printMessage("Premi invio per riprovare o digita 'esci' per annullare.");
                 if (!scanner.nextLine().equalsIgnoreCase("esci")) {
                     show(stage, config);
                     return;
@@ -88,10 +88,10 @@ public class BookAppointmentViewCli implements View {
             }
 
         } catch (Exception e) {
-            System.out.println("[ERRORE] Si è verificato un errore: " + e.getMessage());
+            printMessage("[ERRORE] Si è verificato un errore: " + e.getMessage());
         }
 
-        System.out.println("\nRitorno alla Dashboard...");
+        printMessage("\nRitorno alla Dashboard...");
     }
 
     private int readInt(int min, int max) {
@@ -101,10 +101,10 @@ public class BookAppointmentViewCli implements View {
                 int val = Integer.parseInt(scanner.nextLine());
                 if (val >= min && val <= max)
                     return val;
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException _) {
                 // Ignore
             }
-            System.out.println("Inserimento non valido. Riprova.");
+            printMessage("Inserimento non valido. Riprova.");
         }
     }
 
@@ -115,7 +115,7 @@ public class BookAppointmentViewCli implements View {
                 String input = scanner.nextLine();
                 return LocalDate.parse(input, dateFormatter);
             } catch (DateTimeParseException e) {
-                System.out.println("Formato data non valido. Usa GG/MM/AAAA.");
+                printMessage("Formato data non valido. Usa GG/MM/AAAA.");
             }
         }
     }
@@ -127,8 +127,15 @@ public class BookAppointmentViewCli implements View {
                 String input = scanner.nextLine();
                 return LocalTime.parse(input, timeFormatter);
             } catch (DateTimeParseException e) {
-                System.out.println("Formato orario non valido. Usa HH:mm (es. 14:30).");
+                printMessage("Formato orario non valido. Usa HH:mm (es. 14:30).");
             }
         }
+    }
+
+    /**
+     * Prints a message to stdout.
+     */
+    private void printMessage(String message) {
+        System.out.println(message);
     }
 }

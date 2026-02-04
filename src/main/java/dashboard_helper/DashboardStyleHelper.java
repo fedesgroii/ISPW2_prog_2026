@@ -23,6 +23,9 @@ public class DashboardStyleHelper {
 
     // ==================== COLOR CONSTANTS ====================
 
+    /** Format for background color styling */
+    public static final String STYLE_BG_COLOR_FMT = "-fx-background-color: %s;";
+
     /**
      * Primary color - Used for headers, buttons, and main UI elements (medical
      * green)
@@ -81,6 +84,9 @@ public class DashboardStyleHelper {
     /** Footer button font size */
     public static final int FONT_SIZE_FOOTER = 16;
 
+    /** Font family - System default */
+    public static final String FONT_FAMILY_SYSTEM = "System";
+
     // Private constructor to prevent instantiation of utility class
     private DashboardStyleHelper() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
@@ -95,11 +101,11 @@ public class DashboardStyleHelper {
      */
     public static HBox createHeaderBox(String leftText, String rightText) {
         Text left = new Text(leftText);
-        left.setFont(Font.font("System", FontWeight.BOLD, FONT_SIZE_TITLE));
+        left.setFont(Font.font(FONT_FAMILY_SYSTEM, FontWeight.BOLD, FONT_SIZE_TITLE));
         left.setFill(Color.web(COLOR_TEXT_TITLE));
 
         Text right = new Text(rightText);
-        right.setFont(Font.font("System", FontWeight.NORMAL, FONT_SIZE_TITLE));
+        right.setFont(Font.font(FONT_FAMILY_SYSTEM, FontWeight.NORMAL, FONT_SIZE_TITLE));
         right.setFill(Color.web(COLOR_TEXT_TITLE));
 
         Region spacer = new Region();
@@ -109,7 +115,7 @@ public class DashboardStyleHelper {
         header.setPadding(new Insets(PADDING_HEADER_FOOTER));
         header.setAlignment(Pos.CENTER_LEFT);
         header.setStyle(String.format(
-                "-fx-background-color: %s;",
+                STYLE_BG_COLOR_FMT,
                 COLOR_BACKGROUND)); // No border, clean look
 
         return header;
@@ -125,11 +131,11 @@ public class DashboardStyleHelper {
      */
     public static VBox createCard(String title, String description, String buttonText) {
         Text titleText = new Text(title);
-        titleText.setFont(Font.font("System", FontWeight.BOLD, FONT_SIZE_TITLE));
+        titleText.setFont(Font.font(FONT_FAMILY_SYSTEM, FontWeight.BOLD, FONT_SIZE_TITLE));
         titleText.setFill(Color.web(COLOR_TEXT_TITLE));
 
         Text descText = new Text(description);
-        descText.setFont(Font.font("System", FontWeight.NORMAL, FONT_SIZE_DESCRIPTION));
+        descText.setFont(Font.font(FONT_FAMILY_SYSTEM, FontWeight.NORMAL, FONT_SIZE_DESCRIPTION));
         descText.setFill(Color.web(COLOR_TEXT_SECONDARY));
         descText.setWrappingWidth(420);
 
@@ -171,7 +177,7 @@ public class DashboardStyleHelper {
         Button button = new Button(text);
 
         String baseColor = isPrimary ? COLOR_PRIMARY : "#DADCE0";
-        String textColor = isPrimary ? "white" : "#202124";
+        String textColor = isPrimary ? "white" : COLOR_TEXT_TITLE;
 
         String baseStyle = String.format(
                 "-fx-background-color: %s; -fx-text-fill: %s; -fx-font-weight: bold; " +
@@ -205,7 +211,7 @@ public class DashboardStyleHelper {
         HBox footer = new HBox(32);
         footer.setAlignment(Pos.CENTER);
         footer.setPadding(new Insets(0, PADDING_HEADER_FOOTER, 0, PADDING_HEADER_FOOTER));
-        footer.setStyle(String.format("-fx-background-color: %s;", COLOR_BACKGROUND));
+        footer.setStyle(String.format(STYLE_BG_COLOR_FMT, COLOR_BACKGROUND));
         footer.setMinHeight(HEIGHT_FOOTER);
         footer.setMaxHeight(HEIGHT_FOOTER);
 
@@ -217,7 +223,7 @@ public class DashboardStyleHelper {
                     "-fx-background-color: transparent; -fx-text-fill: %s; " +
                             "-fx-font-size: %dpx; -fx-padding: 12 8 12 8; -fx-border-width: 0; " +
                             "-fx-font-weight: %s; -fx-cursor: hand;",
-                    isActive ? COLOR_PRIMARY : "#5F6368",
+                    isActive ? COLOR_PRIMARY : COLOR_TEXT_SECONDARY,
                     FONT_SIZE_FOOTER,
                     isActive ? "bold" : "normal");
 
@@ -225,7 +231,7 @@ public class DashboardStyleHelper {
 
             if (!isActive) {
                 btn.setOnMouseEntered(_ -> btn.setStyle(
-                        footerButtonStyle.replace("#5F6368", "#1E8449")));
+                        footerButtonStyle.replace(COLOR_TEXT_SECONDARY, COLOR_PRIMARY)));
                 btn.setOnMouseExited(_ -> btn.setStyle(footerButtonStyle));
             }
 
@@ -260,7 +266,7 @@ public class DashboardStyleHelper {
     public static VBox createRootContainer() {
         VBox root = new VBox(SPACING_CARDS);
         root.setPadding(new Insets(PADDING_ROOT));
-        root.setStyle(String.format("-fx-background-color: %s;", COLOR_BACKGROUND));
+        root.setStyle(String.format(STYLE_BG_COLOR_FMT, COLOR_BACKGROUND));
         return root;
     }
 }

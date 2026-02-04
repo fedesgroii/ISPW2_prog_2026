@@ -73,7 +73,7 @@ public class SpecialistDashboardViewCli implements View {
         while (!exitRequested) {
             printDashboardMenu(specialista);
 
-            System.out.print("\nSeleziona un'opzione: ");
+            printMessage("\nSeleziona un'opzione: ");
             String input = scanner.nextLine().trim();
 
             switch (input) {

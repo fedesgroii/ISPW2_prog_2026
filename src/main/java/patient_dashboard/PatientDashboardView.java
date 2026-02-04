@@ -114,9 +114,9 @@ public class PatientDashboardView implements View {
                     Thread.currentThread().getName()));
 
         } catch (Exception e) {
-            LOGGER.severe(() -> String.format("[DEBUG][Thread: %s] Error displaying PatientDashboardView: %s",
-                    Thread.currentThread().getName(), e.getMessage()));
-            throw e;
+            String msg = String.format("Error displaying PatientDashboardView: %s", e.getMessage());
+            LOGGER.log(java.util.logging.Level.SEVERE, msg, e);
+            throw new IllegalStateException(msg, e);
         }
     }
 

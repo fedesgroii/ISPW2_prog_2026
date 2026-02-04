@@ -29,50 +29,68 @@ public class AppNavigator {
     // currentStage: Lo Stage della vista precedente, da chiudere (può essere null
     // per la CLI)
     public void navigateTo(String viewName, StartupConfigBean config, Stage stage) {
-        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering navigateTo: viewName=%s, currentStage=%s",
-                Thread.currentThread().getName(), viewName, (stage != null ? "active" : "null")));
+        logDebug("Entering navigateTo: viewName=%s, currentStage=%s",
+                viewName, (stage != null ? "active" : "null"));
 
-        // 1. Creazione della nuova vista tramite Factory Method
         View view = factory.createView(viewName);
-        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Created view: %s",
-                Thread.currentThread().getName(), (view != null ? view.getClass().getSimpleName() : "null")));
+        logDebug("Created view: %s", (view != null ? view.getClass().getSimpleName() : "null"));
 
-        // 2. Visualizzazione della nuova vista
-        if (view != null) {
-            if (config.isInterfaceMode()) {
-                LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Navigating in GUI mode",
-                        Thread.currentThread().getName()));
-                // GUI Mode: Riutilizziamo lo stage esistente per continuità
-                view.show(stage, config);
-            } else {
-                LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Navigating in CLI mode",
-                        Thread.currentThread().getName()));
-                // CLI Mode: Chiudiamo la finestra grafica se presente
-                if (stage != null) {
-                    LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Closing current stage before CLI",
-                            Thread.currentThread().getName()));
-                    Platform.runLater(stage::close);
-                }
-
-                // Avvio della CLI: in un nuovo thread se siamo sulla JavaFX Thread,
-                // altrimenti sincrono per mantenere l'ordine delle chiamate in console.
-                if (Platform.isFxApplicationThread()) {
-                    new Thread(() -> {
-                        try {
-                            view.show(null, config);
-                        } catch (Exception e) {
-                            LOGGER.severe(() -> String.format("[DEBUG][Thread: %s] Error in CLI view: %s",
-                                    Thread.currentThread().getName(), e.getMessage()));
-                        }
-                    }).start();
-                } else {
-                    view.show(null, config);
-                }
-            }
-        } else {
-            LOGGER.severe(() -> String.format("[DEBUG][Thread: %s] Failed to create view: %s",
-                    Thread.currentThread().getName(), viewName));
-            throw new IllegalArgumentException("Vista non inserita nella Factory: " + viewName);
+        if (view == null) {
+            handleViewCreationFailure(viewName);
+            return;
         }
+
+        if (config.isInterfaceMode()) {
+            handleGuiNavigation(view, stage, config);
+        } else {
+            handleCliNavigation(view, stage, config);
+        }
+    }
+
+    private void handleGuiNavigation(View view, Stage stage, StartupConfigBean config) {
+        logDebug("Navigating in GUI mode");
+        view.show(stage, config);
+    }
+
+    private void handleCliNavigation(View view, Stage stage, StartupConfigBean config) {
+        logDebug("Navigating in CLI mode");
+
+        if (stage != null) {
+            logDebug("Closing current stage before CLI");
+            Platform.runLater(stage::close);
+        }
+
+        if (Platform.isFxApplicationThread()) {
+            new Thread(() -> executeCliShow(view, config)).start();
+        } else {
+            executeCliShow(view, config);
+        }
+    }
+
+    private void executeCliShow(View view, StartupConfigBean config) {
+        try {
+            view.show(null, config);
+        } catch (Exception e) {
+            LOGGER.severe(() -> String.format("[DEBUG][Thread: %s] Error in CLI view: %s",
+                    Thread.currentThread().getName(), e.getMessage()));
+        }
+    }
+
+    private void handleViewCreationFailure(String viewName) {
+        LOGGER.severe(() -> String.format("[DEBUG][Thread: %s] Failed to create view: %s",
+                Thread.currentThread().getName(), viewName));
+        throw new IllegalArgumentException("Vista non inserita nella Factory: " + viewName);
+    }
+
+    private void logDebug(String format, Object... args) {
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] " + format,
+                combineArgs(Thread.currentThread().getName(), args)));
+    }
+
+    private Object[] combineArgs(String first, Object[] rest) {
+        Object[] all = new Object[rest.length + 1];
+        all[0] = first;
+        System.arraycopy(rest, 0, all, 1, rest.length);
+        return all;
     }
 }

@@ -163,7 +163,7 @@ public class LoginViewBoundaryGui implements navigation.View {
         navigator.navigateTo("Patient", this.configBean, stage);
     }
 
-    private void handleRegistration(Stage stage) { // Metodo segnaposto per gestire la registrazione
+    private void handleRegistration() { // Metodo segnaposto per gestire la registrazione
         logger.info("Registration request"); // Logga l'evento (da sostituire con chiamata
                                              // al Controller)
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
@@ -174,7 +174,7 @@ public class LoginViewBoundaryGui implements navigation.View {
         alert.showAndWait();
     }
 
-    private void handleAppointment(Stage stage) { // Metodo segnaposto per gestire l'appuntamento rapido
+    private void handleAppointment() { // Metodo segnaposto per gestire l'appuntamento rapido
         logger.info("Appointment request"); // Logga l'evento (da sostituire con chiamata
                                             // al Controller)
     }

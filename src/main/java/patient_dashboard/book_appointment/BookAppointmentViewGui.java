@@ -116,8 +116,8 @@ public class BookAppointmentViewGui implements View {
         Button cancelButton = DashboardStyleHelper.createStyledButton("Annulla", false);
         Button submitButton = DashboardStyleHelper.createStyledButton("Prenota ora", true);
 
-        cancelButton.setOnAction(e -> graphicController.navigateToDashboard(config, stage));
-        submitButton.setOnAction(e -> {
+        cancelButton.setOnAction(_ -> graphicController.navigateToDashboard(config, stage));
+        submitButton.setOnAction(_ -> {
             BookAppointmentBean bean = new BookAppointmentBean();
             bean.setServiceType(serviceTypeCombo.getValue());
             model.Specialista selectedSpec = specialistCombo.getValue();
@@ -135,7 +135,7 @@ public class BookAppointmentViewGui implements View {
                 if (timeField.getText() != null && !timeField.getText().isEmpty()) {
                     bean.setTime(LocalTime.parse(timeField.getText()));
                 }
-            } catch (DateTimeParseException ex) {
+            } catch (DateTimeParseException _) {
                 // Controller will handle validation error
             }
 

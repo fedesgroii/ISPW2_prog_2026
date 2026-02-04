@@ -48,7 +48,7 @@ public class PatientDashboardViewCli implements View {
      */
     @Override
     public void show(Stage stage, StartupConfigBean config) {
-        LOGGER.info(String.format("[DEBUG][Thread: %s] PatientDashboardViewCli.show() called",
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] PatientDashboardViewCli.show() called",
                 Thread.currentThread().getName()));
 
         // Session validation via Application Controller
@@ -56,7 +56,7 @@ public class PatientDashboardViewCli implements View {
 
         // Retrieve logged-in patient via Application Controller
         Paziente paziente = controller.getLoggedPatient();
-        LOGGER.info(String.format("[DEBUG][Thread: %s] Displaying CLI dashboard for patient: %s",
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Displaying CLI dashboard for patient: %s",
                 Thread.currentThread().getName(), paziente.getNome()));
 
         // Display menu loop
@@ -73,7 +73,7 @@ public class PatientDashboardViewCli implements View {
         while (!exitRequested) {
             printDashboardMenu(paziente);
 
-            System.out.print("\nSeleziona un'opzione: ");
+            printMessage("\nSeleziona un'opzione: ");
             String input = scanner.nextLine().trim();
 
             switch (input) {
@@ -91,7 +91,7 @@ public class PatientDashboardViewCli implements View {
                 case "0" -> {
                     exitRequested = true;
                     printMessage("\nArrivederci, " + paziente.getNome() + "!");
-                    LOGGER.info(String.format("[DEBUG][Thread: %s] User requested exit from dashboard",
+                    LOGGER.info(() -> String.format("[DEBUG][Thread: %s] User requested exit from dashboard",
                             Thread.currentThread().getName()));
                 }
                 default -> printMessage("\n[ERRORE] Opzione non valida. Riprova.");
@@ -131,7 +131,7 @@ public class PatientDashboardViewCli implements View {
      * Navigates to a specified view.
      */
     private void navigateToView(String viewName, StartupConfigBean config) {
-        LOGGER.info(String.format("[DEBUG][Thread: %s] CLI navigation from PatientDashboard to: %s",
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] CLI navigation from PatientDashboard to: %s",
                 Thread.currentThread().getName(), viewName));
 
         try {
@@ -139,7 +139,7 @@ public class PatientDashboardViewCli implements View {
             AppNavigator navigator = new AppNavigator(factory);
             navigator.navigateTo(viewName, config, null);
         } catch (Exception e) {
-            LOGGER.warning(String.format("[DEBUG][Thread: %s] CLI navigation failed to %s: %s",
+            LOGGER.warning(() -> String.format("[DEBUG][Thread: %s] CLI navigation failed to %s: %s",
                     Thread.currentThread().getName(), viewName, e.getMessage()));
             printMessage("\n[ERRORE] Impossibile navigare a " + viewName + ": " + e.getMessage());
             printMessage("Premi INVIO per continuare...");

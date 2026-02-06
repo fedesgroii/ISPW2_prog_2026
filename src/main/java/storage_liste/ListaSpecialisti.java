@@ -22,6 +22,7 @@ public class ListaSpecialisti {
         this.observableListaSpecialisti = FXCollections.observableList(new CopyOnWriteArrayList<>());
         // Aggiunta specialisti di test per verifica In-Memory
         this.observableListaSpecialisti.add(new Specialista.Builder()
+                .id(1)
                 .nome("Federico")
                 .cognome("Sgroi")
                 .dataDiNascita(java.time.LocalDate.of(2003, 3, 1))

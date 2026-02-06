@@ -13,8 +13,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * - Autenticazione: email + password
  */
 public class Specialista {
-    private final String nome; // Parte della PK
-    private final String cognome; // Parte della PK
+    private final Integer id; // Database ID (Primary Key in DB, useful for foreign keys)
+    private final String nome; // Parte della PK composita in Java logic
+    private final String cognome; // Parte della PK composita in Java logic
     private final LocalDate dataDiNascita;
     private final String numeroTelefonico;
     private final String email; // Parte della PK + Username per autenticazione
@@ -24,6 +25,7 @@ public class Specialista {
     // Costruttore annotato per Jackson
     @JsonCreator
     public Specialista(
+            @JsonProperty("id") Integer id,
             @JsonProperty("nome") String nome,
             @JsonProperty("cognome") String cognome,
             @JsonProperty("dataDiNascita") LocalDate dataDiNascita,
@@ -31,6 +33,7 @@ public class Specialista {
             @JsonProperty("email") String email,
             @JsonProperty("specializzazione") String specializzazione,
             @JsonProperty("password") String password) {
+        this.id = id;
         this.nome = nome;
         this.cognome = cognome;
         this.dataDiNascita = dataDiNascita;
@@ -42,6 +45,7 @@ public class Specialista {
 
     // Costruttore privato (si usa il Builder)
     private Specialista(Builder builder) {
+        this.id = builder.id;
         this.nome = builder.nome;
         this.cognome = builder.cognome;
         this.dataDiNascita = builder.dataDiNascita;
@@ -52,6 +56,10 @@ public class Specialista {
     }
 
     // Getters
+    public Integer getId() {
+        return id;
+    }
+
     public String getNome() {
         return nome;
     }
@@ -113,6 +121,7 @@ public class Specialista {
      * Pattern Builder per costruzione flessibile e leggibile.
      */
     public static class Builder {
+        private Integer id;
         private String nome;
         private String cognome;
         private LocalDate dataDiNascita;
@@ -123,6 +132,11 @@ public class Specialista {
 
         public Builder() {
             // Default constructor for the Builder pattern
+        }
+
+        public Builder id(Integer id) {
+            this.id = id;
+            return this;
         }
 
         public Builder nome(String nome) {

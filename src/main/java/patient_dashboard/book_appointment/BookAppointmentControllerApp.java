@@ -38,10 +38,10 @@ public class BookAppointmentControllerApp {
         // 2. Business Logic: Create the Visita object
         try {
             Visita nuevaVisita = new Visita(
-                    loggedPatient,
+                    loggedPatient.getCodiceFiscalePaziente(),
                     bean.getDate(),
                     bean.getTime(),
-                    bean.getSpecialist(),
+                    bean.getSpecialistId(),
                     bean.getServiceType(),
                     bean.getReason(),
                     "Prenotata" // Initial state
@@ -53,8 +53,18 @@ public class BookAppointmentControllerApp {
             AppointmentRepository repo = DAOFactory.createDAOs(config).appointmentRepository;
 
             // Save to persistence
+            LOGGER.info(String.format("[DEBUG-NOTIF-1] About to save Visita: %s", nuevaVisita));
             if (repo.save(nuevaVisita)) {
-                LOGGER.info(() -> "[DEBUG] Successfully saved Visita object: " + nuevaVisita);
+                LOGGER.info(String.format("[DEBUG-NOTIF-2] Successfully saved Visita object: %s", nuevaVisita));
+                LOGGER.info(String.format(
+                        "[DEBUG-NOTIF-3] Visita details - SpecialistaId: [%d], Paziente: [%s], Data: [%s]",
+                        nuevaVisita.getSpecialistaId(), nuevaVisita.getPazienteCodiceFiscale(), nuevaVisita.getData()));
+
+                // Notify observers (Specialist Dashboard)
+                LOGGER.info(() -> "[DEBUG-NOTIF-4] Calling NotificationManager.notifyObservers()...");
+                observer.NotificationManager.getInstance().notifyObservers(nuevaVisita);
+                LOGGER.info(() -> "[DEBUG-NOTIF-5] NotificationManager.notifyObservers() completed.");
+
                 return "SUCCESS";
             } else {
                 LOGGER.severe(() -> "[DEBUG] Failed to save Visita object.");
@@ -67,6 +77,9 @@ public class BookAppointmentControllerApp {
     }
 
     private String validateBean(BookAppointmentBean bean) {
+        if (bean.getSpecialistId() <= 0) {
+            return "Lo specialista selezionato non è valido.";
+        }
         if (bean.getSpecialist() == null || bean.getSpecialist().trim().isEmpty()) {
             return "Lo specialista è obbligatorio.";
         }
@@ -132,9 +145,9 @@ public class BookAppointmentControllerApp {
         LOGGER.info(() -> String.format("[DEBUG] getAvailableSlots called for bean: %s", bean));
 
         LocalDate date = (bean != null) ? bean.getDate() : null;
-        String specialistId = (bean != null) ? bean.getSpecialist() : null;
+        int specialistId = (bean != null) ? bean.getSpecialistId() : 0;
 
-        if (date == null || specialistId == null || specialistId.trim().isEmpty()) {
+        if (date == null || specialistId <= 0) {
             return new ArrayList<>();
         }
 
@@ -163,7 +176,7 @@ public class BookAppointmentControllerApp {
         AppointmentRepository repo = daos.appointmentRepository;
 
         // 3. Recupero prenotazioni esistenti
-        List<Visita> existingAppointments = repo.findByDateAndSpecialist(date, specialistId);
+        List<Visita> existingAppointments = repo.findByDateAndSpecialist(date, bean.getSpecialistId());
         if (existingAppointments == null) {
             existingAppointments = new ArrayList<>();
         }

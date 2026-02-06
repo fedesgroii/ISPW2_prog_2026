@@ -48,7 +48,8 @@ public class BookAppointmentViewCli implements View {
                 }
                 int specChoice = readInt(1, specialists.size());
                 model.Specialista selected = specialists.get(specChoice - 1);
-                bean.setSpecialist(selected.getNome() + " " + selected.getCognome());
+                bean.setSpecialist(selected.getEmail());
+                bean.setSpecialistId(selected.getId());
             }
 
             printMessage("Motivo della visita (invio per saltare): ");
@@ -58,7 +59,7 @@ public class BookAppointmentViewCli implements View {
             LocalDate selectedDate = readDate("Data della visita (GG/MM/AAAA): ");
             bean.setDate(selectedDate);
 
-            LocalTime selectedTime = selectSlot(selectedDate, bean.getSpecialist());
+            LocalTime selectedTime = selectSlot(selectedDate, bean);
             if (selectedTime == null) {
                 printMessage("\n[INFO] Operazione annullata.");
                 return;
@@ -92,9 +93,9 @@ public class BookAppointmentViewCli implements View {
             // 5. Submit
             String result = graphicController.bookAppointment(bean);
             if ("SUCCESS".equals(result)) {
-                printMessage("\n[SUCCESSO] Visita prenotata correttamente!");
+                printMessage("Prenotazione confermata con successo!");
             } else {
-                printMessage("\n[ERRORE] " + result);
+                printMessage("Errore durante il salvataggio: " + result);
                 printMessage("Premi invio per riprovare o digita 'esci' per annullare.");
                 if (!scanner.nextLine().equalsIgnoreCase("esci")) {
                     show(stage, config);
@@ -144,13 +145,15 @@ public class BookAppointmentViewCli implements View {
         }
     }
 
-    private LocalTime selectSlot(LocalDate date, String specialistId) {
+    private LocalTime selectSlot(LocalDate date, BookAppointmentBean fullBean) {
         printMessage("Caricamento orari disponibili...");
         BookAppointmentBean tempBean = new BookAppointmentBean();
         tempBean.setDate(date);
-        tempBean.setSpecialist(specialistId);
+        tempBean.setSpecialist(fullBean.getSpecialist());
+        tempBean.setSpecialistId(fullBean.getSpecialistId());
 
         java.util.List<LocalTime> slots = graphicController.getAvailableSlots(tempBean);
+        // Rest of the method...
 
         if (slots.isEmpty()) {
             printMessage("[ATTENZIONE] Nessun orario disponibile per questa data e specialista.");

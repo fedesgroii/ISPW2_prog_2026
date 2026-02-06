@@ -1,6 +1,5 @@
 package patient_dashboard.book_appointment;
 
-import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import navigation.AppNavigator;
 import navigation.GuiViewFactory;
@@ -33,14 +32,14 @@ public class BookAppointmentGraphicControllerGui {
             String result = appController.bookAppointment(bean, loggedPatient);
 
             if ("SUCCESS".equals(result)) {
-                showInfoAlert("Successo", "Prenotazione effettuata con successo!");
+                showToast(stage, "Prenotazione confermata!", true);
                 navigateToDashboard(config, stage);
             } else {
-                showErrorAlert("Errore di Validazione", result);
+                showToast(stage, "Impossibile completare la prenotazione: " + result, false);
             }
         } catch (Exception e) {
             LOGGER.severe("[DEBUG] Error during booking: " + e.getMessage());
-            showErrorAlert("Errore", "Si è verificato un errore imprevisto: " + e.getMessage());
+            showToast(stage, "Impossibile completare la prenotazione: " + e.getMessage(), false);
         }
     }
 
@@ -66,19 +65,27 @@ public class BookAppointmentGraphicControllerGui {
         }
     }
 
-    private void showInfoAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+    private void showToast(Stage owner, String message, boolean success) {
+        javafx.application.Platform.runLater(() -> {
+            javafx.stage.Popup popup = new javafx.stage.Popup();
+            javafx.scene.control.Label label = new javafx.scene.control.Label(message);
+            label.setStyle(String.format(
+                    "-fx-background-color: %s; -fx-text-fill: white; -fx-padding: 15; -fx-background-radius: 8; -fx-font-size: 14px; -fx-font-weight: bold; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);",
+                    success ? "#1E8449" : "#C0392B"));
 
-    private void showErrorAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+            popup.getContent().add(label);
+            popup.setAutoHide(true);
+
+            // Show at bottom center of owner stage
+            popup.show(owner);
+            popup.setX(owner.getX() + (owner.getWidth() - label.getWidth()) / 2);
+            popup.setY(owner.getY() + owner.getHeight() - 100); // 100px from bottom
+
+            // Auto-close after 3 seconds
+            javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(
+                    javafx.util.Duration.seconds(3));
+            delay.setOnFinished(_ -> popup.hide());
+            delay.play();
+        });
     }
 }

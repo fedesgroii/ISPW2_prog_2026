@@ -24,6 +24,15 @@ public class InMemoryUserDAO<T> implements UserDAO<T> {
     }
 
     @Override
+    public Optional<T> findById(String id) {
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering InMemoryUserDAO.findById: %s",
+                Thread.currentThread().getName(), id));
+        return lista.stream()
+                .filter(u -> getId(u).equalsIgnoreCase(id))
+                .findFirst();
+    }
+
+    @Override
     public Optional<T> findByEmail(String email) {
         LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering InMemoryUserDAO.findByEmail: %s",
                 Thread.currentThread().getName(), email));
@@ -53,6 +62,17 @@ public class InMemoryUserDAO<T> implements UserDAO<T> {
         }
         if (user instanceof Specialista specialista) {
             return specialista.getEmail();
+        }
+        throw new IllegalArgumentException("Tipo utente non supportato: " + user.getClass().getName());
+    }
+
+    // Helper per estrarre ID genericamente in base al tipo
+    private String getId(T user) {
+        if (user instanceof Paziente paziente) {
+            return paziente.getCodiceFiscalePaziente();
+        }
+        if (user instanceof Specialista specialista) {
+            return String.valueOf(specialista.getId());
         }
         throw new IllegalArgumentException("Tipo utente non supportato: " + user.getClass().getName());
     }

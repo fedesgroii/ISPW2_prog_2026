@@ -10,8 +10,8 @@ import java.util.logging.Logger;
  * Graphic Controller for the Specialist Dashboard GUI.
  * Handles navigation and stage management for specialists.
  */
-public class SpecialistDashboardGraphicController {
-    private static final Logger LOGGER = Logger.getLogger(SpecialistDashboardGraphicController.class.getName());
+public class SpecialistDashboardGraphicControllerGui {
+    private static final Logger LOGGER = Logger.getLogger(SpecialistDashboardGraphicControllerGui.class.getName());
 
     /**
      * Navigates to the specified view and closes the current stage.
@@ -30,5 +30,9 @@ public class SpecialistDashboardGraphicController {
             String message = String.format("Navigation to %s failed", viewName);
             LOGGER.log(java.util.logging.Level.SEVERE, message, e);
         }
+    }
+
+    public SpecialistDashboardBean getDashboardData(SpecialistDashboardController appController) {
+        return appController.getDashboardData();
     }
 }

@@ -4,7 +4,8 @@ import select_type_login.LoginViewBoundaryGui;
 import login_insert_data.LoginViewPatient;
 import login_insert_data.LoginViewSpecialist;
 import patient_dashboard.PatientDashboardView;
-import specialist_dashboard.SpecialistDashboardView;
+import specialist_dashboard.SpecialistDashboardViewGui;
+import specialist_dashboard.manage_agenda.ManageAgendaViewGui;
 
 // Concrete Factory per le viste GUI
 // Implementa il Factory Method per creare solo viste grafiche
@@ -18,8 +19,9 @@ public class GuiViewFactory extends ViewFactory {
                 case "Patient" -> new LoginViewPatient();
                 case "Specialist" -> new LoginViewSpecialist();
                 case "PatientDashboard" -> new PatientDashboardView();
-                case "SpecialistDashboard" -> new SpecialistDashboardView();
+                case "SpecialistDashboard" -> new SpecialistDashboardViewGui();
                 case "Booking" -> new patient_dashboard.book_appointment.BookAppointmentViewGui();
+                case "Agenda" -> new ManageAgendaViewGui();
                 default -> null;
             };
         } catch (Exception e) {

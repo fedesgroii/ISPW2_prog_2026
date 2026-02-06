@@ -50,8 +50,12 @@ public class LoginGraphicControllerCli {
         } else {
             LOGGER.warning(() -> String.format("[DEBUG][Thread: %s] Login CLI failed for %s: %s",
                     Thread.currentThread().getName(), email, result.getErrorMessage()));
-            System.out.println("\n[ERROR] Login fallito: " + result.getErrorMessage() + ". Riprova.");
+            printMessage("\n[ERROR] Login fallito: " + result.getErrorMessage() + ". Riprova.");
             return false;
         }
+    }
+
+    private void printMessage(String message) {
+        System.out.println(message);
     }
 }

@@ -18,20 +18,43 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FileManagerPazienti implements DataStorageStrategy<Paziente> {
-    private static final String DIRECTORY = "src/main/resources/pazienti_salvati/";
-    private static final String FILE_EXTENSION = ".json"; // Definisci una costante per l'estensione del file
+    private static String resolveDirectory() {
+        String baseDir = "src/main/resources/pazienti_salvati/";
+        String moduleDir = "ISPW2_PROG_2026/" + baseDir;
+
+        File moduleFolder = new File(moduleDir);
+        File baseFolder = new File(baseDir);
+
+        // Prefer the directory that exists AND contains files
+        if (moduleFolder.exists() && hasJsonFiles(moduleFolder)) {
+            return moduleDir;
+        }
+        if (baseFolder.exists() && hasJsonFiles(baseFolder)) {
+            return baseDir;
+        }
+
+        // Fallback to module dir if it exists, otherwise base
+        return (moduleFolder.exists()) ? moduleDir : baseDir;
+    }
+
+    private static boolean hasJsonFiles(File folder) {
+        File[] files = folder.listFiles();
+        return files != null && Arrays.stream(files).anyMatch(f -> f.getName().endsWith(FILE_EXTENSION));
+    }
+
+    private static final String DIRECTORY = resolveDirectory();
+    private static final String FILE_EXTENSION = ".json";
 
     private final ObjectMapper objectMapper;
     private static final Logger logger = Logger.getLogger(FileManagerPazienti.class.getName());
-    // Lock per sincronizzazione multithread
     private final Object fileLock = new Object();
 
     public FileManagerPazienti() {
-        // Configurazione dell'ObjectMapper con JavaTimeModule
+        logger.info(() -> "[DEBUG] FileManagerPazienti initialized. Using directory: "
+                + new File(DIRECTORY).getAbsolutePath());
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        // Creazione della directory se non esiste
         File dir = new File(DIRECTORY);
         if (!dir.exists() && !dir.mkdirs()) {
             throw new IllegalStateException("Impossibile creare la directory: " + DIRECTORY);
@@ -184,7 +207,7 @@ public class FileManagerPazienti implements DataStorageStrategy<Paziente> {
         }
         File[] files = folder.listFiles();
         if (files == null || files.length == 0) {
-            logger.info("La cartella è vuota o non contiene file: {}");
+            logger.info("La cartella è vuota o non contiene file.");
             return false;
         }
         inputValue = inputValue + FILE_EXTENSION; // Usa la costante FILE_EXTENSION
@@ -194,7 +217,7 @@ public class FileManagerPazienti implements DataStorageStrategy<Paziente> {
                 .anyMatch(file -> {
                     boolean match = Objects.equals(file.getName(), finalInputValue);
                     if (match)
-                        logger.info("Corrispondenza trovata: {}");
+                        logger.log(Level.INFO, "Corrispondenza trovata: {0}", file.getName());
                     return match;
                 });
     }
@@ -214,9 +237,19 @@ public class FileManagerPazienti implements DataStorageStrategy<Paziente> {
             logger.warning("Email non valida per la ricerca.");
             return Optional.empty();
         }
+        List<Paziente> tutti = trovaTutti();
+        logger.log(Level.INFO, "[DEBUG] Searching for email {0} in {1} patients.",
+                new Object[] { email, tutti.size() });
+
         // Cerca in tutti i file
-        return trovaTutti().stream()
-                .filter(p -> p.getEmail().equalsIgnoreCase(email))
+        return tutti.stream()
+                .filter(p -> {
+                    boolean match = p.getEmail().equalsIgnoreCase(email);
+                    if (match) {
+                        logger.log(Level.INFO, "[DEBUG] MATCH FOUND for patient: {0}", p.getEmail());
+                    }
+                    return match;
+                })
                 .findFirst();
     }
 }

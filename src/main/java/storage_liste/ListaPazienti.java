@@ -30,7 +30,7 @@ public class ListaPazienti {
                 .dataDiNascita(java.time.LocalDate.of(2003, 3, 1))
                 .numeroTelefonico("1234567890")
                 .email("paziente@test.it")
-                .codiceFiscalePaziente("RSSMRA90A01H501W")
+                .codiceFiscalePaziente("RSSMRA90A01H501Z")
                 .condizioniMediche("Nessuna")
                 .password("pass")
                 .build());

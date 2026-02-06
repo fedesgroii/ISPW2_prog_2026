@@ -8,9 +8,9 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Specialista;
 import navigation.AppNavigator;
 import navigation.View;
+import session_manager.SessionManagerSpecialista;
 import startupconfig.StartupConfigBean;
 
 import java.util.logging.Logger;
@@ -46,11 +46,11 @@ import java.util.logging.Logger;
  * @see patient_dashboard.PatientDashboardView
  * @see SessionManagerSpecialista
  */
-public class SpecialistDashboardView implements View {
+public class SpecialistDashboardViewGui implements View {
 
-    private static final Logger LOGGER = Logger.getLogger(SpecialistDashboardView.class.getName());
-    private final SpecialistDashboardController controller = new SpecialistDashboardController();
-    private final SpecialistDashboardGraphicController graphicController = new SpecialistDashboardGraphicController();
+    private static final Logger LOGGER = Logger.getLogger(SpecialistDashboardViewGui.class.getName());
+    private SpecialistDashboardController controller; // Initialized in startDashboard()
+    private final SpecialistDashboardGraphicControllerGui graphicController = new SpecialistDashboardGraphicControllerGui();
 
     /**
      * Displays the specialist dashboard in the provided stage.
@@ -72,7 +72,7 @@ public class SpecialistDashboardView implements View {
      */
     @Override
     public void show(Stage stage, StartupConfigBean config) {
-        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] SpecialistDashboardView.show() called",
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] SpecialistDashboardViewGui.show() called",
                 Thread.currentThread().getName()));
 
         // Ensure we're on the JavaFX Application Thread using a clear dispatcher
@@ -90,16 +90,22 @@ public class SpecialistDashboardView implements View {
      */
     private void startDashboard(Stage stage, StartupConfigBean config) {
         try {
+            // Initialize controller HERE to ensure it captures notification history AFTER
+            // bookings have been made
+            LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Initializing SpecialistDashboardController...",
+                    Thread.currentThread().getName()));
+            controller = new SpecialistDashboardController();
+
             // Session validation via Application Controller
             controller.checkSession();
 
-            // Retrieve logged-in specialist via Application Controller
-            Specialista specialista = controller.getLoggedSpecialist();
+            // Retrieve data via Graphic Controller and Bean
+            SpecialistDashboardBean bean = graphicController.getDashboardData(controller);
             LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Displaying dashboard for specialist: %s",
-                    Thread.currentThread().getName(), specialista.getNome()));
+                    Thread.currentThread().getName(), bean.getNome()));
 
             // Build the UI
-            VBox root = buildDashboardUI(specialista, config, stage);
+            VBox root = buildDashboardUI(bean, config, stage);
 
             // Fluid Transition: Swap root if scene exists, otherwise create new Scene
             if (stage.getScene() == null) {
@@ -115,11 +121,11 @@ public class SpecialistDashboardView implements View {
             stage.setResizable(true);
             stage.show();
 
-            LOGGER.info(() -> String.format("[DEBUG][Thread: %s] SpecialistDashboardView displayed successfully",
+            LOGGER.info(() -> String.format("[DEBUG][Thread: %s] SpecialistDashboardViewGui displayed successfully",
                     Thread.currentThread().getName()));
 
         } catch (Exception e) {
-            String msg = String.format("Error displaying SpecialistDashboardView: %s", e.getMessage());
+            String msg = String.format("Error displaying SpecialistDashboardViewGui: %s", e.getMessage());
             LOGGER.log(java.util.logging.Level.SEVERE, msg, e);
         }
     }
@@ -132,14 +138,14 @@ public class SpecialistDashboardView implements View {
      * @param stage       Current stage for navigation
      * @return Root VBox containing the entire dashboard
      */
-    private VBox buildDashboardUI(Specialista specialista, StartupConfigBean config, Stage stage) {
+    private VBox buildDashboardUI(SpecialistDashboardBean bean, StartupConfigBean config, Stage stage) {
         // Create root container
         VBox root = DashboardStyleHelper.createRootContainer();
 
         // Create header
         HBox header = DashboardStyleHelper.createHeaderBox(
                 "Home - MindLab",
-                "Ciao, " + specialista.getNome() + "!");
+                "Ciao, " + bean.getNome() + "!");
 
         // Create cards (Bacheca is moved to footer)
         VBox card1 = createAgendaCard(config, stage);
@@ -147,7 +153,7 @@ public class SpecialistDashboardView implements View {
         VBox card3 = createReportsCard(config, stage);
 
         // Create footer
-        HBox footer = createFooter(config, stage);
+        HBox footer = createFooter(config, stage, bean);
 
         // Assemble dashboard
         root.getChildren().addAll(header, card1, card2, card3, footer);
@@ -223,15 +229,45 @@ public class SpecialistDashboardView implements View {
     /**
      * Creates the footer navigation bar.
      */
-    private HBox createFooter(StartupConfigBean config, Stage stage) {
+    private HBox createFooter(StartupConfigBean config, Stage stage, SpecialistDashboardBean bean) {
         Button bachecaButton = new Button("Bacheca");
         Button homeButton = new Button("Home");
         Button visiteButton = new Button("Visite");
+        Button notificheButton = new Button("Notifiche");
 
         // Add visual interactivity to footer buttons
         addInteractiveHoverEffect(bachecaButton);
         addInteractiveHoverEffect(homeButton);
         addInteractiveHoverEffect(visiteButton);
+        addInteractiveHoverEffect(notificheButton);
+
+        // Badge for notifications
+        javafx.scene.shape.Circle badge = new javafx.scene.shape.Circle(10, javafx.scene.paint.Color.RED);
+        javafx.scene.text.Text badgeText = new javafx.scene.text.Text("0");
+        badgeText.setFill(javafx.scene.paint.Color.WHITE);
+        badgeText.setStyle("-fx-font-weight: bold; -fx-font-size: 11px;");
+        javafx.scene.layout.StackPane badgePane = new javafx.scene.layout.StackPane(badge, badgeText);
+        badgePane.setTranslateX(30); // Position badge relative to button
+        badgePane.setTranslateY(-15);
+        badgePane.setVisible(false);
+
+        // Wrap button and badge
+        javafx.scene.layout.StackPane notificheWrapper = new javafx.scene.layout.StackPane(notificheButton, badgePane);
+        notificheWrapper.setAlignment(javafx.geometry.Pos.CENTER);
+
+        // Callback to update badge
+        Runnable updateBadge = () -> {
+            SpecialistDashboardBean currentBean = graphicController.getDashboardData(controller);
+            int count = currentBean.getUnreadNotificationsCount();
+            if (count > 0) {
+                badgeText.setText(String.valueOf(count));
+                badgePane.setVisible(true);
+            } else {
+                badgePane.setVisible(false);
+            }
+        };
+        controller.setNotificationCallback(updateBadge);
+        updateBadge.run(); // Initial check
 
         // Bacheca button action
         bachecaButton.setOnAction(_ -> {
@@ -251,7 +287,53 @@ public class SpecialistDashboardView implements View {
         // Visite button navigates to Visits view
         visiteButton.setOnAction(_ -> navigateToView("Visits", config, stage));
 
-        return DashboardStyleHelper.createFooter(1, bachecaButton, homeButton, visiteButton);
+        // Create footer using helper for first 3 buttons
+        HBox footer = DashboardStyleHelper.createFooter(1, bachecaButton, homeButton, visiteButton);
+
+        // Notifiche button action
+        notificheButton.setOnAction(_ -> showNotificationsDialog());
+
+        // Manually style notifiche button to match footer
+        String footerButtonStyle = String.format(
+                "-fx-background-color: transparent; -fx-text-fill: %s; " +
+                        "-fx-font-size: %dpx; -fx-padding: 12 8 12 8; -fx-border-width: 0; " +
+                        "-fx-font-weight: normal; -fx-cursor: hand;",
+                DashboardStyleHelper.COLOR_TEXT_SECONDARY,
+                DashboardStyleHelper.FONT_SIZE_FOOTER);
+        notificheButton.setStyle(footerButtonStyle);
+
+        // Hover effect for notifiche button (manual since it's not in the helper loop)
+        notificheButton.setOnMouseEntered(_ -> notificheButton.setStyle(
+                footerButtonStyle.replace(DashboardStyleHelper.COLOR_TEXT_SECONDARY,
+                        DashboardStyleHelper.COLOR_PRIMARY)));
+        notificheButton.setOnMouseExited(_ -> notificheButton.setStyle(footerButtonStyle));
+
+        // Add the wrapper to the footer
+        footer.getChildren().add(notificheWrapper);
+
+        return footer;
+    }
+
+    private void showNotificationsDialog() {
+        java.util.List<model.Visita> notifications = controller.getUnreadNotifications();
+        if (notifications.isEmpty()) {
+            showInfoAlert("Notifiche", "Non hai nuove notifiche.");
+            return;
+        }
+
+        StringBuilder content = new StringBuilder();
+        for (model.Visita v : notifications) {
+            String patientName = controller.getPatientName(v.getPazienteCodiceFiscale());
+            content.append(String.format("- %s: %s con %s\n",
+                    v.getData(), v.getTipo_visita(), patientName));
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Notifiche non lette");
+        alert.setHeaderText("Hai " + notifications.size() + " nuove prenotazioni!");
+        alert.setContentText(content.toString());
+        alert.setOnHidden(_ -> controller.clearNotifications()); // Clear on close
+        alert.showAndWait();
     }
 
     /**
@@ -303,6 +385,16 @@ public class SpecialistDashboardView implements View {
     private void showErrorAlert(String title, String message) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
+    }
+
+    private void showInfoAlert(String title, String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle(title);
             alert.setHeaderText(null);
             alert.setContentText(message);

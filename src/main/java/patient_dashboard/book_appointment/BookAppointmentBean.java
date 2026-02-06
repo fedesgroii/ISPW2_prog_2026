@@ -17,6 +17,7 @@ public class BookAppointmentBean {
 
     // Appointment Data
     private String specialist;
+    private int specialistId;
     private LocalDate date;
     private LocalTime time;
     private String serviceType; // "Online" or "In presenza"
@@ -69,6 +70,14 @@ public class BookAppointmentBean {
 
     public void setSpecialist(String specialist) {
         this.specialist = specialist;
+    }
+
+    public int getSpecialistId() {
+        return specialistId;
+    }
+
+    public void setSpecialistId(int specialistId) {
+        this.specialistId = specialistId;
     }
 
     public LocalDate getDate() {

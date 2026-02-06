@@ -1,6 +1,5 @@
 package storage_db;
 
-import model.Paziente;
 import model.Visita;
 import java.sql.*;
 import java.time.LocalDate;
@@ -17,30 +16,30 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
 
     private static final String VISITA_NOT_NULL_MESSAGE = "Visita non può essere null";
 
-    // Query SQL come costanti
-    private static final String INSERT_QUERY = "INSERT INTO visite (paziente_codice_fiscale, data, orario, specialista, tipo_visita, motivo_visita, stato) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String SELECT_QUERY = "SELECT paziente_codice_fiscale, data, orario, specialista, tipo_visita, motivo_visita, stato FROM visite WHERE paziente_codice_fiscale=? AND data=? AND orario=?";
-    private static final String UPDATE_QUERY = "UPDATE visite SET specialista = ?, tipo_visita = ?, motivo_visita = ?, stato = ? WHERE paziente_codice_fiscale = ? AND data = ? AND orario = ?";
-    private static final String DELETE_QUERY = "DELETE FROM visite WHERE paziente_codice_fiscale = ? AND data = ? AND orario = ?";
-    private static final String SELECT_ALL_QUERY = "SELECT paziente_codice_fiscale, data, orario, specialista, tipo_visita, motivo_visita, stato FROM visite";
-    private static final String SELECT_BY_DATE_AND_SPEC_QUERY = "SELECT paziente_codice_fiscale, data, orario, specialista, tipo_visita, motivo_visita, stato FROM visite WHERE data=? AND specialista=?";
+    // Query SQL come costanti (Simplified: no JOINs)
+    private static final String INSERT_QUERY = "INSERT INTO visite (paziente_codice_fiscale, specialista_id, data, orario, tipo_visita, motivo_visita, stato) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String SELECT_QUERY = "SELECT * FROM visite WHERE paziente_codice_fiscale=? AND specialista_id=? AND data=? AND orario=?";
+    private static final String UPDATE_QUERY = "UPDATE visite SET tipo_visita = ?, motivo_visita = ?, stato = ? WHERE paziente_codice_fiscale = ? AND specialista_id = ? AND data = ? AND orario = ?";
+    private static final String DELETE_QUERY = "DELETE FROM visite WHERE paziente_codice_fiscale = ? AND specialista_id = ? AND data = ? AND orario = ?";
+    private static final String SELECT_ALL_QUERY = "SELECT * FROM visite";
+    private static final String SELECT_BY_DATE_AND_SPEC_QUERY = "SELECT * FROM visite WHERE data=? AND specialista_id=?";
 
     @Override
     public boolean salva(Visita visita) {
         Objects.requireNonNull(visita, VISITA_NOT_NULL_MESSAGE);
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(INSERT_QUERY)) {
-            stmt.setString(1, visita.getPaziente().getCodiceFiscalePaziente());
-            stmt.setObject(2, visita.getData());
-            stmt.setObject(3, visita.getOrario());
-            stmt.setString(4, visita.getSpecialista());
-            stmt.setString(5, visita.getTipoVisita());
-            stmt.setString(6, visita.getMotivoVisita());
+            stmt.setString(1, visita.getPazienteCodiceFiscale());
+            stmt.setInt(2, visita.getSpecialistaId());
+            stmt.setObject(3, visita.getData());
+            stmt.setObject(4, visita.getOrario());
+            stmt.setString(5, visita.getTipo_visita());
+            stmt.setString(6, visita.getMotivo_visita());
             stmt.setString(7, visita.getStato());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e, () -> "Errore durante l'inserimento della visita per paziente: "
-                    + visita.getPaziente().getCodiceFiscalePaziente());
+                    + visita.getPazienteCodiceFiscale());
             return false;
         }
     }
@@ -53,12 +52,12 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
             setKeyParameters(stmt, 1, visita);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return Optional.of(mapResultSetToVisita(rs, visita.getPaziente()));
+                    return Optional.of(mapResultSetToVisita(rs));
                 }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e, () -> "Errore durante la ricerca della visita per paziente: "
-                    + visita.getPaziente().getCodiceFiscalePaziente());
+                    + visita.getPazienteCodiceFiscale());
         }
         return Optional.empty();
     }
@@ -68,15 +67,14 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
         Objects.requireNonNull(visita, VISITA_NOT_NULL_MESSAGE);
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(UPDATE_QUERY)) {
-            stmt.setString(1, visita.getSpecialista());
-            stmt.setString(2, visita.getTipoVisita());
-            stmt.setString(3, visita.getMotivoVisita());
-            stmt.setString(4, visita.getStato());
-            setKeyParameters(stmt, 5, visita);
+            stmt.setString(1, visita.getTipo_visita());
+            stmt.setString(2, visita.getMotivo_visita());
+            stmt.setString(3, visita.getStato());
+            setKeyParameters(stmt, 4, visita);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e, () -> "Errore durante l'aggiornamento della visita per paziente: "
-                    + visita.getPaziente().getCodiceFiscalePaziente());
+                    + visita.getPazienteCodiceFiscale());
             return false;
         }
     }
@@ -90,34 +88,37 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e, () -> "Errore durante l'eliminazione della visita per paziente: "
-                    + visita.getPaziente().getCodiceFiscalePaziente());
+                    + visita.getPazienteCodiceFiscale());
             return false;
         }
     }
 
-    public List<Visita> getAllVisite() {
+    public List<Visita> findBySpecialistId(int specialistaId) {
         List<Visita> visite = new ArrayList<>();
+        String query = "SELECT * FROM visite WHERE specialista_id=?";
         try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(SELECT_ALL_QUERY);
-                ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                visite.add(mapResultSetToVisita(rs, null));
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, specialistaId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    visite.add(mapResultSetToVisita(rs));
+                }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Errore durante il recupero delle visite", e);
+            logger.log(Level.SEVERE, "Errore durante il recupero delle visite per specialista: " + specialistaId, e);
         }
         return visite;
     }
 
-    public List<Visita> findByDateAndSpecialist(LocalDate data, String specialista) {
+    public List<Visita> findByDateAndSpecialist(LocalDate data, int specialistaId) {
         List<Visita> visite = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(SELECT_BY_DATE_AND_SPEC_QUERY)) {
             stmt.setObject(1, data);
-            stmt.setString(2, specialista);
+            stmt.setInt(2, specialistaId);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    visite.add(mapResultSetToVisita(rs, null));
+                    visite.add(mapResultSetToVisita(rs));
                 }
             }
         } catch (SQLException e) {
@@ -127,39 +128,36 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
     }
 
     private void setKeyParameters(PreparedStatement stmt, int startIndex, Visita visita) throws SQLException {
-        stmt.setString(startIndex, visita.getPaziente().getCodiceFiscalePaziente());
-        stmt.setObject(startIndex + 1, visita.getData());
-        stmt.setObject(startIndex + 2, visita.getOrario());
+        stmt.setString(startIndex, visita.getPazienteCodiceFiscale());
+        stmt.setInt(startIndex + 1, visita.getSpecialistaId());
+        stmt.setObject(startIndex + 2, visita.getData());
+        stmt.setObject(startIndex + 3, visita.getOrario());
     }
 
-    private Visita mapResultSetToVisita(ResultSet rs, Paziente paziente) throws SQLException {
+    private Visita mapResultSetToVisita(ResultSet rs) throws SQLException {
         return new Visita(
-                (paziente != null) ? paziente
-                        : new Paziente.Builder()
-                                .codiceFiscalePaziente(rs.getString("paziente_codice_fiscale"))
-                                .email("placeholder@email.com") // Mandatory fields for Builder
-                                .password("placeholder")
-                                .build(),
+                rs.getString("paziente_codice_fiscale"),
                 rs.getObject("data", LocalDate.class),
                 rs.getObject("orario", LocalTime.class),
-                rs.getString("specialista"),
+                rs.getInt("specialista_id"),
                 rs.getString("tipo_visita"),
                 rs.getString("motivo_visita"),
                 rs.getString("stato"));
     }
 
-    public boolean isVisitaDisponibileInDatabase(LocalDate data, LocalTime orario) {
+    public boolean isVisitaDisponibileInDatabase(LocalDate data, LocalTime orario, int specialistId) {
         if (data == null || orario == null) {
             logger.warning("Dati non validi per la verifica della visita.");
             return false;
         }
-        final String SELECT_BY_DATE_ORARIO_QUERY = "SELECT 1 FROM visite WHERE data=? AND orario=? LIMIT 1";
+        final String SELECT_BY_DATE_ORARIO_QUERY = "SELECT 1 FROM visite WHERE data=? AND orario=? AND specialista_id=? LIMIT 1";
 
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(SELECT_BY_DATE_ORARIO_QUERY)) {
 
             stmt.setObject(1, data);
             stmt.setObject(2, orario);
+            stmt.setInt(3, specialistId);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -175,12 +173,21 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
 
     @Override
     public List<Visita> getAllInstanceOfActor() {
-        return getAllVisite();
+        List<Visita> visite = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(SELECT_ALL_QUERY);
+                ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                visite.add(mapResultSetToVisita(rs));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Errore durante il recupero delle visite", e);
+        }
+        return visite;
     }
 
     @Override
     public Optional<Visita> findByEmail(String email) {
-        // Non ha senso cercare una visita per email (non è un utente)
         return Optional.empty();
     }
 }

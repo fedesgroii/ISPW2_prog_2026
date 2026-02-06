@@ -1,6 +1,8 @@
 package storage_file;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import model.Visita;
 import storage_db.DataStorageStrategy;
 import java.io.File;
@@ -20,21 +22,48 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class FileManagerVisite implements DataStorageStrategy<Visita> {
-    private static final String DIRECTORY = "src/main/resources/visite_salvate/"; // Directory di salvataggio
+    private static String resolveDirectory() {
+        String baseDir = "src/main/resources/visite_salvate/";
+        String moduleDir = "ISPW2_PROG_2026/" + baseDir;
+
+        File moduleFolder = new File(moduleDir);
+        File baseFolder = new File(baseDir);
+
+        // Prefer the directory that exists AND contains files
+        if (moduleFolder.exists() && hasJsonFiles(moduleFolder)) {
+            return moduleDir;
+        }
+        if (baseFolder.exists() && hasJsonFiles(baseFolder)) {
+            return baseDir;
+        }
+
+        // Fallback to module dir if it exists, otherwise base
+        return (moduleFolder.exists()) ? moduleDir : baseDir;
+    }
+
+    private static boolean hasJsonFiles(File folder) {
+        File[] files = folder.listFiles();
+        return files != null && Arrays.stream(files).anyMatch(f -> f.getName().endsWith(JSON_EXTENSION));
+    }
+
+    private static final String DIRECTORY = resolveDirectory();
     private static final String JSON_EXTENSION = ".json";
     private static final String ERR_DIR_NOT_FOUND = "Directory delle visite non trovata o non valida.";
-    private final ObjectMapper objectMapper; // Gestore JSON
-    private static final Logger logger = Logger.getLogger(FileManagerVisite.class.getName()); // Logger per debugging
-    // Formati per data e ora
+    private final ObjectMapper objectMapper;
+    private static final Logger logger = Logger.getLogger(FileManagerVisite.class.getName());
+
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HHmm");
-    // Lock per sincronizzazione multithread
     private final Object fileLock = new Object();
 
     public FileManagerVisite() {
-        this.objectMapper = new ObjectMapper(); // Inizializza ObjectMapper per gestire i file JSON
+        logger.info(() -> "[DEBUG] FileManagerVisite initialized. Using directory: "
+                + new File(DIRECTORY).getAbsolutePath());
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         File dir = new File(DIRECTORY);
-        if (!dir.exists() && !dir.mkdirs()) { // Crea la directory se non esiste
+        if (!dir.exists() && !dir.mkdirs()) {
             throw new IllegalStateException("Impossibile creare la directory: " + DIRECTORY);
         }
     }
@@ -46,7 +75,7 @@ public class FileManagerVisite implements DataStorageStrategy<Visita> {
         if (!isValid(visita)) { // Controllo validità
             throw new IllegalArgumentException("Visita non valida");
         }
-        return visita.getPaziente().getCodiceFiscalePaziente() + "_" +
+        return visita.getPazienteCodiceFiscale() + "_" +
                 visita.getData().format(DATE_FORMAT) + "_" +
                 visita.getOrario().format(TIME_FORMAT) + JSON_EXTENSION; // Nome file univoco
     }
@@ -63,8 +92,7 @@ public class FileManagerVisite implements DataStorageStrategy<Visita> {
      */
     private boolean isValid(Visita visita) {
         return visita != null &&
-                visita.getPaziente() != null &&
-                visita.getPaziente().getCodiceFiscalePaziente() != null &&
+                visita.getPazienteCodiceFiscale() != null &&
                 visita.getData() != null &&
                 visita.getOrario() != null;
     }
@@ -188,17 +216,8 @@ public class FileManagerVisite implements DataStorageStrategy<Visita> {
     /**
      * Verifica se lo slot della visita (data e orario) è disponibile nel file
      * system.
-     * Se esiste già un file che rappresenta una visita nello stesso slot, lo slot
-     * non è disponibile.
-     *
-     * @param data   La data della visita
-     * @param orario L'orario della visita
-     * @return true se non esiste una visita nello stesso slot (quindi lo slot è
-     *         disponibile),
-     *         false altrimenti.
      */
-    public boolean isVisitaDisponibileInFile(LocalDate data, LocalTime orario) {
-        // Validazione dei parametri
+    public boolean isVisitaDisponibileInFile(LocalDate data, LocalTime orario, int specialistId) {
         if (data == null || orario == null) {
             logger.warning("Dati non validi per la verifica della visita.");
             return false;
@@ -208,30 +227,28 @@ public class FileManagerVisite implements DataStorageStrategy<Visita> {
             File dir = new File(DIRECTORY);
             if (!dir.exists() || !dir.isDirectory()) {
                 logger.warning(ERR_DIR_NOT_FOUND);
-                // Se la directory non esiste, possiamo considerare lo slot come disponibile
                 return true;
             }
 
-            // Formatta la data e l'orario secondo i pattern definiti
             String dateStr = data.format(DATE_FORMAT);
             String timeStr = orario.format(TIME_FORMAT);
-            // Il suffisso del file da cercare (es: _20250219_1530.json)
             String suffix = "_" + dateStr + "_" + timeStr + JSON_EXTENSION;
 
-            // Elenca tutti i file presenti nella directory
             File[] files = dir.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    // Se il nome del file termina con il suffisso specificato,
-                    // significa che esiste già una visita per quella data e orario.
                     if (file.getName().endsWith(suffix)) {
-                        return false;
+                        // We found a visit at that time. Now we MUST check if it belongs to the same
+                        // specialist.
+                        Optional<Visita> existing = leggiFile(file);
+                        if (existing.isPresent() && existing.get().getSpecialistaId() == specialistId) {
+                            return false; // Already occupied for THIS specialist
+                        }
                     }
                 }
             }
         }
 
-        // Nessun file trovato per quella data/orario: lo slot è disponibile
         return true;
     }
 

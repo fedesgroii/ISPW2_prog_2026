@@ -17,10 +17,10 @@ public class DatabaseStorageStrategySpecialista implements DataStorageStrategy<S
 
     // Query SQL con nomi di colonne corretti
     private static final String INSERT_QUERY = "INSERT INTO specialista (nome, cognome, dataDiNascita, numeroTelefonico, email, specializzazione, password) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String SELECT_QUERY = "SELECT nome, cognome, dataDiNascita, numeroTelefonico, email, specializzazione, password FROM specialista WHERE nome = ? AND cognome = ? AND email = ?";
+    private static final String SELECT_QUERY = "SELECT id, nome, cognome, dataDiNascita, numeroTelefonico, email, specializzazione, password FROM specialista WHERE nome = ? AND cognome = ? AND email = ?";
     private static final String UPDATE_QUERY = "UPDATE specialista SET dataDiNascita = ?, numeroTelefonico = ?, specializzazione = ?, password = ? WHERE nome = ? AND cognome = ? AND email = ?";
     private static final String DELETE_QUERY = "DELETE FROM specialista WHERE nome = ? AND cognome = ? AND email = ?";
-    private static final String SELECT_ALL_QUERY = "SELECT nome, cognome, dataDiNascita, numeroTelefonico, email, specializzazione, password FROM specialista";
+    private static final String SELECT_ALL_QUERY = "SELECT id, nome, cognome, dataDiNascita, numeroTelefonico, email, specializzazione, password FROM specialista";
 
     @Override
     public boolean salva(Specialista specialista) {
@@ -138,6 +138,7 @@ public class DatabaseStorageStrategySpecialista implements DataStorageStrategy<S
      */
     private Specialista mapResultSetToSpecialista(ResultSet rs) throws SQLException {
         return new Specialista.Builder()
+                .id(rs.getInt("id"))
                 .nome(rs.getString("nome"))
                 .cognome(rs.getString("cognome"))
                 .dataDiNascita(rs.getDate("dataDiNascita").toLocalDate())
@@ -150,7 +151,7 @@ public class DatabaseStorageStrategySpecialista implements DataStorageStrategy<S
 
     @Override
     public Optional<Specialista> findByEmail(String email) {
-        String query = "SELECT nome, cognome, dataDiNascita, numeroTelefonico, email, specializzazione, password FROM specialista WHERE email = ?";
+        String query = "SELECT id, nome, cognome, dataDiNascita, numeroTelefonico, email, specializzazione, password FROM specialista WHERE email = ?";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, email);

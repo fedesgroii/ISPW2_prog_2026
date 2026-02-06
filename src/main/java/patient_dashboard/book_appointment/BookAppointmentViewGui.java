@@ -189,6 +189,7 @@ public class BookAppointmentViewGui implements View {
 
                 BookAppointmentBean tempBean = new BookAppointmentBean();
                 tempBean.setDate(date);
+                tempBean.setSpecialistId(specialist.getId());
                 tempBean.setSpecialist(specialist.getNome() + " " + specialist.getCognome());
 
                 CompletableFuture
@@ -227,7 +228,8 @@ public class BookAppointmentViewGui implements View {
         bean.setServiceType(serviceTypeCombo.getValue());
         model.Specialista selectedSpec = specialistCombo.getValue();
         if (selectedSpec != null) {
-            bean.setSpecialist(selectedSpec.getNome() + " " + selectedSpec.getCognome());
+            bean.setSpecialist(selectedSpec.getEmail());
+            bean.setSpecialistId(selectedSpec.getId());
         }
         bean.setName(nameField.getText());
         bean.setSurname(surnameField.getText());

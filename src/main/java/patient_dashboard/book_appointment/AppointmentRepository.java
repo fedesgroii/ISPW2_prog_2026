@@ -12,10 +12,34 @@ public interface AppointmentRepository {
      * Finds all appointments for a specific date and specialist.
      *
      * @param date         The date of the appointments.
-     * @param specialistId The identifier/name of the specialist.
+     * @param specialistId The identifier of the specialist.
      * @return A list of matching Visita objects.
      */
-    List<Visita> findByDateAndSpecialist(LocalDate date, String specialistId);
+    List<Visita> findByDateAndSpecialist(LocalDate date, int specialistId);
+
+    /**
+     * Finds all appointments for a specific specialist.
+     *
+     * @param specialistSurname The surname of the specialist.
+     * @return A list of matching Visita objects.
+     */
+    List<Visita> findBySpecialist(String specialistSurname);
+
+    /**
+     * Finds all appointments for a specific specialist by email.
+     *
+     * @param email The email of the specialist.
+     * @return A list of matching Visita objects.
+     */
+    List<Visita> findBySpecialistEmail(String email);
+
+    /**
+     * Finds all appointments for a specific specialist by their ID.
+     *
+     * @param specialistId The ID of the specialist.
+     * @return A list of matching Visita objects.
+     */
+    List<Visita> findBySpecialistId(int specialistId);
 
     /**
      * Saves a new appointment.
@@ -24,4 +48,12 @@ public interface AppointmentRepository {
      * @return true if saved successfully.
      */
     boolean save(Visita visita);
+
+    /**
+     * Deletes an appointment.
+     * 
+     * @param visita The visit to delete.
+     * @return true if deleted successfully.
+     */
+    boolean delete(Visita visita);
 }

@@ -4,6 +4,8 @@ import authentication.UserDAO;
 import model.Paziente;
 import model.Specialista;
 import storage_db.DataStorageStrategy;
+import storage_db.DatabaseStorageStrategyPaziente;
+import storage_db.DatabaseStorageStrategySpecialista;
 
 import java.util.Optional;
 
@@ -29,6 +31,26 @@ public class DatabaseUserDAO<T> implements UserDAO<T> {
                 Thread.currentThread().getName(), email));
         // Delega alla strategy che implementa findByEmail
         return strategy.findByEmail(email);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Optional<T> findById(String id) {
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering DatabaseUserDAO.findById: %s",
+                Thread.currentThread().getName(), id));
+        if (strategy instanceof DatabaseStorageStrategyPaziente) {
+            // Per il paziente, il metodo trova() usa il CF
+            Paziente dummy = new Paziente.Builder()
+                    .codiceFiscalePaziente(id)
+                    .email("dummy@dummy.com") // Obbligatorio per il builder
+                    .password("dummy") // Obbligatorio per il builder
+                    .build();
+            return (Optional<T>) ((DatabaseStorageStrategyPaziente) strategy).trova(dummy);
+        } else if (strategy instanceof DatabaseStorageStrategySpecialista) {
+            // Se servisse trovare uno specialista per ID in futuro
+            return Optional.empty();
+        }
+        return Optional.empty();
     }
 
     @Override

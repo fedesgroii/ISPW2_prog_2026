@@ -4,6 +4,7 @@ import select_type_login.LoginViewBoundaryCli;
 import login_insert_data.LoginViewCli;
 import patient_dashboard.PatientDashboardViewCli;
 import specialist_dashboard.SpecialistDashboardViewCli;
+import specialist_dashboard.manage_agenda.ManageAgendaViewCli;
 
 // Concrete Factory per le viste CLI
 // Implementa il Factory Method per creare solo viste a linea di comando
@@ -19,6 +20,7 @@ public class CliViewFactory extends ViewFactory {
                 case "PatientDashboard" -> new PatientDashboardViewCli();
                 case "SpecialistDashboard" -> new SpecialistDashboardViewCli();
                 case "Booking" -> new patient_dashboard.book_appointment.BookAppointmentViewCli();
+                case "Agenda" -> new ManageAgendaViewCli();
                 default -> null;
             };
         } catch (Exception e) {

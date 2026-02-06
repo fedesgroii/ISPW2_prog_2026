@@ -30,6 +30,15 @@ public interface UserDAO<T> {
     Optional<T> authenticateByEmailAndPassword(String email, String password);
 
     /**
+     * Finds a user by their primary unique identifier.
+     * 
+     * @param id The identifier (e.g., tax code for patients, numeric ID for
+     *           specialists)
+     * @return Optional containing the user if found, Optional.empty() otherwise
+     */
+    Optional<T> findById(String id);
+
+    /**
      * Recupera tutte le istanze degli attori gestiti da questo DAO.
      * 
      * @return Una lista contenente tutti gli utenti trovati

@@ -18,15 +18,40 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FileManagerSpecialisti implements DataStorageStrategy<Specialista> {
-    private static final String DIRECTORY = "src/main/resources/specialisti_salvati/";
-    private static final String FILE_EXTENSION = ".json"; // Definisci una costante per l'estensione del file
+    private static String resolveDirectory() {
+        String baseDir = "src/main/resources/specialisti_salvati/";
+        String moduleDir = "ISPW2_PROG_2026/" + baseDir;
+
+        File moduleFolder = new File(moduleDir);
+        File baseFolder = new File(baseDir);
+
+        // Prefer the directory that exists AND contains files
+        if (moduleFolder.exists() && hasJsonFiles(moduleFolder)) {
+            return moduleDir;
+        }
+        if (baseFolder.exists() && hasJsonFiles(baseFolder)) {
+            return baseDir;
+        }
+
+        // Fallback to module dir if it exists, otherwise base
+        return (moduleFolder.exists()) ? moduleDir : baseDir;
+    }
+
+    private static boolean hasJsonFiles(File folder) {
+        File[] files = folder.listFiles();
+        return files != null && Arrays.stream(files).anyMatch(f -> f.getName().endsWith(FILE_EXTENSION));
+    }
+
+    private static final String DIRECTORY = resolveDirectory();
+    private static final String FILE_EXTENSION = ".json";
 
     private final ObjectMapper objectMapper;
     private static final Logger logger = Logger.getLogger(FileManagerSpecialisti.class.getName());
-    // Lock per sincronizzazione multithread
     private final Object fileLock = new Object();
 
     public FileManagerSpecialisti() {
+        logger.info(() -> "[DEBUG] FileManagerSpecialisti initialized. Using directory: "
+                + new File(DIRECTORY).getAbsolutePath());
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
         this.objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);

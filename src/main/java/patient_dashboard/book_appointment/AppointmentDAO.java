@@ -44,7 +44,7 @@ public class AppointmentDAO implements AppointmentRepository {
     }
 
     @Override
-    public List<Visita> findByDateAndSpecialist(LocalDate date, String specialistId) {
+    public List<Visita> findByDateAndSpecialist(LocalDate date, int specialistId) {
         List<Visita> allVisite;
 
         switch (storageOption) {
@@ -62,12 +62,51 @@ public class AppointmentDAO implements AppointmentRepository {
 
         return allVisite.stream()
                 .filter(v -> v.getData() != null && v.getData().equals(date) &&
-                        v.getSpecialista() != null && v.getSpecialista().equals(specialistId))
+                        v.getSpecialistaId() == specialistId)
                 .toList();
     }
 
     @Override
+    public List<Visita> findBySpecialist(String specialistSurname) {
+        // Not implemented case - requires joining with Specialist DAO which is not
+        // allowed to be modified here
+        return List.of();
+    }
+
+    @Override
+    public List<Visita> findBySpecialistId(int specialistId) {
+        LOGGER.info(() -> "[DEBUG-DAO] findBySpecialistId called for ID: " + specialistId + " (Storage: "
+                + storageOption + ")");
+        List<Visita> allVisite;
+
+        switch (storageOption) {
+            case 0: // RAM
+                allVisite = getRamList().getObservableListaVisite();
+                break;
+            case 1: // DB
+                return getDbStrategy().findBySpecialistId(specialistId);
+            case 2: // FILE
+                allVisite = getFileManager().getAllInstanceOfActor();
+                break;
+            default:
+                throw new IllegalStateException("Unexpected storage option: " + storageOption);
+        }
+
+        List<Visita> filtered = allVisite.stream()
+                .filter(v -> v.getSpecialistaId() == specialistId)
+                .toList();
+        LOGGER.info(() -> "[DEBUG-DAO] Found " + filtered.size() + " visits for specialist ID: " + specialistId);
+        return filtered;
+    }
+
+    @Override
+    public List<Visita> findBySpecialistEmail(String email) {
+        return List.of();
+    }
+
+    @Override
     public boolean save(Visita visita) {
+        LOGGER.info(() -> "[DEBUG-DAO] Saving Visita: " + visita + " (Storage: " + storageOption + ")");
         try {
             switch (storageOption) {
                 case 0: // RAM
@@ -81,6 +120,28 @@ public class AppointmentDAO implements AppointmentRepository {
             }
         } catch (Exception e) {
             LOGGER.severe(() -> "Error in save appointment: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean delete(Visita visita) {
+        try {
+            switch (storageOption) {
+                case 0: // RAM
+                    return getRamList().rimuoviVisita(
+                            visita.getPazienteCodiceFiscale(),
+                            visita.getData(),
+                            visita.getOrario());
+                case 1: // DB
+                    return getDbStrategy().elimina(visita);
+                case 2: // FILE
+                    return getFileManager().elimina(visita);
+                default:
+                    throw new IllegalStateException("Unexpected storage option: " + storageOption);
+            }
+        } catch (Exception e) {
+            LOGGER.severe(() -> "Error in delete appointment: " + e.getMessage());
             return false;
         }
     }

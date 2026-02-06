@@ -41,6 +41,26 @@ public class FileUserDAO<T> implements UserDAO<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public Optional<T> findById(String id) {
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering FileUserDAO.findById: %s",
+                Thread.currentThread().getName(), id));
+        if (fileManager instanceof FileManagerPazienti) {
+            Paziente dummy = new Paziente.Builder()
+                    .codiceFiscalePaziente(id)
+                    .email("dummy@dummy.com")
+                    .password("dummy")
+                    .build();
+            return (Optional<T>) ((FileManagerPazienti) fileManager).trova(dummy);
+        } else if (fileManager instanceof FileManagerSpecialisti) {
+            // Il file manager specialisti usa la specializzazione come ID del file.
+            // Se id è la specializzazione, funziona.
+            return (Optional<T>) ((FileManagerSpecialisti) fileManager).trovaPerSpecializzazione(id);
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public java.util.List<T> getAllInstanceOfActor() {
         LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Entering FileUserDAO.getAllInstanceOfActor",
                 Thread.currentThread().getName()));

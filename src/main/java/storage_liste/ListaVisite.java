@@ -39,20 +39,24 @@ public class ListaVisite {
             logger.warning("Tentativo di aggiungere una visita nulla.");
             return false;
         }
+        logger.info(() -> String.format(
+                "[DEBUG-RAM] Adding Visita to ListaVisite: SpecId=%d, Paziente=%s, Data=%s, Orario=%s",
+                visita.getSpecialistaId(), visita.getPazienteCodiceFiscale(), visita.getData(), visita.getOrario()));
         observableListaVisite.add(visita);
         return true;
     }
 
-    // Metodo per rimuovere una visita (identificata da codice fiscale, data e orario)
-    public boolean rimuoviVisita(String codiceFiscale, String data, String orario) {
+    // Metodo per rimuovere una visita (identificata da codice fiscale, data e
+    // orario)
+    public boolean rimuoviVisita(String codiceFiscale, LocalDate data, LocalTime orario) {
         if (codiceFiscale == null || data == null || orario == null) {
             logger.warning("Dati non validi per la rimozione della visita.");
             return false;
         }
-        return observableListaVisite.removeIf(visita ->
-                visita.getPaziente().getCodiceFiscalePaziente().equalsIgnoreCase(codiceFiscale) &&
-                        visita.getData().toString().equals(data) &&
-                        visita.getOrario().toString().equals(orario));
+        return observableListaVisite
+                .removeIf(visita -> visita.getPazienteCodiceFiscale().equalsIgnoreCase(codiceFiscale) &&
+                        visita.getData().equals(data) &&
+                        visita.getOrario().equals(orario));
     }
 
     // Metodo per visualizzare la lista di visite
@@ -70,17 +74,16 @@ public class ListaVisite {
         }
     }
 
-
     // Metodo per trovare una visita per codice fiscale, data e orario
-    public Optional<Visita> trovaVisita(String codiceFiscale, String data, String orario) {
+    public Optional<Visita> trovaVisita(String codiceFiscale, LocalDate data, LocalTime orario) {
         if (codiceFiscale == null || data == null || orario == null) {
             logger.warning("Dati non validi per la ricerca della visita.");
             return Optional.empty();
         }
         return observableListaVisite.stream()
-                .filter(visita -> visita.getPaziente().getCodiceFiscalePaziente().equalsIgnoreCase(codiceFiscale) &&
-                        visita.getData().toString().equals(data) &&
-                        visita.getOrario().toString().equals(orario))
+                .filter(visita -> visita.getPazienteCodiceFiscale().equalsIgnoreCase(codiceFiscale) &&
+                        visita.getData().equals(data) &&
+                        visita.getOrario().equals(orario))
                 .findFirst();
     }
 
@@ -89,23 +92,25 @@ public class ListaVisite {
         return observableListaVisite;
     }
 
-
     /**
-     * Verifica se lo slot per una visita (data e orario) è disponibile all'interno della lista.
+     * Verifica se lo slot per una visita (data e orario) è disponibile all'interno
+     * della lista.
      *
      * @param data   La data della visita.
      * @param orario L'orario della visita.
-     * @return true se lo slot è disponibile, false se esiste già una visita con la stessa data e orario.
+     * @return true se lo slot è disponibile, false se esiste già una visita con la
+     *         stessa data e orario.
      */
-    public boolean isVisitaDisponibileInLista(LocalDate data, LocalTime orario) {
+    public boolean isVisitaDisponibileInLista(LocalDate data, LocalTime orario, int specialistId) {
         if (data == null || orario == null) {
             logger.warning("Dati non validi per la verifica della visita.");
             return false;
         }
 
         return observableListaVisite.stream()
-                .noneMatch(visita -> data.isEqual(visita.getData()) && orario.equals(visita.getOrario()));
+                .noneMatch(visita -> data.isEqual(visita.getData()) &&
+                        orario.equals(visita.getOrario()) &&
+                        visita.getSpecialistaId() == specialistId);
     }
-
 
 }

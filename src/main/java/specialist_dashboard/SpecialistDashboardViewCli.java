@@ -1,9 +1,6 @@
 package specialist_dashboard;
 
 import javafx.stage.Stage;
-import model.Specialista;
-import navigation.AppNavigator;
-import navigation.CliViewFactory;
 import navigation.View;
 import startupconfig.StartupConfigBean;
 
@@ -32,12 +29,13 @@ import java.util.logging.Logger;
  * 
  * @author MindLab Development Team
  * @version 1.0
- * @see SpecialistDashboardView
+ * @see SpecialistDashboardViewGui
  */
 public class SpecialistDashboardViewCli implements View {
 
     private static final Logger LOGGER = Logger.getLogger(SpecialistDashboardViewCli.class.getName());
     private final SpecialistDashboardController controller = new SpecialistDashboardController();
+    private final SpecialistDashboardGraphicControllerCli graphicController = new SpecialistDashboardGraphicControllerCli();
 
     /**
      * Displays the specialist dashboard CLI menu.
@@ -51,35 +49,32 @@ public class SpecialistDashboardViewCli implements View {
         LOGGER.info(() -> String.format("[DEBUG][Thread: %s] SpecialistDashboardViewCli.show() called",
                 Thread.currentThread().getName()));
 
-        // Session validation via Application Controller
-        controller.checkSession();
-
-        // Retrieve logged-in specialist via Application Controller
-        Specialista specialista = controller.getLoggedSpecialist();
+        // Retrieve data via Graphic Controller and Bean
+        SpecialistDashboardBean bean = graphicController.getDashboardData(controller);
         LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Displaying CLI dashboard for specialist: %s",
-                Thread.currentThread().getName(), specialista.getNome()));
+                Thread.currentThread().getName(), bean.getNome()));
 
         // Display menu loop
-        displayMenuLoop(specialista, config);
+        displayMenuLoop(bean, config);
     }
 
     /**
      * Displays the menu and handles user selection.
      */
-    private void displayMenuLoop(Specialista specialista, StartupConfigBean config) {
+    private void displayMenuLoop(SpecialistDashboardBean bean, StartupConfigBean config) {
         Scanner scanner = ConsoleScanner.getScanner();
         boolean exitRequested = false;
 
         while (!exitRequested) {
-            printDashboardMenu(specialista);
+            printDashboardMenu(bean);
 
             printMessage("\nSeleziona un'opzione: ");
             String input = scanner.nextLine().trim();
 
             switch (input) {
-                case "1" -> navigateToView("Agenda", config);
-                case "2" -> navigateToView("PatientsList", config);
-                case "3" -> navigateToView("Reports", config);
+                case "1" -> graphicController.navigateToView("Agenda", config);
+                case "2" -> graphicController.navigateToView("PatientsList", config);
+                case "3" -> graphicController.navigateToView("Reports", config);
                 case "4" -> {
                     printMessage("\n=== BACHECA ===");
                     printMessage("Comunicazioni e aggiornamenti dallo staff");
@@ -87,10 +82,10 @@ public class SpecialistDashboardViewCli implements View {
                     printMessage("\nPremi INVIO per continuare...");
                     scanner.nextLine();
                 }
-                case "5" -> navigateToView("Visits", config);
+                case "5" -> graphicController.navigateToView("Visits", config);
                 case "0" -> {
                     exitRequested = true;
-                    printMessage("\nArrivederci, Dott. " + specialista.getCognome() + "!");
+                    printMessage("\nArrivederci, Dott. " + bean.getCognome() + "!");
                     LOGGER.info(() -> String.format("[DEBUG][Thread: %s] User requested exit from dashboard",
                             Thread.currentThread().getName()));
                 }
@@ -102,11 +97,11 @@ public class SpecialistDashboardViewCli implements View {
     /**
      * Prints the main dashboard menu.
      */
-    private void printDashboardMenu(Specialista specialista) {
+    private void printDashboardMenu(SpecialistDashboardBean bean) {
         printMessage("\n" + "=".repeat(50));
         printMessage("    HOME - MINDLAB PORTAL (SPECIALISTA)");
         printMessage("=".repeat(50));
-        printMessage("Ciao, " + specialista.getNome() + "!");
+        printMessage("Ciao, " + bean.getNome() + "!");
         printMessage("");
         printMessage("1. La mia agenda");
         printMessage("   Gestisci i tuoi appuntamenti e la disponibilità");
@@ -129,26 +124,6 @@ public class SpecialistDashboardViewCli implements View {
 
     /**
      * Navigates to a specified view.
-     */
-    private void navigateToView(String viewName, StartupConfigBean config) {
-        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] CLI navigation from SpecialistDashboard to: %s",
-                Thread.currentThread().getName(), viewName));
-
-        try {
-            CliViewFactory factory = new CliViewFactory();
-            AppNavigator navigator = new AppNavigator(factory);
-            navigator.navigateTo(viewName, config, null);
-        } catch (Exception e) {
-            LOGGER.warning(() -> String.format("[DEBUG][Thread: %s] CLI navigation failed to %s: %s",
-                    Thread.currentThread().getName(), viewName, e.getMessage()));
-            printMessage("\n[ERRORE] Impossibile navigare a " + viewName + ": " + e.getMessage());
-            printMessage("Premi INVIO per continuare...");
-            ConsoleScanner.getScanner().nextLine();
-        }
-    }
-
-    /**
-     * Prints a message to stdout.
      */
     private void printMessage(String message) {
         System.out.println(message);

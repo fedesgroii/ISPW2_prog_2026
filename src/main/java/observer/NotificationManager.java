@@ -3,6 +3,7 @@ package observer;
 import model.Visita;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -32,32 +33,46 @@ public class NotificationManager implements VisitSubject {
     public synchronized void registerObserver(SpecialistNotificationObserver observer) {
         if (!observers.contains(observer)) {
             observers.add(observer);
-            LOGGER.info("[DEBUG] Observer registered: " + observer.getClass().getSimpleName());
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "[DEBUG] Observer registered: {0}", observer.getClass().getSimpleName());
+            }
         }
     }
 
     @Override
     public synchronized void removeObserver(SpecialistNotificationObserver observer) {
         observers.remove(observer);
-        LOGGER.info("[DEBUG] Observer removed: " + observer.getClass().getSimpleName());
+        if (LOGGER.isLoggable(Level.INFO)) {
+            LOGGER.log(Level.INFO, "[DEBUG] Observer removed: {0}", observer.getClass().getSimpleName());
+        }
     }
 
     @Override
     public synchronized void notifyObservers(Visita visit) {
-        LOGGER.info(
-                "[DEBUG-NOTIF-MGR-1] notifyObservers() called. Number of registered observers: " + observers.size());
-        LOGGER.info("[DEBUG-NOTIF-MGR-2] Visit to notify - SpecialistaId: [" + visit.getSpecialistaId() + "], Data: ["
-                + visit.getData() + "]");
+        if (LOGGER.isLoggable(Level.INFO)) {
+            LOGGER.log(Level.INFO, "[DEBUG-NOTIF-MGR-1] notifyObservers() called. Number of registered observers: {0}",
+                    observers.size());
+            LOGGER.log(Level.INFO, "[DEBUG-NOTIF-MGR-2] Visit to notify - SpecialistaId: [{0}], Data: [{1}]",
+                    new Object[] { visit.getSpecialistaId(), visit.getData() });
+        }
 
         notificationHistory.add(visit); // Store in history
-        LOGGER.info("[DEBUG-NOTIF-MGR-3] Added to history. Total history size: " + notificationHistory.size());
+
+        if (LOGGER.isLoggable(Level.INFO)) {
+            LOGGER.log(Level.INFO, "[DEBUG-NOTIF-MGR-3] Added to history. Total history size: {0}",
+                    notificationHistory.size());
+        }
 
         for (int i = 0; i < observers.size(); i++) {
             SpecialistNotificationObserver observer = observers.get(i);
-            LOGGER.info(
-                    "[DEBUG-NOTIF-MGR-4] Notifying observer #" + (i + 1) + ": " + observer.getClass().getSimpleName());
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "[DEBUG-NOTIF-MGR-4] Notifying observer #{0}: {1}",
+                        new Object[] { i + 1, observer.getClass().getSimpleName() });
+            }
             observer.update(visit);
-            LOGGER.info("[DEBUG-NOTIF-MGR-5] Observer #" + (i + 1) + " notified.");
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "[DEBUG-NOTIF-MGR-5] Observer #{0} notified.", i + 1);
+            }
         }
         LOGGER.info("[DEBUG-NOTIF-MGR-6] All observers notified.");
     }

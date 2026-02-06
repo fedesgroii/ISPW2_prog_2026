@@ -98,8 +98,8 @@ public class ManagerAgendaControllerApp {
                                 v.getData(),
                                 v.getOrario(),
                                 name,
-                                v.getTipo_visita(),
-                                v.getMotivo_visita(),
+                                v.getTipoVisita(),
+                                v.getMotivoVisita(),
                                 v.getStato());
                     })
                     .toList();

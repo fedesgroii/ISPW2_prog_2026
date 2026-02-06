@@ -106,9 +106,11 @@ public class BookAppointmentViewGui implements View {
         Button cancelButton = DashboardStyleHelper.createStyledButton("Annulla", false);
         Button submitButton = DashboardStyleHelper.createStyledButton("Prenota ora", true);
 
+        BookingComponents components = new BookingComponents(serviceTypeCombo, specialistCombo, nameField,
+                surnameField, dobField, phoneField, emailField, reasonField, datePicker, timeCombo);
+
         cancelButton.setOnAction(_ -> graphicController.navigateToDashboard(config, stage));
-        submitButton.setOnAction(_ -> handleBookingSubmit(serviceTypeCombo, specialistCombo, nameField, surnameField,
-                dobField, phoneField, emailField, reasonField, datePicker, timeCombo, config, stage));
+        submitButton.setOnAction(_ -> handleBookingSubmit(components, config, stage));
 
         buttonBox.getChildren().addAll(cancelButton, submitButton);
         formContainer.getChildren().add(buttonBox);
@@ -219,27 +221,23 @@ public class BookAppointmentViewGui implements View {
         specialistCombo.valueProperty().addListener((_, _, _) -> updateSlots.run());
     }
 
-    private void handleBookingSubmit(ComboBox<String> serviceTypeCombo, ComboBox<model.Specialista> specialistCombo,
-            TextField nameField, TextField surnameField, TextField dobField,
-            TextField phoneField, TextField emailField, TextField reasonField,
-            DatePicker datePicker, ComboBox<String> timeCombo,
-            StartupConfigBean config, Stage stage) {
+    private void handleBookingSubmit(BookingComponents components, StartupConfigBean config, Stage stage) {
         BookAppointmentBean bean = new BookAppointmentBean();
-        bean.setServiceType(serviceTypeCombo.getValue());
-        model.Specialista selectedSpec = specialistCombo.getValue();
+        bean.setServiceType(components.serviceTypeCombo().getValue());
+        model.Specialista selectedSpec = components.specialistCombo().getValue();
         if (selectedSpec != null) {
             bean.setSpecialist(selectedSpec.getEmail());
             bean.setSpecialistId(selectedSpec.getId());
         }
-        bean.setName(nameField.getText());
-        bean.setSurname(surnameField.getText());
-        bean.setDateOfBirth(dobField.getText());
-        bean.setPhone(phoneField.getText());
-        bean.setEmail(emailField.getText());
-        bean.setReason(reasonField.getText());
-        bean.setDate(datePicker.getValue());
+        bean.setName(components.nameField().getText());
+        bean.setSurname(components.surnameField().getText());
+        bean.setDateOfBirth(components.dobField().getText());
+        bean.setPhone(components.phoneField().getText());
+        bean.setEmail(components.emailField().getText());
+        bean.setReason(components.reasonField().getText());
+        bean.setDate(components.datePicker().getValue());
         try {
-            String timeStr = timeCombo.getValue();
+            String timeStr = components.timeCombo().getValue();
             if (timeStr != null && !timeStr.isEmpty()) {
                 bean.setTime(LocalTime.parse(timeStr));
             }
@@ -294,5 +292,18 @@ public class BookAppointmentViewGui implements View {
         tf.setPromptText(prompt);
         tf.setStyle("-fx-padding: 8 10; -fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 6;");
         return tf;
+    }
+
+    private record BookingComponents(
+            ComboBox<String> serviceTypeCombo,
+            ComboBox<model.Specialista> specialistCombo,
+            TextField nameField,
+            TextField surnameField,
+            TextField dobField,
+            TextField phoneField,
+            TextField emailField,
+            TextField reasonField,
+            DatePicker datePicker,
+            ComboBox<String> timeCombo) {
     }
 }

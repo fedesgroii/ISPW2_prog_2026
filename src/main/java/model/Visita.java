@@ -23,10 +23,10 @@ public class Visita {
     private LocalTime orario;
 
     @JsonProperty("tipo_visita")
-    private String tipo_visita;
+    private String tipoVisita;
 
     @JsonProperty("motivo_visita")
-    private String motivo_visita;
+    private String motivoVisita;
 
     @JsonProperty("stato")
     private String stato;
@@ -37,25 +37,21 @@ public class Visita {
             @JsonProperty("data") LocalDate data,
             @JsonProperty("orario") LocalTime orario,
             @JsonProperty("specialista_id") int specialistaId,
-            @JsonProperty("tipo_visita") String tipo_visita,
-            @JsonProperty("motivo_visita") String motivo_visita,
+            @JsonProperty("tipo_visita") String tipoVisita,
+            @JsonProperty("motivo_visita") String motivoVisita,
             @JsonProperty("stato") String stato) {
         this.pazienteCodiceFiscale = pazienteCodiceFiscale;
         this.data = data;
         this.orario = orario;
         this.specialistaId = specialistaId;
-        this.tipo_visita = tipo_visita;
-        this.motivo_visita = motivo_visita;
+        this.tipoVisita = tipoVisita;
+        this.motivoVisita = motivoVisita;
         this.stato = stato;
     }
 
     // Getters and Setters
     public String getPazienteCodiceFiscale() {
         return pazienteCodiceFiscale;
-    }
-
-    public void setPazienteCodiceFiscale(String pazienteCodiceFiscale) {
-        this.pazienteCodiceFiscale = pazienteCodiceFiscale;
     }
 
     public LocalDate getData() {
@@ -70,40 +66,20 @@ public class Visita {
         return orario;
     }
 
-    public void setOrario(LocalTime orario) {
-        this.orario = orario;
-    }
-
     public int getSpecialistaId() {
         return specialistaId;
     }
 
-    public void setSpecialistaId(int specialistaId) {
-        this.specialistaId = specialistaId;
+    public String getTipoVisita() {
+        return tipoVisita;
     }
 
-    public String getTipo_visita() {
-        return tipo_visita;
-    }
-
-    public void setTipo_visita(String tipo_visita) {
-        this.tipo_visita = tipo_visita;
-    }
-
-    public String getMotivo_visita() {
-        return motivo_visita;
-    }
-
-    public void setMotivo_visita(String motivo_visita) {
-        this.motivo_visita = motivo_visita;
+    public String getMotivoVisita() {
+        return motivoVisita;
     }
 
     public String getStato() {
         return stato;
-    }
-
-    public void setStato(String stato) {
-        this.stato = stato;
     }
 
     @Override

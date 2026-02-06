@@ -33,8 +33,8 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
             stmt.setInt(2, visita.getSpecialistaId());
             stmt.setObject(3, visita.getData());
             stmt.setObject(4, visita.getOrario());
-            stmt.setString(5, visita.getTipo_visita());
-            stmt.setString(6, visita.getMotivo_visita());
+            stmt.setString(5, visita.getTipoVisita());
+            stmt.setString(6, visita.getMotivoVisita());
             stmt.setString(7, visita.getStato());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -67,8 +67,8 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
         Objects.requireNonNull(visita, VISITA_NOT_NULL_MESSAGE);
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(UPDATE_QUERY)) {
-            stmt.setString(1, visita.getTipo_visita());
-            stmt.setString(2, visita.getMotivo_visita());
+            stmt.setString(1, visita.getTipoVisita());
+            stmt.setString(2, visita.getMotivoVisita());
             stmt.setString(3, visita.getStato());
             setKeyParameters(stmt, 4, visita);
             return stmt.executeUpdate() > 0;

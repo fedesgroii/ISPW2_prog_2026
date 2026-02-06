@@ -5,6 +5,7 @@ import model.Paziente;
 import model.Visita;
 import authentication.UserDAO;
 import session_manager.SessionManagerSpecialista;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -39,68 +40,96 @@ public class SpecialistDashboardController {
         try {
             LOGGER.info("[DEBUG-SPEC-CTRL-4] Loading appointments from persistent storage...");
             Specialista logged = getLoggedSpecialist();
-            LOGGER.info("[DEBUG-SPEC-CTRL-5] Querying appointments for specialist: " + logged.getCognome());
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "[DEBUG-SPEC-CTRL-5] Querying appointments for specialist: {0}",
+                        logged.getCognome());
+            }
 
             java.util.List<model.Visita> specialistAppointments = daos.appointmentRepository
                     .findBySpecialistId(logged.getId());
-            LOGGER.info("[DEBUG-SPEC-CTRL-6] Found " + specialistAppointments.size() + " appointments from storage.");
+
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "[DEBUG-SPEC-CTRL-6] Found {0} appointments from storage.",
+                        specialistAppointments.size());
+            }
 
             // Process each appointment as notification
             for (model.Visita v : specialistAppointments) {
-                LOGGER.info("[DEBUG-SPEC-CTRL-7] Processing appointment: " + v);
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.log(Level.INFO, "[DEBUG-SPEC-CTRL-7] Processing appointment: {0}", v);
+                }
                 if (!unreadNotifications.contains(v)) {
                     unreadNotifications.add(v);
                 }
             }
-            LOGGER.info(
-                    "[DEBUG-SPEC-CTRL-8] Constructor completed. Unread notifications: " + unreadNotifications.size());
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "[DEBUG-SPEC-CTRL-8] Constructor completed. Unread notifications: {0}",
+                        unreadNotifications.size());
+            }
         } catch (Exception e) {
-            LOGGER.warning("[DEBUG-SPEC-CTRL-ERROR] Error loading appointments: " + e.getMessage());
+            if (LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.log(Level.WARNING, "[DEBUG-SPEC-CTRL-ERROR] Error loading appointments: {0}", e.getMessage());
+            }
         }
     }
 
     private void onNewVisit(model.Visita visit) {
-        LOGGER.info("[DEBUG-SPEC-ON-VISIT-1] onNewVisit() called with visit: " + visit);
+        if (LOGGER.isLoggable(Level.INFO)) {
+            LOGGER.log(Level.INFO, "[DEBUG-SPEC-ON-VISIT-1] onNewVisit() called with visit: {0}", visit);
+        }
         try {
             LOGGER.info("[DEBUG-SPEC-ON-VISIT-2] Attempting to get logged specialist...");
             Specialista logged = getLoggedSpecialist();
-            LOGGER.info(
-                    "[DEBUG-SPEC-ON-VISIT-3] Logged specialist: " + (logged != null ? logged.getCognome() : "NULL"));
 
-            if (logged != null) {
-                LOGGER.info(
-                        "[DEBUG-SPEC-ON-VISIT-4] Logged is non-null. Proceeding with matching...");
-                // Robust matching: Check if visit specialist ID matches logged specialist ID
-                int visitSpecId = visit.getSpecialistaId();
-                Integer loggedId = logged.getId();
-
-                LOGGER.info(String.format("[DEBUG-SPEC-ON-VISIT-5] Comparing: visitSpecId=[%d] vs loggedId=[%d]",
-                        visitSpecId, loggedId));
-
-                if (loggedId != null && visitSpecId == loggedId) {
-                    LOGGER.info("[DEBUG-SPEC-ON-VISIT-6] MATCH FOUND! Adding to unread notifications.");
-                    // Avoid duplicates
-                    if (!unreadNotifications.contains(visit)) {
-                        unreadNotifications.add(visit);
-                        LOGGER.info("[DEBUG-SPEC-ON-VISIT-7] Visit added. Total unread: " + unreadNotifications.size());
-                        if (onNotificationReceived != null) {
-                            LOGGER.info("[DEBUG-SPEC-ON-VISIT-8] Triggering UI update callback...");
-                            javafx.application.Platform.runLater(onNotificationReceived);
-                        } else {
-                            LOGGER.warning("[DEBUG-SPEC-ON-VISIT-9] UI callback is NULL!");
-                        }
-                    } else {
-                        LOGGER.info("[DEBUG-SPEC-ON-VISIT-10] Visit already in unread list (duplicate).");
-                    }
-                } else {
-                    LOGGER.info("[DEBUG-SPEC-ON-VISIT-11] NO MATCH. Visit is for different specialist.");
+            if (logged == null) {
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.log(Level.WARNING, "[DEBUG-SPEC-ON-VISIT-12] Null check failed. logged={0}", logged);
                 }
-            } else {
-                LOGGER.warning("[DEBUG-SPEC-ON-VISIT-12] Null check failed. logged=" + logged);
+                return;
             }
+
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "[DEBUG-SPEC-ON-VISIT-3] Logged specialist: {0}", logged.getCognome());
+            }
+
+            LOGGER.info("[DEBUG-SPEC-ON-VISIT-4] Logged is non-null. Proceeding with matching...");
+            int visitSpecId = visit.getSpecialistaId();
+            Integer loggedId = logged.getId();
+
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "[DEBUG-SPEC-ON-VISIT-5] Comparing: visitSpecId=[{0}] vs loggedId=[{1}]",
+                        new Object[] { visitSpecId, loggedId });
+            }
+
+            if (loggedId == null || visitSpecId != loggedId) {
+                LOGGER.info("[DEBUG-SPEC-ON-VISIT-11] NO MATCH. Visit is for different specialist.");
+                return;
+            }
+
+            LOGGER.info("[DEBUG-SPEC-ON-VISIT-6] MATCH FOUND! Adding to unread notifications.");
+            if (unreadNotifications.contains(visit)) {
+                LOGGER.info("[DEBUG-SPEC-ON-VISIT-10] Visit already in unread list (duplicate).");
+                return;
+            }
+
+            unreadNotifications.add(visit);
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "[DEBUG-SPEC-ON-VISIT-7] Visit added. Total unread: {0}",
+                        unreadNotifications.size());
+            }
+
+            if (onNotificationReceived == null) {
+                LOGGER.warning("[DEBUG-SPEC-ON-VISIT-9] UI callback is NULL!");
+                return;
+            }
+
+            LOGGER.info("[DEBUG-SPEC-ON-VISIT-8] Triggering UI update callback...");
+            javafx.application.Platform.runLater(onNotificationReceived);
+
         } catch (Exception e) {
-            // Log warning but don't crash
-            LOGGER.warning("Error processing notification: " + e.getMessage());
+            if (LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.log(Level.WARNING, "Error processing notification: {0}", e.getMessage());
+            }
         }
     }
 
@@ -159,6 +188,6 @@ public class SpecialistDashboardController {
     public String getPatientName(String cf) {
         return pazienteDAO.findById(cf)
                 .map(p -> p.getNome() + " " + p.getCognome())
-                .orElse("Paziente non trovato (" + cf + ")");
+                .orElseGet(() -> "Paziente non trovato (" + cf + ")");
     }
 }

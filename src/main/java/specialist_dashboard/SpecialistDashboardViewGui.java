@@ -325,7 +325,7 @@ public class SpecialistDashboardViewGui implements View {
         for (model.Visita v : notifications) {
             String patientName = controller.getPatientName(v.getPazienteCodiceFiscale());
             content.append(String.format("- %s: %s con %s\n",
-                    v.getData(), v.getTipo_visita(), patientName));
+                    v.getData(), v.getTipoVisita(), patientName));
         }
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

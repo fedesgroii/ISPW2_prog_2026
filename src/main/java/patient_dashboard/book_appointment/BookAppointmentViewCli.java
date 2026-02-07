@@ -19,19 +19,30 @@ public class BookAppointmentViewCli implements View {
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
+    // Input fields
+    private String serviceType;
+    private String specialist;
+    private int specialistId;
+    private String reason;
+    private LocalDate date;
+    private LocalTime time;
+    private String name;
+    private String surname;
+    private String email;
+    private String phone;
+    private String dateOfBirth;
+
     @Override
     public void show(javafx.stage.Stage stage, StartupConfigBean config) {
         printMessage("\n--- MindLab: Prenotazione Visita ---");
 
         try {
-            BookAppointmentBean bean = new BookAppointmentBean();
-
             // 1. Service Type
             printMessage("Seleziona tipo di prestazione:");
             printMessage("1) Online");
             printMessage("2) In presenza");
             int choice = readInt(1, 2);
-            bean.setServiceType(choice == 1 ? "Online" : "In presenza");
+            this.serviceType = (choice == 1 ? "Online" : "In presenza");
 
             // 2. Details
             java.util.List<model.Specialista> specialists = graphicController.getAvailableSpecialists(config);
@@ -39,7 +50,8 @@ public class BookAppointmentViewCli implements View {
             if (specialists.isEmpty()) {
                 printMessage("[WARNING] Nessun specialista trovato nel sistema.");
                 printMessage("Inserisci nome specialista manualmente: ");
-                bean.setSpecialist(scanner.nextLine());
+                this.specialist = scanner.nextLine();
+                this.specialistId = 0; // Or handle as needed
             } else {
                 for (int i = 0; i < specialists.size(); i++) {
                     model.Specialista s = specialists.get(i);
@@ -48,23 +60,30 @@ public class BookAppointmentViewCli implements View {
                 }
                 int specChoice = readInt(1, specialists.size());
                 model.Specialista selected = specialists.get(specChoice - 1);
-                bean.setSpecialist(selected.getEmail());
-                bean.setSpecialistId(selected.getId());
+                this.specialist = selected.getEmail();
+                this.specialistId = selected.getId();
             }
 
             printMessage("Motivo della visita (invio per saltare): ");
-            bean.setReason(scanner.nextLine());
+            this.reason = scanner.nextLine();
 
             // 3. Date & Time
-            LocalDate selectedDate = readDate("Data della visita (GG/MM/AAAA): ");
-            bean.setDate(selectedDate);
+            this.date = readDate("Data della visita (GG/MM/AAAA): ");
 
-            LocalTime selectedTime = selectSlot(selectedDate, bean);
+            // Need a temp bean just for slot selection helper, or refactor helper too.
+            // For now, let's create a temp bean solely for the slot checking,
+            // but the official data is stored in the view fields.
+            BookAppointmentBean tempBeanForSlots = new BookAppointmentBean();
+            tempBeanForSlots.setDate(this.date);
+            tempBeanForSlots.setSpecialistId(this.specialistId);
+            tempBeanForSlots.setSpecialist(this.specialist);
+
+            LocalTime selectedTime = selectSlot(this.date, tempBeanForSlots);
             if (selectedTime == null) {
                 printMessage("\n[INFO] Operazione annullata.");
                 return;
             }
-            bean.setTime(selectedTime);
+            this.time = selectedTime;
 
             // 4. Personal details (Confirmation or new)
             printMessage("\nDati Personali:");
@@ -72,26 +91,26 @@ public class BookAppointmentViewCli implements View {
             printMessage("Conferma dati di " + loggedPatient.getNome() + " " + loggedPatient.getCognome() + "? (S/N)");
             String confirm = scanner.nextLine();
             if (confirm.equalsIgnoreCase("S") || confirm.isEmpty()) {
-                bean.setName(loggedPatient.getNome());
-                bean.setSurname(loggedPatient.getCognome());
-                bean.setEmail(loggedPatient.getEmail());
-                bean.setPhone(loggedPatient.getNumeroTelefonico());
-                bean.setDateOfBirth(loggedPatient.getDataDiNascita().format(dateFormatter));
+                this.name = loggedPatient.getNome();
+                this.surname = loggedPatient.getCognome();
+                this.email = loggedPatient.getEmail();
+                this.phone = loggedPatient.getNumeroTelefonico();
+                this.dateOfBirth = loggedPatient.getDataDiNascita().format(dateFormatter);
             } else {
                 printMessage("Inserisci nome: ");
-                bean.setName(scanner.nextLine());
+                this.name = scanner.nextLine();
                 printMessage("Inserisci cognome: ");
-                bean.setSurname(scanner.nextLine());
+                this.surname = scanner.nextLine();
                 printMessage("Inserisci email: ");
-                bean.setEmail(scanner.nextLine());
+                this.email = scanner.nextLine();
                 printMessage("Inserisci telefono: ");
-                bean.setPhone(scanner.nextLine());
+                this.phone = scanner.nextLine();
                 printMessage("Inserisci data di nascita (GG/MM/AAAA): ");
-                bean.setDateOfBirth(scanner.nextLine());
+                this.dateOfBirth = scanner.nextLine();
             }
 
             // 5. Submit
-            String result = graphicController.bookAppointment(bean);
+            String result = graphicController.bookAppointment(this);
             if ("SUCCESS".equals(result)) {
                 printMessage("Prenotazione confermata con successo!");
             } else {
@@ -108,6 +127,51 @@ public class BookAppointmentViewCli implements View {
         }
 
         printMessage("\nRitorno alla Dashboard...");
+    }
+
+    // Getters for Graphic Controller
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    public String getSpecialist() {
+        return specialist;
+    }
+
+    public int getSpecialistId() {
+        return specialistId;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getDateOfBirth() {
+        return dateOfBirth;
     }
 
     private int readInt(int min, int max) {

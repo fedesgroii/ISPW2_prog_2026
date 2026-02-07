@@ -11,6 +11,7 @@ import java.util.logging.Logger;
  * It manages the list of registered observers and dispatches notifications.
  * This decouples the App Controllers from the Dashboard Controllers.
  */
+@SuppressWarnings("java:S6548")
 public class NotificationManager implements VisitSubject {
     private static final Logger LOGGER = Logger.getLogger(NotificationManager.class.getName());
     private static NotificationManager instance;

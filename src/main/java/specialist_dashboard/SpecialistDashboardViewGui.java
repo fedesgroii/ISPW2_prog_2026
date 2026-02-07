@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import navigation.AppNavigator;
 import navigation.View;
+import patient_dashboard.PatientDashboardViewGui;
 import session_manager.SessionManagerSpecialista;
 import startupconfig.StartupConfigBean;
 
@@ -43,7 +44,7 @@ import java.util.logging.Logger;
  * 
  * @author MindLab Development Team
  * @version 1.0
- * @see patient_dashboard.PatientDashboardView
+ * @see PatientDashboardViewGui
  * @see SessionManagerSpecialista
  */
 public class SpecialistDashboardViewGui implements View {

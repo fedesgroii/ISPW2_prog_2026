@@ -3,7 +3,7 @@ package navigation; // Package di appartenenza
 import select_type_login.LoginViewBoundaryGui;
 import login_insert_data.LoginViewPatient;
 import login_insert_data.LoginViewSpecialist;
-import patient_dashboard.PatientDashboardView;
+import patient_dashboard.PatientDashboardViewGui;
 import specialist_dashboard.SpecialistDashboardViewGui;
 import specialist_dashboard.manage_agenda.ManageAgendaViewGui;
 
@@ -18,7 +18,7 @@ public class GuiViewFactory extends ViewFactory {
                 case "Login" -> new LoginViewBoundaryGui();
                 case "Patient" -> new LoginViewPatient();
                 case "Specialist" -> new LoginViewSpecialist();
-                case "PatientDashboard" -> new PatientDashboardView();
+                case "PatientDashboard" -> new PatientDashboardViewGui();
                 case "SpecialistDashboard" -> new SpecialistDashboardViewGui();
                 case "Booking" -> new patient_dashboard.book_appointment.BookAppointmentViewGui();
                 case "Agenda" -> new ManageAgendaViewGui();

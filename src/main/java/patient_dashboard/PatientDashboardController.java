@@ -6,16 +6,19 @@ import java.util.logging.Logger;
 
 /**
  * Application Controller for the Patient Dashboard.
- * Shared between GUI and CLI views.
- * Handles session logic and data retrieval.
+ * Strictly adheres to MVC: completely independent of UI technologies (JavaFX,
+ * CLI).
+ * 
+ * Responsibilities:
+ * - Session validation
+ * - Processing semantic user choices (PatientDashboardOption)
+ * - Returning neutral NavigationInstruction result
  */
 public class PatientDashboardController {
     private static final Logger LOGGER = Logger.getLogger(PatientDashboardController.class.getName());
 
     /**
      * Verifies if a patient session is active.
-     * 
-     * @throws IllegalStateException if no session is active.
      */
     public void checkSession() {
         if (!SessionManagerPaziente.isLoggedIn()) {
@@ -32,5 +35,30 @@ public class PatientDashboardController {
     public Paziente getLoggedPatient() {
         checkSession();
         return SessionManagerPaziente.getPazienteLoggato();
+    }
+
+    /**
+     * Processes the user's semantic selection and determines the next navigation
+     * step.
+     * 
+     * @param option The option selected by the user.
+     * @return A NavigationInstruction indicating where to navigate.
+     * @throws IllegalArgumentException if the option is unknown.
+     */
+    public NavigationInstruction processSelection(PatientDashboardOption option) {
+        checkSession();
+        LOGGER.info(() -> String.format("Processing dashboard selection: %s", option));
+
+        return switch (option) {
+            case BOOK_VISIT -> new NavigationInstruction("Booking");
+
+            case MANAGE_APPOINTMENTS -> new NavigationInstruction("Agenda");
+
+            case LOGOUT -> {
+                SessionManagerPaziente.resetSession();
+                yield new NavigationInstruction("Login");
+            }
+            default -> throw new IllegalArgumentException("Unsupported option: " + option);
+        };
     }
 }

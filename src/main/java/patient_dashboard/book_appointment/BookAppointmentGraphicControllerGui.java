@@ -21,10 +21,37 @@ public class BookAppointmentGraphicControllerGui {
     private final BookAppointmentControllerApp appController = new BookAppointmentControllerApp();
     private final PatientDashboardController dashboardController = new PatientDashboardController();
 
-    public void bookAppointment(BookAppointmentBean bean, StartupConfigBean config, Stage stage) {
+    public void bookAppointment(BookAppointmentViewGui view, StartupConfigBean config, Stage stage) {
         LOGGER.info("[DEBUG] BookAppointmentGraphicControllerGui.bookAppointment called");
 
         try {
+            // Create Bean from View data
+            BookAppointmentBean bean = new BookAppointmentBean();
+            bean.setServiceType(view.getServiceType());
+
+            Specialista selectedSpec = view.getSelectedSpecialist();
+            if (selectedSpec != null) {
+                bean.setSpecialist(selectedSpec.getEmail());
+                bean.setSpecialistId(selectedSpec.getId());
+            }
+
+            bean.setName(view.getName());
+            bean.setSurname(view.getSurname());
+            bean.setDateOfBirth(view.getDateOfBirth());
+            bean.setPhone(view.getPhone());
+            bean.setEmail(view.getEmail());
+            bean.setReason(view.getReason());
+            bean.setDate(view.getSelectedDate());
+
+            try {
+                String timeStr = view.getSelectedTime();
+                if (timeStr != null && !timeStr.isEmpty()) {
+                    bean.setTime(LocalTime.parse(timeStr));
+                }
+            } catch (Exception _) {
+                // Controller will handle validation error if time is missing/invalid
+            }
+
             // Get the logged-in patient
             Paziente loggedPatient = dashboardController.getLoggedPatient();
 

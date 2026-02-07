@@ -28,7 +28,24 @@ public class BookAppointmentGraphicControllerCli {
         return appController.validateDate(bean);
     }
 
-    public String bookAppointment(BookAppointmentBean bean) {
+    public String bookAppointment(BookAppointmentViewCli view) {
+        // Create Bean from View data
+        BookAppointmentBean bean = new BookAppointmentBean();
+        bean.setServiceType(view.getServiceType());
+
+        // Handle specialist (email and ID)
+        bean.setSpecialist(view.getSpecialist());
+        bean.setSpecialistId(view.getSpecialistId());
+
+        bean.setName(view.getName());
+        bean.setSurname(view.getSurname());
+        bean.setDateOfBirth(view.getDateOfBirth());
+        bean.setPhone(view.getPhone());
+        bean.setEmail(view.getEmail());
+        bean.setReason(view.getReason());
+        bean.setDate(view.getDate());
+        bean.setTime(view.getTime());
+
         Paziente loggedPatient = dashboardController.getLoggedPatient();
         return appController.bookAppointment(bean, loggedPatient);
     }

@@ -16,9 +16,7 @@ import javafx.stage.Stage;
 import navigation.View;
 import startupconfig.StartupConfigBean;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
@@ -31,6 +29,18 @@ public class BookAppointmentViewGui implements View {
     private static final Logger LOGGER = Logger.getLogger(BookAppointmentViewGui.class.getName());
     private static final String CSS_PATH = "/style/style_prenotazione_visita_view_a_colori.css";
     private final BookAppointmentGraphicControllerGui graphicController = new BookAppointmentGraphicControllerGui();
+
+    // UI Components promoted to fields
+    private final ComboBox<String> serviceTypeCombo = new ComboBox<>();
+    private final ComboBox<model.Specialista> specialistCombo = new ComboBox<>();
+    private final TextField nameField = createTextField("Nome");
+    private final TextField surnameField = createTextField("Cognome");
+    private final TextField dobField = createTextField("Data di nascita (GG/MM/AAAA)");
+    private final TextField phoneField = createTextField("Numero di telefono");
+    private final TextField emailField = createTextField("E-mail");
+    private final TextField reasonField = createTextField("Motivo visita (facoltativo)");
+    private final DatePicker datePicker = createDatePicker();
+    private final ComboBox<String> timeCombo = new ComboBox<>();
 
     @Override
     public void show(Stage stage, StartupConfigBean config) {
@@ -62,24 +72,13 @@ public class BookAppointmentViewGui implements View {
         formContainer.setStyle(
                 "-fx-background-color: white; -fx-border-color: #e5e7eb; -fx-border-radius: 12; -fx-background-radius: 12;");
 
-        // UI Components
-        ComboBox<String> serviceTypeCombo = new ComboBox<>();
+        // UI Components initialization
         serviceTypeCombo.getItems().addAll("Online", "In presenza");
         serviceTypeCombo.setPromptText("Seleziona un'opzione...");
         serviceTypeCombo.setMaxWidth(Double.MAX_VALUE);
 
-        ComboBox<model.Specialista> specialistCombo = createSpecialistCombo(
-                graphicController.getAvailableSpecialists(config));
+        setupSpecialistCombo(graphicController.getAvailableSpecialists(config));
 
-        TextField nameField = createTextField("Nome");
-        TextField surnameField = createTextField("Cognome");
-        TextField dobField = createTextField("Data di nascita (GG/MM/AAAA)");
-        TextField phoneField = createTextField("Numero di telefono");
-        TextField emailField = createTextField("E-mail");
-        TextField reasonField = createTextField("Motivo visita (facoltativo)");
-
-        DatePicker datePicker = createDatePicker();
-        ComboBox<String> timeCombo = new ComboBox<>();
         timeCombo.setMaxWidth(Double.MAX_VALUE);
         timeCombo.setPromptText("Scegli prima data e specialista");
         timeCombo.setDisable(true);
@@ -106,11 +105,8 @@ public class BookAppointmentViewGui implements View {
         Button cancelButton = DashboardStyleHelper.createStyledButton("Annulla", false);
         Button submitButton = DashboardStyleHelper.createStyledButton("Prenota ora", true);
 
-        BookingComponents components = new BookingComponents(serviceTypeCombo, specialistCombo, nameField,
-                surnameField, dobField, phoneField, emailField, reasonField, datePicker, timeCombo);
-
         cancelButton.setOnAction(_ -> graphicController.navigateToDashboard(config, stage));
-        submitButton.setOnAction(_ -> handleBookingSubmit(components, config, stage));
+        submitButton.setOnAction(_ -> graphicController.bookAppointment(this, config, stage));
 
         buttonBox.getChildren().addAll(cancelButton, submitButton);
         formContainer.getChildren().add(buttonBox);
@@ -139,12 +135,11 @@ public class BookAppointmentViewGui implements View {
         }
     }
 
-    private ComboBox<model.Specialista> createSpecialistCombo(List<model.Specialista> specialists) {
-        ComboBox<model.Specialista> combo = new ComboBox<>();
-        combo.getItems().addAll(specialists);
-        combo.setPromptText("Seleziona uno specialista...");
-        combo.setMaxWidth(Double.MAX_VALUE);
-        combo.setConverter(new javafx.util.StringConverter<>() {
+    private void setupSpecialistCombo(List<model.Specialista> specialists) {
+        specialistCombo.getItems().addAll(specialists);
+        specialistCombo.setPromptText("Seleziona uno specialista...");
+        specialistCombo.setMaxWidth(Double.MAX_VALUE);
+        specialistCombo.setConverter(new javafx.util.StringConverter<>() {
             @Override
             public String toString(model.Specialista s) {
                 return (s == null) ? "" : s.getNome() + " " + s.getCognome() + " (" + s.getSpecializzazione() + ")";
@@ -155,7 +150,6 @@ public class BookAppointmentViewGui implements View {
                 return null;
             }
         });
-        return combo;
     }
 
     private DatePicker createDatePicker() {
@@ -221,31 +215,45 @@ public class BookAppointmentViewGui implements View {
         specialistCombo.valueProperty().addListener((_, _, _) -> updateSlots.run());
     }
 
-    private void handleBookingSubmit(BookingComponents components, StartupConfigBean config, Stage stage) {
-        BookAppointmentBean bean = new BookAppointmentBean();
-        bean.setServiceType(components.serviceTypeCombo().getValue());
-        model.Specialista selectedSpec = components.specialistCombo().getValue();
-        if (selectedSpec != null) {
-            bean.setSpecialist(selectedSpec.getEmail());
-            bean.setSpecialistId(selectedSpec.getId());
-        }
-        bean.setName(components.nameField().getText());
-        bean.setSurname(components.surnameField().getText());
-        bean.setDateOfBirth(components.dobField().getText());
-        bean.setPhone(components.phoneField().getText());
-        bean.setEmail(components.emailField().getText());
-        bean.setReason(components.reasonField().getText());
-        bean.setDate(components.datePicker().getValue());
-        try {
-            String timeStr = components.timeCombo().getValue();
-            if (timeStr != null && !timeStr.isEmpty()) {
-                bean.setTime(LocalTime.parse(timeStr));
-            }
-        } catch (DateTimeParseException _) {
-            // Controller will handle validation error
-        }
+    // Getters for raw data
+    public String getServiceType() {
+        return serviceTypeCombo.getValue();
+    }
 
-        graphicController.bookAppointment(bean, config, stage);
+    public model.Specialista getSelectedSpecialist() {
+        return specialistCombo.getValue();
+    }
+
+    public String getName() {
+        return nameField.getText();
+    }
+
+    public String getSurname() {
+        return surnameField.getText();
+    }
+
+    public String getDateOfBirth() {
+        return dobField.getText();
+    }
+
+    public String getPhone() {
+        return phoneField.getText();
+    }
+
+    public String getEmail() {
+        return emailField.getText();
+    }
+
+    public String getReason() {
+        return reasonField.getText();
+    }
+
+    public LocalDate getSelectedDate() {
+        return datePicker.getValue();
+    }
+
+    public String getSelectedTime() {
+        return timeCombo.getValue();
     }
 
     private void loadStyleSheet(Scene scene) {
@@ -294,16 +302,4 @@ public class BookAppointmentViewGui implements View {
         return tf;
     }
 
-    private record BookingComponents(
-            ComboBox<String> serviceTypeCombo,
-            ComboBox<model.Specialista> specialistCombo,
-            TextField nameField,
-            TextField surnameField,
-            TextField dobField,
-            TextField phoneField,
-            TextField emailField,
-            TextField reasonField,
-            DatePicker datePicker,
-            ComboBox<String> timeCombo) {
-    }
 }

@@ -3,7 +3,6 @@ package patient_dashboard;
 import dashboard_helper.DashboardStyleHelper;
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -41,11 +40,11 @@ import java.util.logging.Logger;
  * </p>
  * 
  */
-public class PatientDashboardView implements View {
+public class PatientDashboardViewGui implements View {
 
-    private static final Logger LOGGER = Logger.getLogger(PatientDashboardView.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PatientDashboardViewGui.class.getName());
     private final PatientDashboardController controller = new PatientDashboardController();
-    private final PatientDashboardGraphicController graphicController = new PatientDashboardGraphicController();
+    private final PatientDashboardGraphicControllerGui graphicController = new PatientDashboardGraphicControllerGui();
 
     /**
      * Displays the patient dashboard in the provided stage.
@@ -67,7 +66,7 @@ public class PatientDashboardView implements View {
      */
     @Override
     public void show(Stage stage, StartupConfigBean config) {
-        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] PatientDashboardView.show() called",
+        LOGGER.info(() -> String.format("[DEBUG][Thread: %s] PatientDashboardViewGui.show() called",
                 Thread.currentThread().getName()));
 
         // Ensure we're on the JavaFX Application Thread using a clear dispatcher
@@ -110,11 +109,11 @@ public class PatientDashboardView implements View {
             stage.setResizable(true);
             stage.show();
 
-            LOGGER.info(() -> String.format("[DEBUG][Thread: %s] PatientDashboardView displayed successfully",
+            LOGGER.info(() -> String.format("[DEBUG][Thread: %s] PatientDashboardViewGui displayed successfully",
                     Thread.currentThread().getName()));
 
         } catch (Exception e) {
-            String msg = String.format("Error displaying PatientDashboardView: %s", e.getMessage());
+            String msg = String.format("Error displaying PatientDashboardViewGui: %s", e.getMessage());
             LOGGER.log(java.util.logging.Level.SEVERE, msg, e);
         }
     }
@@ -169,7 +168,7 @@ public class PatientDashboardView implements View {
         Button button = (Button) card.getChildren().get(2);
         button.setStyle(button.getStyle() + "; -fx-background-color: white; -fx-text-fill: #1E8449;");
         addInteractiveHoverEffect(button);
-        button.setOnAction(_ -> navigateToView("Booking", config, stage));
+        button.setOnAction(_ -> graphicController.handleSelection(PatientDashboardOption.BOOK_VISIT, config, stage));
 
         return card;
     }
@@ -193,7 +192,7 @@ public class PatientDashboardView implements View {
         Button button = (Button) card.getChildren().get(2);
         button.setStyle(button.getStyle() + "; -fx-background-color: white; -fx-text-fill: #1E8449;");
         addInteractiveHoverEffect(button);
-        button.setOnAction(_ -> navigateToView("History", config, stage));
+        button.setOnAction(_ -> graphicController.handleSelection(PatientDashboardOption.VISIT_HISTORY, config, stage));
 
         return card;
     }
@@ -210,7 +209,7 @@ public class PatientDashboardView implements View {
         // Wire button to navigate to Shop view
         Button button = (Button) card.getChildren().get(2);
         addInteractiveHoverEffect(button);
-        button.setOnAction(_ -> navigateToView("Shop", config, stage));
+        button.setOnAction(_ -> graphicController.handleSelection(PatientDashboardOption.SHOP, config, stage));
 
         return card;
     }
@@ -230,13 +229,9 @@ public class PatientDashboardView implements View {
 
         // Bacheca button action
         bachecaButton.setOnAction(_ -> {
-            LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Opening Bacheca notification",
+            LOGGER.info(() -> String.format("[DEBUG][Thread: %s] User clicked Bacheca",
                     Thread.currentThread().getName()));
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Bacheca - MindLab");
-            alert.setHeaderText("Ultime notifiche e annunci");
-            alert.setContentText("Non ci sono nuovi annunci in bacheca al momento.");
-            alert.showAndWait();
+            graphicController.handleSelection(PatientDashboardOption.BULLETIN_BOARD, config, stage);
         });
 
         // Home button is already on home, so no action needed
@@ -244,7 +239,8 @@ public class PatientDashboardView implements View {
                 Thread.currentThread().getName())));
 
         // Visite button navigates to Appointments view
-        visiteButton.setOnAction(_ -> navigateToView("Appointments", config, stage));
+        visiteButton.setOnAction(
+                _ -> graphicController.handleSelection(PatientDashboardOption.MANAGE_APPOINTMENTS, config, stage));
 
         return DashboardStyleHelper.createFooter(1, bachecaButton, homeButton, visiteButton);
     }
@@ -270,38 +266,6 @@ public class PatientDashboardView implements View {
         button.setOnMouseExited(_ -> {
             scaleIn.stop();
             scaleOut.playFromStart();
-        });
-    }
-
-    /**
-     * Navigates to a specified view using the Graphic Controller.
-     * 
-     * @param viewName     Name of the target view
-     * @param config       Configuration bean
-     * @param currentStage Current stage to close after navigation
-     */
-    private void navigateToView(String viewName, StartupConfigBean config, Stage currentStage) {
-        try {
-            graphicController.navigateToView(viewName, config, currentStage);
-        } catch (Exception e) {
-            showErrorAlert("Navigazione fallita",
-                    "Impossibile navigare a " + viewName + ": " + e.getMessage());
-        }
-    }
-
-    /**
-     * Shows an error alert dialog to the user.
-     * 
-     * @param title   Alert title
-     * @param message Alert message
-     */
-    private void showErrorAlert(String title, String message) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            alert.showAndWait();
         });
     }
 }

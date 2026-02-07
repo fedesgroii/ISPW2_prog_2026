@@ -43,14 +43,7 @@ public class BookAppointmentGraphicControllerGui {
             bean.setReason(view.getReason());
             bean.setDate(view.getSelectedDate());
 
-            try {
-                String timeStr = view.getSelectedTime();
-                if (timeStr != null && !timeStr.isEmpty()) {
-                    bean.setTime(LocalTime.parse(timeStr));
-                }
-            } catch (Exception _) {
-                // Controller will handle validation error if time is missing/invalid
-            }
+            setTimeFromView(bean, view);
 
             // Get the logged-in patient
             Paziente loggedPatient = dashboardController.getLoggedPatient();
@@ -80,6 +73,17 @@ public class BookAppointmentGraphicControllerGui {
 
     public String validateDate(BookAppointmentBean bean) {
         return appController.validateDate(bean);
+    }
+
+    private void setTimeFromView(BookAppointmentBean bean, BookAppointmentViewGui view) {
+        try {
+            String timeStr = view.getSelectedTime();
+            if (timeStr != null && !timeStr.isEmpty()) {
+                bean.setTime(LocalTime.parse(timeStr));
+            }
+        } catch (Exception _) {
+            // Controller will handle validation error if time is missing/invalid
+        }
     }
 
     public void navigateToDashboard(StartupConfigBean config, Stage stage) {

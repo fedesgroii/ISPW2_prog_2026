@@ -3,6 +3,7 @@ package patient_dashboard;
 import javafx.stage.Stage;
 import navigation.AppNavigator;
 import navigation.GuiViewFactory;
+import navigation.NavigationInstruction;
 import startupconfig.StartupConfigBean;
 import java.util.logging.Logger;
 

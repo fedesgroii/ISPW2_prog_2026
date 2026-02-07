@@ -121,6 +121,7 @@ public class LoginViewBoundaryGui implements navigation.View {
         try { // Inizia un blocco try per gestire eventuali errori di caricamento
             String style = getClass().getResource(resourcePath).toExternalForm(); // Ottiene l'URL del file CSS come
                                                                                   // stringa esterna
+            scene.getStylesheets().clear(); // Clear existing stylesheets to prevent cumulative pollution
             scene.getStylesheets().add(style); // Aggiunge il foglio di stile alla scena
         } catch (NullPointerException e) { // Cattura l'eccezione se il file non viene trovato
             logger.severe("Could not load style resource: " + resourcePath + " \n Errore: " + e.getMessage()); // Logga

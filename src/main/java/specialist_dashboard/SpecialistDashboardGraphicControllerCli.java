@@ -2,6 +2,7 @@ package specialist_dashboard;
 
 import navigation.AppNavigator;
 import navigation.CliViewFactory;
+import navigation.NavigationInstruction;
 import startupconfig.StartupConfigBean;
 import java.util.logging.Logger;
 
@@ -11,6 +12,19 @@ import java.util.logging.Logger;
  */
 public class SpecialistDashboardGraphicControllerCli {
     private static final Logger LOGGER = Logger.getLogger(SpecialistDashboardGraphicControllerCli.class.getName());
+    private final SpecialistDashboardController appController = new SpecialistDashboardController();
+
+    /**
+     * Handles a semantic selection from the user.
+     * 
+     * @param option The option selected by the user.
+     * @param config Configuration bean.
+     */
+    public void handleSelection(SpecialistDashboardOption option, StartupConfigBean config) {
+        NavigationInstruction instruction = appController.processSelection(option);
+        String viewName = instruction.getViewName();
+        navigateToView(viewName, config);
+    }
 
     public void navigateToView(String viewName, StartupConfigBean config) {
         try {

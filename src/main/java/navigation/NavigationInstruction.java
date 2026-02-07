@@ -1,4 +1,4 @@
-package patient_dashboard;
+package navigation;
 
 /**
  * Encapsulates navigation instructions from the Application Controller.

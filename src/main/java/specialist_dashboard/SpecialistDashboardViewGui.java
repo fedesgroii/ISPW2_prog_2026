@@ -181,7 +181,8 @@ public class SpecialistDashboardViewGui implements View {
         Button button = (Button) card.getChildren().get(2);
         button.setStyle(button.getStyle() + "; -fx-background-color: white; -fx-text-fill: #1E8449;");
         addInteractiveHoverEffect(button);
-        button.setOnAction(_ -> navigateToView("Agenda", config, stage));
+        button.setOnAction(
+                _ -> graphicController.handleSelection(SpecialistDashboardOption.MANAGE_AGENDA, config, stage));
 
         return card;
     }
@@ -205,7 +206,8 @@ public class SpecialistDashboardViewGui implements View {
         Button button = (Button) card.getChildren().get(2);
         button.setStyle(button.getStyle() + "; -fx-background-color: white; -fx-text-fill: #1E8449;");
         addInteractiveHoverEffect(button);
-        button.setOnAction(_ -> navigateToView("PatientsList", config, stage));
+        button.setOnAction(
+                _ -> graphicController.handleSelection(SpecialistDashboardOption.PATIENTS_LIST, config, stage));
 
         return card;
     }
@@ -222,7 +224,7 @@ public class SpecialistDashboardViewGui implements View {
         // Wire button to navigate to Reports view
         Button button = (Button) card.getChildren().get(2);
         addInteractiveHoverEffect(button);
-        button.setOnAction(_ -> navigateToView("Reports", config, stage));
+        button.setOnAction(_ -> graphicController.handleSelection(SpecialistDashboardOption.REPORTS, config, stage));
 
         return card;
     }
@@ -235,12 +237,14 @@ public class SpecialistDashboardViewGui implements View {
         Button homeButton = new Button("Home");
         Button visiteButton = new Button("Visite");
         Button notificheButton = new Button("Notifiche");
+        Button logoutButton = new Button("Log Out");
 
         // Add visual interactivity to footer buttons
         addInteractiveHoverEffect(bachecaButton);
         addInteractiveHoverEffect(homeButton);
         addInteractiveHoverEffect(visiteButton);
         addInteractiveHoverEffect(notificheButton);
+        addInteractiveHoverEffect(logoutButton);
 
         // Badge for notifications
         javafx.scene.shape.Circle badge = new javafx.scene.shape.Circle(10, javafx.scene.paint.Color.RED);
@@ -286,15 +290,21 @@ public class SpecialistDashboardViewGui implements View {
                 Thread.currentThread().getName())));
 
         // Visite button navigates to Visits view
-        visiteButton.setOnAction(_ -> navigateToView("Visits", config, stage));
+        visiteButton
+                .setOnAction(_ -> graphicController.handleSelection(SpecialistDashboardOption.VISITS, config, stage));
 
-        // Create footer using helper for first 3 buttons
-        HBox footer = DashboardStyleHelper.createFooter(1, bachecaButton, homeButton, visiteButton);
+        // Logout button
+        logoutButton
+                .setOnAction(_ -> graphicController.handleSelection(SpecialistDashboardOption.LOGOUT, config, stage));
+
+        // Create footer using helper
+        HBox footer = DashboardStyleHelper.createFooter(1, bachecaButton, homeButton, visiteButton, logoutButton);
 
         // Notifiche button action
         notificheButton.setOnAction(_ -> showNotificationsDialog());
 
-        // Manually style notifiche button to match footer
+        // Manually style notifiche button to match footer (it's added separately with
+        // badge)
         String footerButtonStyle = String.format(
                 "-fx-background-color: transparent; -fx-text-fill: %s; " +
                         "-fx-font-size: %dpx; -fx-padding: 12 8 12 8; -fx-border-width: 0; " +
@@ -359,22 +369,6 @@ public class SpecialistDashboardViewGui implements View {
             scaleIn.stop();
             scaleOut.playFromStart();
         });
-    }
-
-    /**
-     * Navigates to a specified view using the Graphic Controller.
-     * 
-     * @param viewName     Name of the target view
-     * @param config       Configuration bean
-     * @param currentStage Current stage to close after navigation
-     */
-    private void navigateToView(String viewName, StartupConfigBean config, Stage currentStage) {
-        try {
-            graphicController.navigateToView(viewName, config, currentStage);
-        } catch (Exception e) {
-            showErrorAlert("Navigazione fallita",
-                    "Impossibile navigare a " + viewName + ": " + e.getMessage());
-        }
     }
 
     /**

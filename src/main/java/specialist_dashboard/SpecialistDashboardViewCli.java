@@ -72,9 +72,9 @@ public class SpecialistDashboardViewCli implements View {
             String input = scanner.nextLine().trim();
 
             switch (input) {
-                case "1" -> graphicController.navigateToView("Agenda", config);
-                case "2" -> graphicController.navigateToView("PatientsList", config);
-                case "3" -> graphicController.navigateToView("Reports", config);
+                case "1" -> graphicController.handleSelection(SpecialistDashboardOption.MANAGE_AGENDA, config);
+                case "2" -> graphicController.handleSelection(SpecialistDashboardOption.PATIENTS_LIST, config);
+                case "3" -> graphicController.handleSelection(SpecialistDashboardOption.REPORTS, config);
                 case "4" -> {
                     printMessage("\n=== BACHECA ===");
                     printMessage("Comunicazioni e aggiornamenti dallo staff");
@@ -82,9 +82,10 @@ public class SpecialistDashboardViewCli implements View {
                     printMessage("\nPremi INVIO per continuare...");
                     scanner.nextLine();
                 }
-                case "5" -> graphicController.navigateToView("Visits", config);
+                case "5" -> graphicController.handleSelection(SpecialistDashboardOption.VISITS, config);
                 case "0" -> {
                     exitRequested = true;
+                    graphicController.handleSelection(SpecialistDashboardOption.LOGOUT, config);
                     printMessage("\nArrivederci, Dott. " + bean.getCognome() + "!");
                     LOGGER.info(() -> String.format("[DEBUG][Thread: %s] User requested exit from dashboard",
                             Thread.currentThread().getName()));
@@ -118,7 +119,7 @@ public class SpecialistDashboardViewCli implements View {
         printMessage("5. Visite");
         printMessage("   Gestisci le visite programmate");
         printMessage("");
-        printMessage("0. Esci");
+        printMessage("0. Log Out");
         printMessage("=".repeat(50));
     }
 

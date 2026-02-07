@@ -221,11 +221,13 @@ public class PatientDashboardViewGui implements View {
         Button bachecaButton = new Button("Bacheca");
         Button homeButton = new Button("Home");
         Button visiteButton = new Button("Visite");
+        Button logoutButton = new Button("Log Out");
 
         // Add visual interactivity to footer buttons
         addInteractiveHoverEffect(bachecaButton);
         addInteractiveHoverEffect(homeButton);
         addInteractiveHoverEffect(visiteButton);
+        addInteractiveHoverEffect(logoutButton);
 
         // Bacheca button action
         bachecaButton.setOnAction(_ -> {
@@ -242,7 +244,10 @@ public class PatientDashboardViewGui implements View {
         visiteButton.setOnAction(
                 _ -> graphicController.handleSelection(PatientDashboardOption.MANAGE_APPOINTMENTS, config, stage));
 
-        return DashboardStyleHelper.createFooter(1, bachecaButton, homeButton, visiteButton);
+        // Logout button
+        logoutButton.setOnAction(_ -> graphicController.handleSelection(PatientDashboardOption.LOGOUT, config, stage));
+
+        return DashboardStyleHelper.createFooter(1, bachecaButton, homeButton, visiteButton, logoutButton);
     }
 
     /**

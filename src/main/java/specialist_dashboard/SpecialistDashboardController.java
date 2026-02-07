@@ -4,6 +4,7 @@ import model.Specialista;
 import model.Paziente;
 import model.Visita;
 import authentication.UserDAO;
+import navigation.NavigationInstruction;
 import session_manager.SessionManagerSpecialista;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -177,6 +178,31 @@ public class SpecialistDashboardController {
     public SpecialistDashboardBean getDashboardData() {
         Specialista s = getLoggedSpecialist();
         return new SpecialistDashboardBean(s.getNome(), s.getCognome(), getUnreadCount());
+    }
+
+    /**
+     * Processes the user's semantic selection and determines the next navigation
+     * step.
+     * 
+     * @param option The option selected by the user.
+     * @return A NavigationInstruction indicating where to navigate.
+     * @throws IllegalArgumentException if the option is unknown.
+     */
+    public NavigationInstruction processSelection(SpecialistDashboardOption option) {
+        checkSession();
+        LOGGER.info(() -> String.format("Processing dashboard selection: %s", option));
+
+        return switch (option) {
+            case MANAGE_AGENDA -> new NavigationInstruction("Agenda");
+            case PATIENTS_LIST -> new NavigationInstruction("PatientsList");
+            case REPORTS -> new NavigationInstruction("Reports");
+            case VISITS -> new NavigationInstruction("Visits");
+            case LOGOUT -> {
+                SessionManagerSpecialista.resetSession();
+                yield new NavigationInstruction("Login");
+            }
+            default -> throw new IllegalArgumentException("Unsupported option: " + option);
+        };
     }
 
     /**

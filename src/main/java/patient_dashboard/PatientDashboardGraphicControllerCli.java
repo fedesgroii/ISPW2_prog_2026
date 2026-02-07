@@ -2,6 +2,7 @@ package patient_dashboard;
 
 import navigation.AppNavigator;
 import navigation.CliViewFactory;
+import navigation.NavigationInstruction;
 import startupconfig.StartupConfigBean;
 import java.util.logging.Logger;
 

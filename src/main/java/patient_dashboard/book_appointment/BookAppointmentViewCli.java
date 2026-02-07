@@ -193,16 +193,16 @@ public class BookAppointmentViewCli implements View {
             try {
                 printMessage(prompt);
                 String input = scanner.nextLine();
-                LocalDate date = LocalDate.parse(input, dateFormatter);
+                LocalDate parsedDate = LocalDate.parse(input, dateFormatter);
 
                 BookAppointmentBean tempBean = new BookAppointmentBean();
-                tempBean.setDate(date);
+                tempBean.setDate(parsedDate);
                 String error = graphicController.validateDate(tempBean);
                 if (error != null) {
                     printMessage("[errore] " + error);
                     continue;
                 }
-                return date;
+                return parsedDate;
             } catch (DateTimeParseException _) {
                 printMessage("Formato data non valido. Usa GG/MM/AAAA.");
             }

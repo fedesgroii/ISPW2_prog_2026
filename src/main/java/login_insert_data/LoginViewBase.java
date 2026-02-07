@@ -71,6 +71,7 @@ public abstract class LoginViewBase implements View {
             String styleSheet = Objects.requireNonNull(
                     getClass().getResource(CSS_PATH),
                     "Resource non trovata: " + CSS_PATH).toExternalForm();
+            scene.getStylesheets().clear(); // Clear existing stylesheets to prevent cumulative pollution
             scene.getStylesheets().add(styleSheet);
         } catch (Exception _) {
             LOGGER.log(Level.WARNING, "Impossibile caricare il CSS: {0}. Uso stile di sistema.", CSS_PATH);

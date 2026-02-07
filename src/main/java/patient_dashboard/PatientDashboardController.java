@@ -1,6 +1,7 @@
 package patient_dashboard;
 
 import model.Paziente;
+import navigation.NavigationInstruction;
 import session_manager.SessionManagerPaziente;
 import java.util.logging.Logger;
 
@@ -12,7 +13,7 @@ import java.util.logging.Logger;
  * Responsibilities:
  * - Session validation
  * - Processing semantic user choices (PatientDashboardOption)
- * - Returning neutral NavigationInstruction result
+ * - Returning neutral navigation.NavigationInstruction result
  */
 public class PatientDashboardController {
     private static final Logger LOGGER = Logger.getLogger(PatientDashboardController.class.getName());

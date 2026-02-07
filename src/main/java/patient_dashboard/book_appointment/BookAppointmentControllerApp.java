@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import startupconfig.StartupConfigBean;
 import startupconfig.StartupSettingsEntity;
@@ -53,12 +54,17 @@ public class BookAppointmentControllerApp {
             AppointmentRepository repo = DAOFactory.createDAOs(config).appointmentRepository;
 
             // Save to persistence
-            LOGGER.info(String.format("[DEBUG-NOTIF-1] About to save Visita: %s", nuevaVisita));
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.log(Level.INFO, "[DEBUG-NOTIF-1] About to save Visita: {0}", nuevaVisita);
+            }
             if (repo.save(nuevaVisita)) {
-                LOGGER.info(String.format("[DEBUG-NOTIF-2] Successfully saved Visita object: %s", nuevaVisita));
-                LOGGER.info(String.format(
-                        "[DEBUG-NOTIF-3] Visita details - SpecialistaId: [%d], Paziente: [%s], Data: [%s]",
-                        nuevaVisita.getSpecialistaId(), nuevaVisita.getPazienteCodiceFiscale(), nuevaVisita.getData()));
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.log(Level.INFO, "[DEBUG-NOTIF-2] Successfully saved Visita object: {0}", nuevaVisita);
+                    LOGGER.log(Level.INFO,
+                            "[DEBUG-NOTIF-3] Visita details - SpecialistaId: [{0}], Paziente: [{1}], Data: [{2}]",
+                            new Object[] { nuevaVisita.getSpecialistaId(), nuevaVisita.getPazienteCodiceFiscale(),
+                                    nuevaVisita.getData() });
+                }
 
                 // Notify observers (Specialist Dashboard)
                 LOGGER.info(() -> "[DEBUG-NOTIF-4] Calling NotificationManager.notifyObservers()...");

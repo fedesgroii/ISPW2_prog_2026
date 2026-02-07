@@ -18,11 +18,11 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
 
     // Query SQL come costanti (Simplified: no JOINs)
     private static final String INSERT_QUERY = "INSERT INTO visite (paziente_codice_fiscale, specialista_id, data, orario, tipo_visita, motivo_visita, stato) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String SELECT_QUERY = "SELECT * FROM visite WHERE paziente_codice_fiscale=? AND specialista_id=? AND data=? AND orario=?";
+    private static final String SELECT_QUERY = "SELECT paziente_codice_fiscale, specialista_id, data, orario, tipo_visita, motivo_visita, stato FROM visite WHERE paziente_codice_fiscale=? AND specialista_id=? AND data=? AND orario=?";
     private static final String UPDATE_QUERY = "UPDATE visite SET tipo_visita = ?, motivo_visita = ?, stato = ? WHERE paziente_codice_fiscale = ? AND specialista_id = ? AND data = ? AND orario = ?";
     private static final String DELETE_QUERY = "DELETE FROM visite WHERE paziente_codice_fiscale = ? AND specialista_id = ? AND data = ? AND orario = ?";
-    private static final String SELECT_ALL_QUERY = "SELECT * FROM visite";
-    private static final String SELECT_BY_DATE_AND_SPEC_QUERY = "SELECT * FROM visite WHERE data=? AND specialista_id=?";
+    private static final String SELECT_ALL_QUERY = "SELECT paziente_codice_fiscale, specialista_id, data, orario, tipo_visita, motivo_visita, stato FROM visite";
+    private static final String SELECT_BY_DATE_AND_SPEC_QUERY = "SELECT paziente_codice_fiscale, specialista_id, data, orario, tipo_visita, motivo_visita, stato FROM visite WHERE data=? AND specialista_id=?";
 
     @Override
     public boolean salva(Visita visita) {
@@ -95,7 +95,7 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
 
     public List<Visita> findBySpecialistId(int specialistaId) {
         List<Visita> visite = new ArrayList<>();
-        String query = "SELECT * FROM visite WHERE specialista_id=?";
+        String query = "SELECT paziente_codice_fiscale, specialista_id, data, orario, tipo_visita, motivo_visita, stato FROM visite WHERE specialista_id=?";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, specialistaId);
@@ -105,7 +105,8 @@ public class DatabaseStorageStrategyVisita implements DataStorageStrategy<Visita
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Errore durante il recupero delle visite per specialista: " + specialistaId, e);
+            logger.log(Level.SEVERE, e,
+                    () -> "Errore durante il recupero delle visite per specialista: " + specialistaId);
         }
         return visite;
     }

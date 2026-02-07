@@ -3,6 +3,7 @@ package specialist_dashboard.manage_agenda;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import model.Paziente;
@@ -61,21 +62,21 @@ public class ManagerAgendaControllerApp {
         checkSession();
         try {
             Specialista logged = getLoggedSpecialist();
-            LOGGER.info(String.format("[AGENDA-DEBUG-1] Logged specialist ID: %d, Email: %s", logged.getId(),
-                    logged.getEmail()));
+            LOGGER.log(Level.INFO, "[AGENDA-DEBUG-1] Logged specialist ID: {0}, Email: {1}",
+                    new Object[] { logged.getId(), logged.getEmail() });
 
             List<Visita> allVisits = appointmentRepository.findBySpecialistId(logged.getId());
-            LOGGER.info("[AGENDA-DEBUG-3] Total visits found for specialist ID: " + allVisits.size());
+            LOGGER.log(Level.INFO, "[AGENDA-DEBUG-3] Total visits found for specialist ID: {0}", allVisits.size());
 
             // Log first few visits for debugging
             for (int i = 0; i < Math.min(3, allVisits.size()); i++) {
                 Visita v = allVisits.get(i);
-                LOGGER.info(String.format("[AGENDA-DEBUG-4] Visit %d: date=%s, specialistId=%d",
-                        i, v.getData(), v.getSpecialistaId()));
+                LOGGER.log(Level.INFO, "[AGENDA-DEBUG-4] Visit {0}: date={1}, specialistId={2}",
+                        new Object[] { i, v.getData(), v.getSpecialistaId() });
             }
 
             LocalDate today = LocalDate.now();
-            LOGGER.info("[AGENDA-DEBUG-5] Today's date: " + today);
+            LOGGER.log(Level.INFO, "[AGENDA-DEBUG-5] Today''s date: {0}", today);
 
             List<Visita> futureVisits = allVisits.stream()
                     .filter(v -> !v.getData().isBefore(today)) // >= today
@@ -87,7 +88,7 @@ public class ManagerAgendaControllerApp {
                     })
                     .toList();
 
-            LOGGER.info("[AGENDA-DEBUG-6] Future visits after filtering: " + futureVisits.size());
+            LOGGER.log(Level.INFO, "[AGENDA-DEBUG-6] Future visits after filtering: {0}", futureVisits.size());
 
             return futureVisits.stream()
                     .map(v -> {
@@ -134,15 +135,15 @@ public class ManagerAgendaControllerApp {
                     .orElse(null);
 
             if (toReject == null) {
-                LOGGER.warning("Could not find matching visit to reject for bean: " + bean);
+                LOGGER.log(Level.WARNING, "Could not find matching visit to reject for bean: {0}", bean);
                 return false;
             }
 
             boolean result = appointmentRepository.delete(toReject);
             if (result) {
-                LOGGER.info("Visit rejected successfully: " + bean);
+                LOGGER.log(Level.INFO, "Visit rejected successfully: {0}", bean);
             } else {
-                LOGGER.warning("Failed to reject visit: " + bean);
+                LOGGER.log(Level.WARNING, "Failed to reject visit: {0}", bean);
             }
             return result;
         } catch (Exception e) {

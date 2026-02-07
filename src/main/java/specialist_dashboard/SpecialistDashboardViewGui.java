@@ -153,7 +153,7 @@ public class SpecialistDashboardViewGui implements View {
         VBox card3 = createReportsCard(config, stage);
 
         // Create footer
-        HBox footer = createFooter(config, stage, bean);
+        HBox footer = createFooter(config, stage);
 
         // Assemble dashboard
         root.getChildren().addAll(header, card1, card2, card3, footer);
@@ -229,7 +229,7 @@ public class SpecialistDashboardViewGui implements View {
     /**
      * Creates the footer navigation bar.
      */
-    private HBox createFooter(StartupConfigBean config, Stage stage, SpecialistDashboardBean bean) {
+    private HBox createFooter(StartupConfigBean config, Stage stage) {
         Button bachecaButton = new Button("Bacheca");
         Button homeButton = new Button("Home");
         Button visiteButton = new Button("Visite");
@@ -324,7 +324,7 @@ public class SpecialistDashboardViewGui implements View {
         StringBuilder content = new StringBuilder();
         for (model.Visita v : notifications) {
             String patientName = controller.getPatientName(v.getPazienteCodiceFiscale());
-            content.append(String.format("- %s: %s con %s\n",
+            content.append(String.format("- %s: %s con %s%n",
                     v.getData(), v.getTipoVisita(), patientName));
         }
 

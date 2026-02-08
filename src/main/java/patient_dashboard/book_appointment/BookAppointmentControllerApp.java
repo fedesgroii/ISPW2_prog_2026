@@ -36,7 +36,20 @@ public class BookAppointmentControllerApp {
             return validationError;
         }
 
-        // 2. Business Logic: Create the Visita object
+        // 2. Business Logic: Handle "Booking for others" intelligently
+        String effectiveReason = bean.getReason() != null ? bean.getReason() : "";
+        boolean isDifferentName = !bean.getName().trim().equalsIgnoreCase(loggedPatient.getNome().trim()) ||
+                !bean.getSurname().trim().equalsIgnoreCase(loggedPatient.getCognome().trim());
+
+        if (isDifferentName) {
+            String patientInfo = String.format("Paziente: %s %s", bean.getName().trim(), bean.getSurname().trim());
+            effectiveReason = "[" + patientInfo + "] " + effectiveReason;
+        }
+
+        // 3. Prevent SQL DataTruncation (conservative limit of 45 chars for
+        // motivo_visita)
+        effectiveReason = truncateReason(effectiveReason, 45);
+
         try {
             Visita nuevaVisita = new Visita(
                     loggedPatient.getCodiceFiscalePaziente(),
@@ -44,7 +57,7 @@ public class BookAppointmentControllerApp {
                     bean.getTime(),
                     bean.getSpecialistId(),
                     bean.getServiceType(),
-                    bean.getReason(),
+                    effectiveReason,
                     "Prenotata" // Initial state
             );
 
@@ -197,5 +210,14 @@ public class BookAppointmentControllerApp {
                 .filter(slot -> !occupiedTimes.contains(slot))
                 .sorted()
                 .toList();
+    }
+
+    private String truncateReason(String reason, int maxLength) {
+        if (reason == null)
+            return "";
+        if (reason.length() <= maxLength)
+            return reason;
+        LOGGER.warning(() -> "[DEBUG] Truncating reason from " + reason.length() + " to " + maxLength);
+        return reason.substring(0, maxLength);
     }
 }

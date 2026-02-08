@@ -4,7 +4,9 @@ import authentication.UserDAO;
 import authentication.dao.DatabaseUserDAO;
 import authentication.dao.FileUserDAO;
 import authentication.dao.InMemoryUserDAO;
-import patient_dashboard.book_appointment.AppointmentDAO;
+import patient_dashboard.book_appointment.DatabaseAppointmentDAO;
+import patient_dashboard.book_appointment.FileAppointmentDAO;
+import patient_dashboard.book_appointment.RamAppointmentDAO;
 import patient_dashboard.book_appointment.AppointmentRepository;
 import model.Paziente;
 import model.Specialista;
@@ -53,7 +55,7 @@ public class DAOFactory {
                                                 new InMemoryUserDAO<>(
                                                                 ListaSpecialisti.getIstanzaListaSpecialisti()
                                                                                 .getObservableListaSpecialisti()),
-                                                new AppointmentDAO(0));
+                                                new RamAppointmentDAO());
 
                         case 1: // Database
                                 LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Creating Database DAOs",
@@ -61,7 +63,7 @@ public class DAOFactory {
                                 return new DAOPair(
                                                 new DatabaseUserDAO<>(new DatabaseStorageStrategyPaziente()),
                                                 new DatabaseUserDAO<>(new DatabaseStorageStrategySpecialista()),
-                                                new AppointmentDAO(1));
+                                                new DatabaseAppointmentDAO());
 
                         case 2: // File
                                 LOGGER.info(() -> String.format("[DEBUG][Thread: %s] Creating File DAOs",
@@ -69,7 +71,7 @@ public class DAOFactory {
                                 return new DAOPair(
                                                 new FileUserDAO<>(new FileManagerPazienti()),
                                                 new FileUserDAO<>(new FileManagerSpecialisti()),
-                                                new AppointmentDAO(2));
+                                                new FileAppointmentDAO());
 
                         default:
                                 LOGGER.severe(() -> String.format("[DEBUG][Thread: %s] Invalid storage option: %d",

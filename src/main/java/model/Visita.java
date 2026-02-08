@@ -5,11 +5,17 @@ import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.List;
+import observer.Observer;
+import observer.Subject;
+
 /**
  * Entity class for a medical visit (Visita), strictly aligned with the database
  * schema.
+ * Acts as a ConcreteSubject in the Observer pattern.
  */
-public class Visita {
+public class Visita implements Subject {
     @JsonProperty("paziente_codice_fiscale")
     private String pazienteCodiceFiscale;
 
@@ -31,6 +37,8 @@ public class Visita {
     @JsonProperty("stato")
     private String stato;
 
+    private final List<Observer> observers = new ArrayList<>();
+
     @JsonCreator
     public Visita(
             @JsonProperty("paziente_codice_fiscale") String pazienteCodiceFiscale,
@@ -47,6 +55,26 @@ public class Visita {
         this.tipoVisita = tipoVisita;
         this.motivoVisita = motivoVisita;
         this.stato = stato;
+    }
+
+    // --- Subject implementation ---
+    @Override
+    public void attach(Observer o) {
+        if (!observers.contains(o)) {
+            observers.add(o);
+        }
+    }
+
+    @Override
+    public void detach(Observer o) {
+        observers.remove(o);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer o : new ArrayList<>(observers)) { // Copy to avoid ConcurrentModificationException
+            o.update();
+        }
     }
 
     // Getters and Setters
@@ -80,6 +108,19 @@ public class Visita {
 
     public String getStato() {
         return stato;
+    }
+
+    public void setStato(String stato) {
+        this.stato = stato;
+        notifyObservers();
+    }
+
+    /**
+     * Confirms the visit and notifies observers.
+     */
+    public void confirm() {
+        this.stato = "Confermata";
+        notifyObservers();
     }
 
     @Override

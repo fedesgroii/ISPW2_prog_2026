@@ -86,9 +86,10 @@ public class BookAppointmentViewCli implements View {
             this.time = selectedTime;
 
             // 4. Personal details (Confirmation or new)
-            printMessage("\nDati Personali:");
+            printMessage("\nDati Paziente:");
             Paziente loggedPatient = graphicController.getLoggedPatient();
-            printMessage("Conferma dati di " + loggedPatient.getNome() + " " + loggedPatient.getCognome() + "? (S/N)");
+            printMessage("Stai prenotando per te (" + loggedPatient.getNome() + " " + loggedPatient.getCognome()
+                    + ")? (S/N) [Default: S]");
             String confirm = scanner.nextLine();
             if (confirm.equalsIgnoreCase("S") || confirm.isEmpty()) {
                 this.name = loggedPatient.getNome();
@@ -97,6 +98,8 @@ public class BookAppointmentViewCli implements View {
                 this.phone = loggedPatient.getNumeroTelefonico();
                 this.dateOfBirth = loggedPatient.getDataDiNascita().format(dateFormatter);
             } else {
+                printMessage("\n--- Inserimento dati per un altro paziente ---");
+                printMessage("(Nota: Lo specialista vedrà il nome nel motivo della visita)");
                 printMessage("Inserisci nome: ");
                 this.name = scanner.nextLine();
                 printMessage("Inserisci cognome: ");

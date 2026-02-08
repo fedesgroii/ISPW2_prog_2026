@@ -20,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
+import session_manager.SessionManagerPaziente;
+import model.Paziente;
 
 /**
  * GUI Boundary for booking an appointment.
@@ -79,9 +81,20 @@ public class BookAppointmentViewGui implements View {
 
         setupSpecialistCombo(graphicController.getAvailableSpecialists(config));
 
-        timeCombo.setMaxWidth(Double.MAX_VALUE);
         timeCombo.setPromptText("Scegli prima data e specialista");
         timeCombo.setDisable(true);
+
+        // Pre-fill fields with logged-in patient data
+        if (SessionManagerPaziente.isLoggedIn()) {
+            Paziente logged = SessionManagerPaziente.getPazienteLoggato();
+            nameField.setText(logged.getNome());
+            surnameField.setText(logged.getCognome());
+            if (logged.getDataDiNascita() != null) {
+                dobField.setText(logged.getDataDiNascita().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            }
+            phoneField.setText(logged.getNumeroTelefonico());
+            emailField.setText(logged.getEmail());
+        }
 
         setupSlotUpdateListener(datePicker, specialistCombo, timeCombo);
 

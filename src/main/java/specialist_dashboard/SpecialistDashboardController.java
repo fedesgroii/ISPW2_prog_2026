@@ -9,25 +9,25 @@ import session_manager.SessionManagerSpecialista;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import observer.Observer;
+
 /**
  * Application Controller for the Specialist Dashboard.
  * Shared between GUI and CLI views.
  * Handles session logic and data retrieval for specialists.
+ * Acts as a ConcreteObserver in the Observer pattern.
  */
-public class SpecialistDashboardController {
+public class SpecialistDashboardController implements Observer {
     private static final Logger LOGGER = Logger.getLogger(SpecialistDashboardController.class.getName());
 
     private final java.util.List<Visita> unreadNotifications = new java.util.ArrayList<>();
     private Runnable onNotificationReceived;
     private final UserDAO<Paziente> pazienteDAO;
     private startupconfig.StartupConfigBean startupConfig;
+    private final java.util.List<Visita> observedVisits = new java.util.ArrayList<>();
 
     public SpecialistDashboardController() {
         LOGGER.info("[DEBUG-SPEC-CTRL-1] SpecialistDashboardController constructor called.");
-        observer.NotificationManager manager = observer.NotificationManager.getInstance();
-        LOGGER.info("[DEBUG-SPEC-CTRL-2] Registering observer with NotificationManager...");
-        manager.registerObserver(this::onNewVisit);
-        LOGGER.info("[DEBUG-SPEC-CTRL-3] Observer registered.");
 
         // Initialize DAOs before the try block to satisfy final field requirements
         startupconfig.StartupSettingsEntity settings = startupconfig.StartupSettingsEntity.getInstance();
@@ -54,14 +54,17 @@ public class SpecialistDashboardController {
                         specialistAppointments.size());
             }
 
-            // Process each appointment as notification
+            // Process each appointment as notification and attach observer
             for (model.Visita v : specialistAppointments) {
                 if (LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.log(Level.INFO, "[DEBUG-SPEC-CTRL-7] Processing appointment: {0}", v);
+                    LOGGER.log(Level.INFO, "[DEBUG-SPEC-CTRL-7] Processing appointment and attaching: {0}", v);
                 }
                 if (!unreadNotifications.contains(v)) {
                     unreadNotifications.add(v);
                 }
+                // Attach as observer to each visit
+                v.attach(this);
+                observedVisits.add(v);
             }
             if (LOGGER.isLoggable(Level.INFO)) {
                 LOGGER.log(Level.INFO, "[DEBUG-SPEC-CTRL-8] Constructor completed. Unread notifications: {0}",
@@ -74,62 +77,39 @@ public class SpecialistDashboardController {
         }
     }
 
-    private void onNewVisit(model.Visita visit) {
-        if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.log(Level.INFO, "[DEBUG-SPEC-ON-VISIT-1] onNewVisit() called with visit: {0}", visit);
-        }
-        try {
-            LOGGER.info("[DEBUG-SPEC-ON-VISIT-2] Attempting to get logged specialist...");
-            Specialista logged = getLoggedSpecialist();
-
-            if (logged == null) {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING, "[DEBUG-SPEC-ON-VISIT-12] Null check failed. logged={0}", logged);
-                }
-                return;
-            }
-
-            if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.log(Level.INFO, "[DEBUG-SPEC-ON-VISIT-3] Logged specialist: {0}", logged.getCognome());
-            }
-
-            LOGGER.info("[DEBUG-SPEC-ON-VISIT-4] Logged is non-null. Proceeding with matching...");
-            int visitSpecId = visit.getSpecialistaId();
-            Integer loggedId = logged.getId();
-
-            if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.log(Level.INFO, "[DEBUG-SPEC-ON-VISIT-5] Comparing: visitSpecId=[{0}] vs loggedId=[{1}]",
-                        new Object[] { visitSpecId, loggedId });
-            }
-
-            if (loggedId == null || visitSpecId != loggedId) {
-                LOGGER.info("[DEBUG-SPEC-ON-VISIT-11] NO MATCH. Visit is for different specialist.");
-                return;
-            }
-
-            LOGGER.info("[DEBUG-SPEC-ON-VISIT-6] MATCH FOUND! Adding to unread notifications.");
-            if (unreadNotifications.contains(visit)) {
-                LOGGER.info("[DEBUG-SPEC-ON-VISIT-10] Visit already in unread list (duplicate).");
-                return;
-            }
-
-            unreadNotifications.add(visit);
-            if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.log(Level.INFO, "[DEBUG-SPEC-ON-VISIT-7] Visit added. Total unread: {0}",
-                        unreadNotifications.size());
-            }
-
-            if (onNotificationReceived == null) {
-                LOGGER.warning("[DEBUG-SPEC-ON-VISIT-9] UI callback is NULL!");
-                return;
-            }
-
-            LOGGER.info("[DEBUG-SPEC-ON-VISIT-8] Triggering UI update callback...");
+    /**
+     * Implementation of the Observer interface.
+     * Called by the Subject (Visita) when its state changes.
+     */
+    @Override
+    public void update() {
+        LOGGER.info("[DEBUG-SPEC-UPDATE] update() called by a Visita subject.");
+        // In a real scenario, we might want to know which Visita changed,
+        // but for the dashboard refresh, triggering the callback is often enough.
+        if (onNotificationReceived != null) {
             javafx.application.Platform.runLater(onNotificationReceived);
+        }
+    }
 
-        } catch (Exception e) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, "Error processing notification: {0}", e.getMessage());
+    private void onNewVisit(model.Visita visit) {
+        // This method is now legacy as the notify logic moved to direct Visita ->
+        // Controller.
+        // However, if BookAppointmentController still uses NotificationManager to
+        // "dispatch"
+        // new visits to potentially interested controllers, we might still need a way
+        // to
+        // register this controller as an observer for NEW visits if they aren't in the
+        // DB yet.
+        // But the requirements say: "Aggiungi una dipendenza per registrarsi su Visit
+        // (es. visit.attach(this) nel costruttore o inizializzazione)".
+        // For new visits created during the app lifecycle, they should be attached
+        // here.
+        if (visit != null && !observedVisits.contains(visit)) {
+            visit.attach(this);
+            observedVisits.add(visit);
+            unreadNotifications.add(visit);
+            if (onNotificationReceived != null) {
+                javafx.application.Platform.runLater(onNotificationReceived);
             }
         }
     }

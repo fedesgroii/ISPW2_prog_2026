@@ -46,9 +46,8 @@ public class BookAppointmentControllerApp {
             effectiveReason = "[" + patientInfo + "] " + effectiveReason;
         }
 
-        // 3. Prevent SQL DataTruncation (conservative limit of 45 chars for
-        // motivo_visita)
-        effectiveReason = truncateReason(effectiveReason, 45);
+        // 3. Prevent SQL DataTruncation (expanded limit to 255 after ALTER TABLE)
+        effectiveReason = truncateReason(effectiveReason, 255);
 
         try {
             Visita nuevaVisita = new Visita(

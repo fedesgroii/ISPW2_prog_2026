@@ -19,6 +19,7 @@ public class SessionManagerPaziente {
 
     /**
      * Imposta il paziente loggato, terminando eventualmente una sessione esistente.
+     * 
      * @param paziente Il paziente da loggare
      */
     public static void setPazienteLoggato(Paziente paziente) {
@@ -33,6 +34,7 @@ public class SessionManagerPaziente {
 
     /**
      * Restituisce il paziente attualmente loggato.
+     * 
      * @return Il paziente loggato
      * @throws IllegalStateException Se nessuno è loggato
      */
@@ -59,6 +61,7 @@ public class SessionManagerPaziente {
 
     /**
      * Verifica se c'è un paziente loggato.
+     * 
      * @return true se loggato, false altrimenti
      */
     public static boolean isLoggedIn() {

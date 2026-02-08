@@ -7,15 +7,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Singleton class that manages notification history and logging.
- * It is no longer a Subject in the Observer pattern (real-time updates
- * are handled directly by Visita objects).
+ * Singleton class that manages notification history and acts as a Subject
+ * for real-time notifications of NEW visits.
  */
 @SuppressWarnings("java:S6548")
-public class NotificationManager {
+public class NotificationManager implements Subject {
     private static final Logger LOGGER = Logger.getLogger(NotificationManager.class.getName());
     private static NotificationManager instance;
     private final List<Visita> notificationHistory;
+    private final List<Observer> observers = new ArrayList<>();
+    private Visita lastNewVisit;
 
     private NotificationManager() {
         notificationHistory = new ArrayList<>();
@@ -29,21 +30,50 @@ public class NotificationManager {
     }
 
     /**
-     * Records a visit for history and logging.
-     * Note: This no longer notifies dashboard observers directly.
+     * Records a visit for history and notifies observers (GoF Subject).
      */
     public synchronized void notifyObservers(Visita visit) {
         if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.log(Level.INFO, "[DEBUG-NOTIF-MGR] Recording visit for history - SpecialistaId: [{0}], Data: [{1}]",
-                    new Object[] { visit.getSpecialistaId(), visit.getData() });
+            LOGGER.log(Level.INFO, "[DEBUG-NOTIF-MGR] Recording and notifying new visit - SpecialistaId: [{0}]",
+                    visit.getSpecialistaId());
         }
 
-        notificationHistory.add(visit); // Store in history
+        this.lastNewVisit = visit;
+        notificationHistory.add(visit);
 
-        if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.log(Level.INFO, "[DEBUG-NOTIF-MGR] Added to history. Total history size: {0}",
-                    notificationHistory.size());
+        // Notify all registered observers (like SpecialistDashboardController)
+        this.notifyObservers((Object) visit);
+    }
+
+    @Override
+    public void attach(Observer o) {
+        synchronized (observers) {
+            if (!observers.contains(o)) {
+                observers.add(o);
+            }
         }
+    }
+
+    @Override
+    public void detach(Observer o) {
+        synchronized (observers) {
+            observers.remove(o);
+        }
+    }
+
+    @Override
+    public void notifyObservers(Object arg) {
+        List<Observer> observersCopy;
+        synchronized (observers) {
+            observersCopy = new ArrayList<>(observers);
+        }
+        for (Observer o : observersCopy) {
+            o.update(arg);
+        }
+    }
+
+    public synchronized Visita getLastNewVisit() {
+        return lastNewVisit;
     }
 
     public synchronized List<Visita> getNotificationHistory() {

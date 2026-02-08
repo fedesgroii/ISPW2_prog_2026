@@ -60,20 +60,28 @@ public class Visita implements Subject {
     // --- Subject implementation ---
     @Override
     public void attach(Observer o) {
-        if (!observers.contains(o)) {
-            observers.add(o);
+        synchronized (observers) {
+            if (!observers.contains(o)) {
+                observers.add(o);
+            }
         }
     }
 
     @Override
     public void detach(Observer o) {
-        observers.remove(o);
+        synchronized (observers) {
+            observers.remove(o);
+        }
     }
 
     @Override
-    public void notifyObservers() {
-        for (Observer o : new ArrayList<>(observers)) { // Copy to avoid ConcurrentModificationException
-            o.update();
+    public void notifyObservers(Object arg) {
+        List<Observer> copy;
+        synchronized (observers) {
+            copy = new ArrayList<>(observers);
+        }
+        for (Observer o : copy) {
+            o.update(arg);
         }
     }
 
@@ -112,7 +120,7 @@ public class Visita implements Subject {
 
     public void setStato(String stato) {
         this.stato = stato;
-        notifyObservers();
+        notifyObservers(this);
     }
 
     /**
@@ -120,7 +128,25 @@ public class Visita implements Subject {
      */
     public void confirm() {
         this.stato = "Confermata";
-        notifyObservers();
+        notifyObservers(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Visita visita = (Visita) o;
+        return specialistaId == visita.specialistaId &&
+                java.util.Objects.equals(pazienteCodiceFiscale, visita.pazienteCodiceFiscale) &&
+                java.util.Objects.equals(data, visita.data) &&
+                java.util.Objects.equals(orario, visita.orario);
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(pazienteCodiceFiscale, specialistaId, data, orario);
     }
 
     @Override

@@ -134,7 +134,6 @@ public class SpecialistDashboardViewGui implements View {
     /**
      * Builds the complete dashboard UI structure.
      * 
-     * @param specialista The logged-in specialist
      * @param config      Configuration bean
      * @param stage       Current stage for navigation
      * @return Root VBox containing the entire dashboard
@@ -368,22 +367,6 @@ public class SpecialistDashboardViewGui implements View {
         button.setOnMouseExited(_ -> {
             scaleIn.stop();
             scaleOut.playFromStart();
-        });
-    }
-
-    /**
-     * Shows an error alert dialog to the user.
-     * 
-     * @param title   Alert title
-     * @param message Alert message
-     */
-    private void showErrorAlert(String title, String message) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            alert.showAndWait();
         });
     }
 

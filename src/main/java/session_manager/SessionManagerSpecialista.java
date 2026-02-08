@@ -9,8 +9,13 @@ import model.Specialista;
  * Tiene traccia dello specialista loggato utilizzando metodi statici.
  */
 public class SessionManagerSpecialista {
-    private static final AtomicReference<Specialista> specialistaLoggato = new AtomicReference<>(); // Specialista loggato (utilizzabile da un thread alla volta)
-    private static final Logger logger = Logger.getLogger(SessionManagerSpecialista.class.getName()); // Logger per i messaggi
+    private static final AtomicReference<Specialista> specialistaLoggato = new AtomicReference<>(); // Specialista
+                                                                                                    // loggato
+                                                                                                    // (utilizzabile da
+                                                                                                    // un thread alla
+                                                                                                    // volta)
+    private static final Logger logger = Logger.getLogger(SessionManagerSpecialista.class.getName()); // Logger per i
+                                                                                                      // messaggi
 
     // Costruttore privato per evitare istanziazione
     private SessionManagerSpecialista() {
@@ -18,7 +23,9 @@ public class SessionManagerSpecialista {
     }
 
     /**
-     * Imposta lo specialista loggato, terminando eventualmente una sessione esistente.
+     * Imposta lo specialista loggato, terminando eventualmente una sessione
+     * esistente.
+     * 
      * @param specialista Lo specialista da loggare
      */
     public static void setSpecialistaLoggato(Specialista specialista) {
@@ -33,6 +40,7 @@ public class SessionManagerSpecialista {
 
     /**
      * Restituisce lo specialista attualmente loggato.
+     * 
      * @return Lo specialista loggato
      * @throws IllegalStateException Se nessuno è loggato
      */
@@ -57,6 +65,7 @@ public class SessionManagerSpecialista {
 
     /**
      * Verifica se c'è uno specialista loggato.
+     * 
      * @return true se loggato, false altrimenti
      */
     public static boolean isLoggedIn() {
